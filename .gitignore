@@ -1,0 +1,7 @@
+*.swp
+.*project
+*.o
+ui_geojackal.h
+release/
+debug/
+GeoJackal
