@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>GeoJackalClass</class>
- <widget class="QWidget" name="GeoJackalClass" >
+ <class>MainWindowClass</class>
+ <widget class="QWidget" name="MainWindowClass" >
   <property name="geometry" >
    <rect>
     <x>0</x>

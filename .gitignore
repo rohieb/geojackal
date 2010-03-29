@@ -1,7 +1,10 @@
 *.swp
 .*project
 *.o
+*.P
 ui_geojackal.h
 release/
 debug/
 GeoJackal
+Makefile*
+ui_MainWindow.h
