@@ -33,7 +33,7 @@ bool createTable(QSqlQuery& q) {
 
 // main
 int main(int argc, char * argv[]) {
-  QApplication app(argc, argv);
+  QApplication app(argc, argv, false);
 
   // connect to database
   qDebug() << "connecting to database";
