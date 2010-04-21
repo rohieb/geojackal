@@ -7,7 +7,7 @@
 #ifndef GCSPIDER_H_
 #define GCSPIDER_H_
 
-#include <string>
+#include <QString>
 
 using namespace std;
 
@@ -18,12 +18,15 @@ public:
   GCSpider();
   virtual ~GCSpider();
 
-  void open(string filename);
+  bool loadCache(QString waypoint);
   bool isLoggedIn();
+
+  // for testing
+  void open(QString filename);
 
 private:
   bool hasContent;
-  string file_content_;
+  QString file_content_;
 };
 
 }

@@ -8,6 +8,9 @@
 #include <fstream>
 #include <stdexcept>
 
+#include <QFile>
+#include <QHttp>
+
 using namespace std;
 using namespace geojackal;
 
@@ -22,8 +25,8 @@ GCSpider::~GCSpider() {
  * Open a (HTML) file and read its contents into the memory
  * @param filename
  */
-void GCSpider::open(string filename) {
-  ifstream file(filename.c_str());
+void GCSpider::open(QString filename) {
+  QFile file(filename.c_str());
   string line;
 
   if(!file) {
@@ -35,4 +38,8 @@ void GCSpider::open(string filename) {
   }
 
   hasContent = true;
+}
+
+GCSpider::loadCache(QString waypoint) {
+  QHttpReq
 }
