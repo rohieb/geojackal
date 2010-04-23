@@ -58,20 +58,18 @@ struct Angle {
 
   /**
    * Get the sexagesimal minute of the angle
-   * @param val decimal value
    * @return the sexagesimal minute of the angle
    */
   inline double min() const {
-    return (int) (deg() - (int)deg()) * 60;
+    return (deg() - (int)deg()) * 60;
   }
 
   /**
    * Get the sexagesimal seconds of the angle
-   * @param val decimal value
    * @return the sexagesimal seconds of the angle
    */
   inline double sec() const {
-    return (int) (min() - (int)min()) * 60;
+    return (min() - (int)min()) * 60;
   }
 };
 
