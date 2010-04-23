@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 #include <QFile>
-#include <QHttp>
+//#include <QHttp>
 
 using namespace std;
 using namespace geojackal;
@@ -26,20 +26,16 @@ GCSpider::~GCSpider() {
  * @param filename
  */
 void GCSpider::open(QString filename) {
-  QFile file(filename.c_str());
-  string line;
-
-  if(!file) {
-    throw runtime_error("input stream failed!");
-  }
-
-  while(getline(file, line)) {
-    file_content_ += line;
-  }
-
-  hasContent = true;
-}
-
-GCSpider::loadCache(QString waypoint) {
-  QHttpReq
+//  QFile file(filename.c_str());
+//  string line;
+//
+//  if(!file) {
+//    throw runtime_error("input stream failed!");
+//  }
+//
+//  while(getline(file, line)) {
+//    file_content_ += line;
+//  }
+//
+//  hasContent = true;
 }
