@@ -9,7 +9,7 @@
 namespace geojackal {
 
 /**
- * Helper class to allow conversion between sexagesimal and decimal values.
+ * Solid angle. Allows conversion between sexagesimal and decimal values.
  * Example:
  * @code
  * // create angle with sexagesimal values
@@ -18,8 +18,11 @@ namespace geojackal {
  * double m = a.min(); // m = 21.25
  * double s = a.sec(); // s = 15
  * // or, if you only want the conversion to decimal:
- * double d2 = Angle(10, 21, 15).deg();
+ * double d2 = Angle(10, 21, 15);
  * @endcode
+ *
+ * Note that the cast operator to @c double is overloaded accordingly to return
+ * the angle in decimal degree.
  */
 struct Angle {
 
@@ -30,8 +33,8 @@ struct Angle {
    * Constructor to set the angle in decimal degree
    * @param deg decimal angle in degree
    */
-  Angle(double deg = 0) {
-    degree = deg;
+  Angle(double deg = 0) :
+    degree(deg) {
   }
 
   /**
@@ -43,8 +46,8 @@ struct Angle {
    * @param min sexagesimal minute part
    * @param sec sexagesimal second part
    */
-  Angle(double deg, double min, double sec = 0) {
-    degree = deg + (min / 60) + (sec / (60*60));
+  Angle(double deg, double min, double sec = 0) :
+    degree(deg + (min / 60) + (sec / (60 * 60))) {
   }
 
   /**
@@ -71,6 +74,21 @@ struct Angle {
   inline double sec() const {
     return (min() - (int)min()) * 60;
   }
+
+  /**
+   * Assignment operator, sets the decimal angle in degree
+   * @param val the new value, in decimal degree
+   */
+  Angle&
+  operator=(double val) {
+    degree = val;
+    return *this;
+  }
+
+  /** Cast operator to double */
+  operator double() const {
+    return degree;
+  }
 };
 
 /**
@@ -94,27 +112,25 @@ struct Coordinate {
   };
 
   /** The longitude (north-south) part of the coordinate, in degree */
-  double lon;
+  Angle lon;
   /** The latitude (east-west) part of the coordinate, in degree */
-  double lat;
+  Angle lat;
 
   /**
    * Default constructor. The latitude and longitude parts are set to an
    * invalid value.
    */
-  Coordinate() {
-    lat = 361;
-    lon = 361;
+  Coordinate() :
+    lon(361), lat(361.0) {
   }
 
   /**
    * Constructor to set latitude and longitude
-   * @param lat The latitude part of the coordinate, in degree
-   * @param lon The longitude part of the coordinate, in degree
+   * @param latitude The latitude part of the coordinate, in degree
+   * @param longitude The longitude part of the coordinate, in degree
    */
-  Coordinate(double lon, double lat) {
-    this->lon = lon;
-    this->lat = lat;
+  Coordinate(Angle longitude, Angle latitude) :
+    lon(longitude), lat(latitude) {
   }
 
   QString format(OutputFormat format) const {
@@ -126,16 +142,14 @@ struct Coordinate {
 
     switch(format) {
       case FORMAT_DEG:
-        return QString("%f %s %f %s").arg(abslon.deg()).arg(ns).
-          arg(abslat.deg()).arg(ew);
+        return QString("%f %s %f %s").arg(abslon).arg(ns).arg(abslat).arg(ew);
       case FORMAT_DEG_MIN:
-        return QString("%d %f %s %d %f %s").arg((int)abslon.deg()).
-          arg(abslon.min()).arg(ns).arg((int)abslat.deg()).arg(abslat.min()).
-          arg(ew);
+        return QString("%d %f %s %d %f %s").arg((int)abslon).arg(abslon.min()).
+          arg(ns).arg((int)abslat).arg(abslat.min()).arg(ew);
       case FORMAT_DEG_MIN_SEC:
-        return QString("%d %d %f %s %d %d %f %s").arg((int)abslon.deg()).
-          arg((int)abslon.min()).arg(abslon.sec()).arg(ns).
-          arg((int)abslat.deg()).arg(abslat.min()).arg(abslat.sec()).arg(ew);
+        return QString("%d %d %f %s %d %d %f %s").arg((int)abslon).arg(
+          (int)abslon.min()).arg(abslon.sec()).arg(ns).arg((int)abslat).arg(
+          abslat.min()).arg(abslat.sec()).arg(ew);
       default:
         return QString("");
     }

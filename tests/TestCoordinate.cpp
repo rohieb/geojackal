@@ -12,7 +12,8 @@ BOOST_AUTO_TEST_CASE(struct_Angle) {
   BOOST_CHECK_CLOSE(a.min(), 17.554166, 0.00001f);
   BOOST_CHECK_CLOSE(a.sec(), 33.25, 0.0001f);
 
-  Angle b(53.292569);
+  Angle b;
+  b = 53.292569;
   BOOST_CHECK_CLOSE(b.deg(), 53.292569, 0.000001f);
   BOOST_CHECK_CLOSE(b.min(), 17.55414, 0.00001f);
   BOOST_CHECK_CLOSE(b.sec(), 33.2484, 0.0001f);
