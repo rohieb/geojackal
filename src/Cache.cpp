@@ -1,7 +1,9 @@
+/**
+ * @file Cache.cpp
+ * @date 23 Apr 2010
+ * @author Roland Hieber <rohieb@rohieb.name>
+ */
+
 #include "Cache.h"
 
-using namespace geojackal;
-
-Cache::Cache()
-{
-}
+/** @todo functions for loading and storing caches */

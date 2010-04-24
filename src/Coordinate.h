@@ -1,3 +1,9 @@
+/**
+ * @file Coordinate.h
+ * @date 23 Apr 2010
+ * @author Roland Hieber <rohieb@rohieb.name>
+ */
+
 #ifndef COORDINATE_H
 #define COORDINATE_H
 
