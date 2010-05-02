@@ -410,6 +410,8 @@ struct LogMessage {
   QString msg;
   /** Log icon, see @ref logTypes */
   LogIcon icon;
+  /** Whether the log message is (partially) encrypted (ROT13) */
+  bool encrypted;
   /** Additional images */
   QVector<CacheImage> images;
 };
@@ -454,6 +456,8 @@ struct Cache : Waypoint {
   unsigned int terrain;
   /** Date the cache was placed */
   QDateTime placed;
+  /** Date the cache was found, 0 if not found */
+  QDateTime found;
   /** Person who placed the cache */
   QString owner;
   /** Additional waypoints */
