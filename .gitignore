@@ -9,5 +9,3 @@ Makefile*
 geojackal.pro
 *.exe
 *.dll
-.project
-.cproject
