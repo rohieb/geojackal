@@ -33,6 +33,9 @@ struct DescriptedIcon {
   virtual ~DescriptedIcon() {}
 };
 
+/**
+ * Type of a waypoint, see @ref waypointTypes
+ */
 typedef DescriptedIcon WaypointType;
 /**
  * @defgroup waypointTypes Icon constants for cache/waypoint types
@@ -463,9 +466,9 @@ struct Cache : Waypoint {
    */
   unsigned int terrain;
   /** Date the cache was placed */
-  QDateTime placed;
+  QDate placed;
   /** Date the cache was found, 0 if not found */
-  QDateTime found;
+  QDate found;
   /** Person who placed the cache */
   QString owner;
   /** Additional waypoints */
