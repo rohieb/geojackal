@@ -417,6 +417,16 @@ struct LogMessage {
 };
 
 /**
+ * Cache Description, can be plain text or HTML
+ */
+struct CacheDesc {
+  /** Descriptive text, notes */
+  QString desc;
+  /** Is the description in HTML format? */
+  bool descHtml;
+};
+
+/**
  * Waypoint of a cache
  */
 struct Waypoint {
@@ -428,10 +438,8 @@ struct Waypoint {
   Coordinate coord;
   /** Type of the waypoint, see @ref waypointTypes */
   WaypointType type;
-  /** Descriptive text, notes */
-  QString desc;
-  /** Is the description in HTML format? */
-  bool descHtml;
+  /** Cache description */
+  CacheDesc desc;
 };
 
 /**
@@ -440,7 +448,7 @@ struct Waypoint {
  * and the @c desc member to store the cache description.
  */
 struct Cache : Waypoint {
-  /** Short description */
+  /** Short description (plain text) */
   QString shortDesc;
   /** Size of the cache container */
   CacheSize size;
