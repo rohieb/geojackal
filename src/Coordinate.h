@@ -114,9 +114,17 @@ struct Coordinate {
     FORMAT_DEG_MIN_SEC
   };
 
-  /** The longitude (north-south) part of the coordinate, in degree */
+  /**
+   * The longitude (north-south) part of the coordinate, in degree. Positive
+   * values determine coordinates on the northern hemisphere, negative values
+   * determine values on the southern hemisphere.
+   */
   Angle lon;
-  /** The latitude (east-west) part of the coordinate, in degree */
+  /**
+   * The latitude (east-west) part of the coordinate, in degree. Positive
+   * values determine coordinates on the western hemisphere, negative values
+   * determine values on the eastern hemisphere.
+   */
   Angle lat;
 
   Coordinate();
