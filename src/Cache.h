@@ -387,10 +387,12 @@ enum CacheSize {
   SIZE_REGULAR,
   /** Large: more than 20 liter of storage space */
   SIZE_LARGE,
-  /** No size given, or not applicable (e.&nbsp;g. for Event Caches */
+  /** Other size (bigger or smaller)  */
+  SIZE_OTHER,
+  /** No size given, or not applicable (e.&nbsp;g. for Event Caches) */
   SIZE_NONE,
-  /** Other size */
-  SIZE_OTHER
+  /** Unknown Size (could not be determined) */
+  SIZE_UNKNOWN
 };
 
 /**
