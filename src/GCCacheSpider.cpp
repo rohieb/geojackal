@@ -236,7 +236,19 @@ bool GCCacheSpider::coord(Coordinate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::desc(CacheDesc& buf) {
-  return false;
+  QRegExp startRx("(<span [^>]*id=\"ctl00_ContentBody_LongDescription\""
+    "[^>]*>)");
+  int start = text.indexOf(startRx) + startRx.cap(1).length();
+  int end = text.indexOf(QRegExp("<div [^>]*class=\"CacheDetailNavigation"
+    "Widget\""));
+
+  // TODO process images
+  // TODO process links to other caches?
+
+  // TODO maybe html flag is not needed?
+  buf.desc = text.mid(start, end - start);
+  buf.descHtml = true;
+  return (start != -1 && end != -1 && start < end);
 }
 
 /**
@@ -245,16 +257,56 @@ bool GCCacheSpider::desc(CacheDesc& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::shortDesc(QString& buf) {
-  return false;
+  QRegExp rx("<span [^>]*id=\"ctl00_ContentBody_ShortDescription\"[^>]*>"
+    "([^>]*)</span");
+  bool ret = (rx.indexIn(text) >= 0);
+  buf = rx.cap(1);
+  return ret;
 }
 
 /**
  * Extract the size of the cache
- * @return The size of the cache, or @c SIZE_NONE if the data could not be
+ * @return The size of the cache, or @c SIZE_UNKNOWN if the data could not be
  * extracted
  */
 CacheSize GCCacheSpider::size() {
-  return SIZE_NONE;
+  // Micro
+  QRegExp rx("<img[^>]*src=\"/images/icons/container/micro.gif\".*");
+  rx.setMinimal(true);
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_MICRO;
+  }
+  // Small
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/small.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_SMALL;
+  }
+  // Regular
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/regular.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_REGULAR;
+  }
+  // Large
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/large.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_LARGE;
+  }
+  // Other
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/other.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_OTHER;
+  }
+  // Not chosen
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/not_chosen.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_NONE;
+  }
+  // Virtual => Not chosen
+  rx.setPattern("<img[^>]*src=\"/images/icons/container/virtual.gif\".*");
+  if(ret = (rx.indexIn(text) >= 0)) {
+    return SIZE_NONE;
+  }
+  return SIZE_UNKNOWN;
 }
 
 /**
@@ -263,6 +315,7 @@ CacheSize GCCacheSpider::size() {
  * not be extracted
  */
 unsigned int GCCacheSpider::difficulty() {
+  // FIXME
   return 0;
 }
 
@@ -272,6 +325,7 @@ unsigned int GCCacheSpider::difficulty() {
  * be extracted
  */
 unsigned int GCCacheSpider::terrain() {
+  // FIXME
   return 0;
 }
 
@@ -281,6 +335,7 @@ unsigned int GCCacheSpider::terrain() {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::placed(QDate& buf) {
+  // FIXME
   return false;
 }
 
@@ -291,6 +346,7 @@ bool GCCacheSpider::placed(QDate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::found(QDate& buf) {
+  // FIXME
   return false;
 }
 
@@ -301,6 +357,7 @@ bool GCCacheSpider::found(QDate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::owner(QString& buf) {
+  // FIXME
   return false;
 }
 
@@ -311,6 +368,7 @@ bool GCCacheSpider::owner(QString& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
+  // FIXME
   return false;
 }
 
@@ -321,6 +379,7 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
+  // FIXME
   return false;
 }
 
@@ -331,6 +390,7 @@ bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
+  // FIXME
   return false;
 }
 
@@ -341,6 +401,7 @@ bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::hint(QString& buf) {
+  // FIXME
   return false;
 }
 
