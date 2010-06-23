@@ -74,7 +74,7 @@ bool GCCacheSpider::name(QString& buf) {
  */
 bool GCCacheSpider::waypoint(QString& buf) {
   QRegExp rx("<div[^>]*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>\\s*([^<]*)"
-    "<\/p");
+    "</p");
   bool ret = (rx.indexIn(text) >= 0);
   buf = rx.cap(1);
   return ret;
@@ -91,91 +91,91 @@ bool GCCacheSpider::type(WaypointType& buf) {
   // Traditional
   QRegExp rx("<h2.*<img[^>]*src=\"/images/WptTypes/2.gif\".*<\\/h2");
   rx.setMinimal(true);
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_TRADI;
     return true;
   }
   // Multi
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/3.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_MULTI;
     return true;
   }
   // Project APE
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/9.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_PROJECTAPE;
     return true;
   }
   // Mystery
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/8.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_MYSTERY;
     return true;
   }
   // Letterbox Hybrid
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/5.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_LETTERBOX;
     return true;
   }
   // Whereigo
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/1858.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_WHEREIGO;
     return true;
   }
   // Event
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/6.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_EVENT;
     return true;
   }
   // Mega Event
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/453.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_MEGAEVENT;
     return true;
   }
   // CITO
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/13.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_TRADI;
     return true;
   }
   // Earthcache
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/137.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_EARTH;
     return true;
   }
   // GPS Adventure Exhibit
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/1304.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_GAME;
     return true;
   }
   // Virtual
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/4.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_VIRTUAL;
     return true;
   }
   // Webcam
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/11.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_WEBCAM;
     return true;
   }
   // 10 Years Event Caches
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/3653.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_EVENT; // no exception here :P
     return true;
   }
   // Locationless
   rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/12.gif\".*<\\/h2");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     buf = TYPE_REVERSE;
     return true;
   }
@@ -192,7 +192,7 @@ bool GCCacheSpider::type(WaypointType& buf) {
  */
 bool GCCacheSpider::coord(Coordinate& buf) {
   QRegExp rx("<span[^>]*id=\"ctl00_ContentBody_LatLon\"[^>]*>(N|S) (\\d{2})° "
-    "(\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3})<\/span");
+    "(\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3})</span");
   bool ret = (rx.indexIn(text) >= 0);
 
   // calc latitude
@@ -219,11 +219,11 @@ bool GCCacheSpider::coord(Coordinate& buf) {
   if(rx.cap(4) == "W") {
     buf.lon = ((double)buf.lon * -1);
     // must be -180 <= value <= 0
-    ASSERT(buf.lat.degree <= 0 && (buf.lat.degree >= -180 ||
+    Q_ASSERT(buf.lat.degree <= 0 && (buf.lat.degree >= -180 ||
       abs(buf.lat.degree + 180) < std::numeric_limits<double>::min()));
   } else {
     // must be 0 <= value <= 180
-    ASSERT(buf.lat.degree >= 0 && (buf.lat.degree <= 180 ||
+    Q_ASSERT(buf.lat.degree >= 0 && (buf.lat.degree <= 180 ||
       abs(buf.lat.degree - 180) < std::numeric_limits<double>::min()));
   }
 
@@ -273,37 +273,37 @@ CacheSize GCCacheSpider::size() {
   // Micro
   QRegExp rx("<img[^>]*src=\"/images/icons/container/micro.gif\".*");
   rx.setMinimal(true);
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_MICRO;
   }
   // Small
   rx.setPattern("<img[^>]*src=\"/images/icons/container/small.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_SMALL;
   }
   // Regular
   rx.setPattern("<img[^>]*src=\"/images/icons/container/regular.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_REGULAR;
   }
   // Large
   rx.setPattern("<img[^>]*src=\"/images/icons/container/large.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_LARGE;
   }
   // Other
   rx.setPattern("<img[^>]*src=\"/images/icons/container/other.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_OTHER;
   }
   // Not chosen
   rx.setPattern("<img[^>]*src=\"/images/icons/container/not_chosen.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_NONE;
   }
   // Virtual => Not chosen
   rx.setPattern("<img[^>]*src=\"/images/icons/container/virtual.gif\".*");
-  if(ret = (rx.indexIn(text) >= 0)) {
+  if(rx.indexIn(text) >= 0) {
     return SIZE_NONE;
   }
   return SIZE_UNKNOWN;
@@ -315,7 +315,20 @@ CacheSize GCCacheSpider::size() {
  * not be extracted
  */
 unsigned int GCCacheSpider::difficulty() {
-  // FIXME
+  QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img [^>]*src="
+    "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
+  rx.setMinimal(true);
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    bool ok = false;
+    int rating = rx.cap(1).toInt(&ok); // full stars
+    if(ok && rating != 0) {
+      if(!rx.cap(2).isEmpty()) {
+        // half stars
+        return 2 * rating + 1; // double value as per definition
+      }
+      return 2 * rating;
+    }
+  }
   return 0;
 }
 
@@ -325,7 +338,20 @@ unsigned int GCCacheSpider::difficulty() {
  * be extracted
  */
 unsigned int GCCacheSpider::terrain() {
-  // FIXME
+  QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img [^>]*src="
+    "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
+  rx.setMinimal(true);
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    bool ok = false;
+    int rating = rx.cap(1).toInt(&ok); // full stars
+    if(ok && rating != 0) {
+      if(!rx.cap(2).isEmpty()) {
+        // half stars
+        return 2 * rating + 1; // double value as per definition
+      }
+      return 2 * rating;
+    }
+  }
   return 0;
 }
 
@@ -335,7 +361,29 @@ unsigned int GCCacheSpider::terrain() {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::placed(QDate& buf) {
-  // FIXME
+  QRegExp rx("<td>\\s*<strong>\\s*Hidden\\s*:</strong>(\\d{1,2})/(\\d{1,2})/"
+    "(\\d{4})\\s*</td>");
+  rx.setMinimal(true);
+
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty() && !rx.cap(2).isEmpty() &&
+    !rx.cap(3).isEmpty()) {
+    bool ok = true;
+    int month, day, year;
+    month = rx.cap(1).toInt(&ok);
+    if(!ok) {
+      return false;
+    }
+    day = rx.cap(2).toInt(&ok);
+    if(!ok) {
+      return false;
+    }
+    year = rx.cap(3).toInt(&ok);
+    if(!ok) {
+      return false;
+    }
+    buf.setDate(year, month, day);
+    return true;
+  }
   return false;
 }
 
@@ -346,7 +394,8 @@ bool GCCacheSpider::placed(QDate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::found(QDate& buf) {
-  // FIXME
+  // FIXME: extract from logs
+  buf.setDate(0,0,0);
   return false;
 }
 
@@ -358,6 +407,13 @@ bool GCCacheSpider::found(QDate& buf) {
  */
 bool GCCacheSpider::owner(QString& buf) {
   // FIXME
+  QRegExp rx("<td[^>]*>\\s*<strong>\\s*A\\s*cache\\s*</strong>\\s*by\\s*"
+    "<a[^>]*>([^<]+)</a");
+  rx.setMinimal(true);
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    buf = rx.cap(1);
+    return true;
+  }
   return false;
 }
 
@@ -369,6 +425,9 @@ bool GCCacheSpider::owner(QString& buf) {
  */
 bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
   // FIXME
+  QRegExp rx("");
+  rx.setMinimal(true);
+
   return false;
 }
 
@@ -380,6 +439,9 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
  */
 bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
   // FIXME
+  QRegExp rx("");
+  rx.setMinimal(true);
+
   return false;
 }
 
@@ -391,6 +453,9 @@ bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
  */
 bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
   // FIXME
+  QRegExp rx("");
+  rx.setMinimal(true);
+
   return false;
 }
 
@@ -402,6 +467,13 @@ bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
  */
 bool GCCacheSpider::hint(QString& buf) {
   // FIXME
+  QRegExp rx("<div[^>]* id=\"div_hint\"[^>]*>(.*)</div");
+  rx.setMinimal(true);
+
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    buf = rx.cap(1);
+    return true;
+  }
   return false;
 }
 
