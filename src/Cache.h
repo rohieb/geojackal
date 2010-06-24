@@ -435,7 +435,10 @@ struct CacheDesc {
  * Waypoint of a cache
  */
 struct Waypoint {
-  /** The waypoint, like <em>GC1Q743</em> */
+  /**
+   * The waypoint, like <em>GC1Q743</em>. For additional waypoints of a cache,
+   * this field stores the 2-letter prefix code
+   */
   QString waypoint;
   /** Name of the waypoint, like <em>Wayward Drive!</em>*/
   QString name;
