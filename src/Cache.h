@@ -314,63 +314,63 @@ static const CacheAttribute ATTR_WINTER_YES("Available in winter", QIcon(
   ":attr-winter-yes.gif"));
 /** @} */
 
-typedef DescriptedIcon LogIcon;
+typedef DescriptedIcon LogType;
 /**
  * @defgroup logTypes  Icon constants for log types
  * @{
  */
 /** Attended */
-static const LogIcon LOG_ATTENDED("Attended", QIcon(":icon-attended.gif"));
+static const LogType LOG_ATTENDED("Attended", QIcon(":icon-attended.gif"));
 /** Post Reviewer Note */
-static const LogIcon LOG_REVIEWER_NOTE("Post Reviewer Note", QIcon(
+static const LogType LOG_REVIEWER_NOTE("Post Reviewer Note", QIcon(
   ":icon-big-smile.gif"));
 /** Took a webcam photo */
-static const LogIcon LOG_WEBCAM_PHOTO("Took a webcam photo", QIcon(
+static const LogType LOG_WEBCAM_PHOTO("Took a webcam photo", QIcon(
   ":icon-camera.gif"));
 /** Update Coordinates */
-static const LogIcon LOG_COORD_UPDATE("Update Coordinates", QIcon(
+static const LogType LOG_COORD_UPDATE("Update Coordinates", QIcon(
   ":icon-coord-update.gif"));
 /** Temporarily Disable Listing  */
-static const LogIcon LOG_DISABLED("Temporarily Disable Listing ", QIcon(
+static const LogType LOG_DISABLED("Temporarily Disable Listing ", QIcon(
   ":icon-disabled.gif"));
 /** Enable Listing */
-static const LogIcon LOG_ENABLED("Enable Listing", QIcon(":icon-enabled.gif"));
+static const LogType LOG_ENABLED("Enable Listing", QIcon(":icon-enabled.gif"));
 /** Publish */
-static const LogIcon LOG_PUBLISH("Publish", QIcon(":icon-greenlight.gif"));
+static const LogType LOG_PUBLISH("Publish", QIcon(":icon-greenlight.gif"));
 /** Owner Maintenance */
-static const LogIcon LOG_MAINT("Owner Maintenance", QIcon(":icon-maint.gif"));
+static const LogType LOG_MAINT("Owner Maintenance", QIcon(":icon-maint.gif"));
 /** Needs Maintenance */
-static const LogIcon LOG_NEEDSMAINT("Needs Maintenance", QIcon(
+static const LogType LOG_NEEDSMAINT("Needs Maintenance", QIcon(
   ":icon-needsmaint.gif"));
 /** Write Note */
-static const LogIcon LOG_NOTE("Write Note", QIcon(":icon-note.gif"));
+static const LogType LOG_NOTE("Write Note", QIcon(":icon-note.gif"));
 /** Dropped Travelbug */
-static const LogIcon LOG_TB_DROPPED("Dropped Travelbug", QIcon(
+static const LogType LOG_TB_DROPPED("Dropped Travelbug", QIcon(
   ":icon-dropped-off.gif"));
 /** Travelbug retrieved */
-static const LogIcon LOG_TB_RETRIEVED("Travelbug retrieved", QIcon(
+static const LogType LOG_TB_RETRIEVED("Travelbug retrieved", QIcon(
   ":icon-picked-up.gif"));
 /** Travelbug grabbed */
-static const LogIcon LOG_TB_GRABBED("Travelbug grabbed", QIcon(
+static const LogType LOG_TB_GRABBED("Travelbug grabbed", QIcon(
   ":icon-transfer.gif"));
 /** Travelbug discovered */
-static const LogIcon LOG_TB_DISCOVERED("Travelbug discovered", QIcon(
+static const LogType LOG_TB_DISCOVERED("Travelbug discovered", QIcon(
   ":icon-smile.gif"));
 /** Retract */
-static const LogIcon LOG_RETRACT("Retract", QIcon(":icon-redlight.gif"));
+static const LogType LOG_RETRACT("Retract", QIcon(":icon-redlight.gif"));
 /** Needs Archived */
-static const LogIcon
+static const LogType
   LOG_NEED_ARCHV("Needs Archived", QIcon(":icon-remove.gif"));
 /** Will Attend */
-static const LogIcon LOG_WILL_ATTEND("Will Attend", QIcon(":icon-rsvp.gif"));
+static const LogType LOG_WILL_ATTEND("Will Attend", QIcon(":icon-rsvp.gif"));
 /** Not Found */
-static const LogIcon LOG_NOT_FOUND("Not Found", QIcon(":icon-sad.gif"));
+static const LogType LOG_NOT_FOUND("Not Found", QIcon(":icon-sad.gif"));
 /** Found */
-static const LogIcon LOG_FOUND("Found", QIcon(":icon-smile.gif"));
+static const LogType LOG_FOUND("Found", QIcon(":icon-smile.gif"));
 /** Archive */
-static const LogIcon LOG_ARCHIVE("Archive", QIcon(":icon-traffic-cone.gif"));
+static const LogType LOG_ARCHIVE("Archive", QIcon(":icon-traffic-cone.gif"));
 /** Unarchive */
-static const LogIcon
+static const LogType
   LOG_UNARCHIVE("Unarchive", QIcon(":icon-traffic-cone.gif"));
 /** @} */
 
@@ -415,7 +415,7 @@ struct LogMessage {
   /** Log message */
   QString msg;
   /** Log icon, see @ref logTypes */
-  LogIcon icon;
+  LogType icon;
   /** Whether the log message is (partially) encrypted (ROT13) */
   bool encrypted;
   /** Additional images */
