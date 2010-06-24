@@ -14,7 +14,7 @@ using namespace geojackal;
  * invalid value.
  */
 Coordinate::Coordinate() :
-  lon(361), lat(361.0) {
+  lon(ANGLE_INVALID), lat(ANGLE_INVALID) {
 }
 
 /**
