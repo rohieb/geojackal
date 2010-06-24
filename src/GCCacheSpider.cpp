@@ -41,9 +41,9 @@ bool GCCacheSpider::all(Cache& buf) {
   ret |= coord(buf.coord);
   ret |= desc(buf.desc);
   ret |= shortDesc(buf.shortDesc);
-  ret |= ( (buf.size = size()) != SIZE_NONE);
-  ret |= ( (buf.difficulty = difficulty()) != 0);
-  ret |= ( (buf.terrain = terrain()) != 0);
+  ret |= ((buf.size = size()) != SIZE_UNKNOWN);
+  ret |= ((buf.difficulty = difficulty()) != 0);
+  ret |= ((buf.terrain = terrain()) != 0);
   ret |= placed(buf.placed);
   ret |= found(buf.found);
   ret |= owner(buf.owner);
@@ -60,7 +60,8 @@ bool GCCacheSpider::all(Cache& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::name(QString& buf) {
-  QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\"[^<]*>([^<]+)<\\/span>");
+  QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\".*>(.+)</span>");
+  rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
   buf = rx.cap(1);
   return ret;
@@ -73,10 +74,10 @@ bool GCCacheSpider::name(QString& buf) {
  *
  */
 bool GCCacheSpider::waypoint(QString& buf) {
-  QRegExp rx("<div[^>]*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>\\s*([^<]*)"
-    "</p");
+  QRegExp rx("<div .*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>(.+)</p");
+  rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
-  buf = rx.cap(1);
+  buf = rx.cap(1).trimmed();
   return ret;
 }
 
@@ -89,95 +90,57 @@ bool GCCacheSpider::waypoint(QString& buf) {
  */
 bool GCCacheSpider::type(WaypointType& buf) {
   // Traditional
-  QRegExp rx("<h2.*<img[^>]*src=\"/images/WptTypes/2.gif\".*<\\/h2");
+  QRegExp rx("<h2.*<img .*src=\"/images/WptTypes/(2|3|9|8|5|1858|6|453|13|137|"
+    "1304|4|11|3653|12).gif\".*</h2");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_TRADI;
-    return true;
-  }
-  // Multi
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/3.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_MULTI;
-    return true;
-  }
-  // Project APE
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/9.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_PROJECTAPE;
-    return true;
-  }
-  // Mystery
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/8.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_MYSTERY;
-    return true;
-  }
-  // Letterbox Hybrid
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/5.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_LETTERBOX;
-    return true;
-  }
-  // Whereigo
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/1858.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_WHEREIGO;
-    return true;
-  }
-  // Event
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/6.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_EVENT;
-    return true;
-  }
-  // Mega Event
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/453.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_MEGAEVENT;
-    return true;
-  }
-  // CITO
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/13.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_TRADI;
-    return true;
-  }
-  // Earthcache
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/137.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_EARTH;
-    return true;
-  }
-  // GPS Adventure Exhibit
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/1304.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_GAME;
-    return true;
-  }
-  // Virtual
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/4.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_VIRTUAL;
-    return true;
-  }
-  // Webcam
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/11.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_WEBCAM;
-    return true;
-  }
-  // 10 Years Event Caches
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/3653.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_EVENT; // no exception here :P
-    return true;
-  }
-  // Locationless
-  rx.setPattern("<h2.*<img[^>]*src=\"/images/WptTypes/12.gif\".*<\\/h2");
-  if(rx.indexIn(text) >= 0) {
-    buf = TYPE_REVERSE;
-    return true;
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    QString cap = rx.cap(1);
+    if(cap == "2") {
+      buf = TYPE_TRADI;
+      return true;
+    } else if(cap == "3") {
+      buf = TYPE_MULTI;
+      return true;
+    } else if(cap == "9") {
+      buf = TYPE_PROJECTAPE;
+      return true;
+    } else if(cap == "8") {
+      buf = TYPE_MYSTERY;
+      return true;
+    } else if(cap == "5") {
+      buf = TYPE_LETTERBOX;
+      return true;
+    } else if(cap == "1858") {
+      buf = TYPE_WHEREIGO;
+      return true;
+    } else if(cap == "6") {
+      buf = TYPE_EVENT;
+      return true;
+    } else if(cap == "453") {
+      buf = TYPE_MEGAEVENT;
+      return true;
+    } else if(cap == "13") { // CITO
+      buf = TYPE_TRADI;
+      return true;
+    } else if(cap == "137") {
+      buf = TYPE_EARTH;
+      return true;
+    } else if(cap == "1304") { // GPS Adventure Exhibit
+      buf = TYPE_GAME;
+      return true;
+    } else if(cap == "4") {
+      buf = TYPE_VIRTUAL;
+      return true;
+    } else if(cap == "11") {
+      buf = TYPE_WEBCAM;
+      return true;
+    } else if(cap == "3653") {
+      buf = TYPE_EVENT; // 10 Years Event Caches, no exception here :P
+      return true;
+    } else if(cap == "12") {
+      buf = TYPE_REVERSE;
+      return true;
+    }
   }
   // nothing appropriate
   buf = TYPE_OTHER;
@@ -186,48 +149,88 @@ bool GCCacheSpider::type(WaypointType& buf) {
 
 /**
  * Extract the coordinates of the cache
- * @param buf Buffer to receive the coordinate. If the conversion fails, some
- *  parts of the coordinate may be @c 0.
- * @return @c false if the data could not be extracted, @c true otherwise.
+ * @param buf Buffer to receive the coordinate. If the extraction fails or
+ *  the coordinate is invisible (the text says @c ??? instead of a coordinate),
+ *  the @c angle fields of this value are both set to @c ANGLE_INVALID.
+ * @return @c false if the data could not be extracted, @c true otherwise, even
+ *  if the coordinate is invisible.
  */
 bool GCCacheSpider::coord(Coordinate& buf) {
-  QRegExp rx("<span[^>]*id=\"ctl00_ContentBody_LatLon\"[^>]*>(N|S) (\\d{2})° "
-    "(\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3})</span");
-  bool ret = (rx.indexIn(text) >= 0);
+  QRegExp rx("<span .*id=\"ctl00_ContentBody_LatLon\".*>(:?\\?{1,3}|(N|S) "
+    "(\\d{2})° (\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3}))</span");
+  rx.setMinimal(true);
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    // is the coordinate "???" or something real?
+    if(rx.cap(1).at(0) == QChar('?')) {
+      // invisible coordinate
+      buf.lat = ANGLE_INVALID;
+      buf.lon = ANGLE_INVALID;
+      return true;
 
-  // calc latitude
-  int latdeg = rx.cap(2).toInt(&ret);
-  double latmin = rx.cap(3).toDouble(&ret);
-  buf.lat = Angle(latdeg, latmin);
-  // if south, multiply by -1
-  if(rx.cap(1) == "S") {
-    buf.lat = ((double)buf.lat * -1);
-    // must be -90 <= value <= 0
-    Q_ASSERT(buf.lat.degree <= 0 && (buf.lat.degree >= -90 ||
-      abs(buf.lat.degree + 90) < std::numeric_limits<double>::min()));
-  } else {
-    // must be 0 <= value <= 90
-    Q_ASSERT(buf.lat.degree >= 0 && (buf.lat.degree <= 90 ||
-      abs(buf.lat.degree - 90) < std::numeric_limits<double>::min()));
+    } else if( (rx.cap(1).at(0) == QChar('N') || rx.cap(1).at(0) == QChar('S'))
+      && !rx.cap(2).isEmpty() && !rx.cap(3).isEmpty() && !rx.cap(4).isEmpty()
+      && !rx.cap(5).isEmpty() && !rx.cap(6).isEmpty() && !rx.cap(7).isEmpty()
+      && !rx.cap(8).isEmpty()) {
+      // real coordinate
+      bool ret;
+
+      // calc latitude
+      int latdeg = rx.cap(2).toInt(&ret);
+      if(!ret) {
+        return false;
+      }
+      double latmin = rx.cap(3).toDouble(&ret);
+      if(!ret) {
+        return false;
+      }
+      buf.lat = Angle(latdeg, latmin);
+
+      // if south, multiply by -1
+      if(rx.cap(1) == "S") {
+        buf.lat = ((double)buf.lat * -1);
+        // must be -90 <= value <= 0
+        if(buf.lat.degree <= 0 && (buf.lat.degree >= -90 || abs(buf.lat.degree
+          + 90) < std::numeric_limits<double>::min())) {
+          return false;
+        }
+      } else {
+        // must be 0 <= value <= 90
+        if(buf.lat.degree >= 0 && (buf.lat.degree <= 90 || abs(buf.lat.degree
+          - 90) < std::numeric_limits<double>::min())) {
+          return false;
+        }
+      }
+
+      // calc longitude
+      int londeg = rx.cap(5).toInt(&ret);
+      if(!ret) {
+        return false;
+      }
+      double lonmin = rx.cap(6).toDouble(&ret);
+      if(!ret) {
+        return false;
+      }
+      buf.lon = Angle(londeg, lonmin);
+
+      // if west, multiply longitude by -1
+      if(rx.cap(4) == "W") {
+        buf.lon = ((double)buf.lon * -1);
+        // must be -180 <= value <= 0
+        if(buf.lat.degree <= 0 && (buf.lat.degree >= -180 || abs(buf.lat.degree
+          + 180) < std::numeric_limits<double>::min())) {
+          return false;
+        }
+      } else {
+        // must be 0 <= value <= 180
+        if(buf.lat.degree >= 0 && (buf.lat.degree <= 180 || abs(buf.lat.degree
+          - 180) < std::numeric_limits<double>::min())) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
-
-  int londeg = rx.cap(5).toInt(&ret);
-  double lonmin = rx.cap(6).toDouble(&ret);
-  buf.lon = Angle(londeg, lonmin);
-
-  // if west, multiply longitude by -1
-  if(rx.cap(4) == "W") {
-    buf.lon = ((double)buf.lon * -1);
-    // must be -180 <= value <= 0
-    Q_ASSERT(buf.lat.degree <= 0 && (buf.lat.degree >= -180 ||
-      abs(buf.lat.degree + 180) < std::numeric_limits<double>::min()));
-  } else {
-    // must be 0 <= value <= 180
-    Q_ASSERT(buf.lat.degree >= 0 && (buf.lat.degree <= 180 ||
-      abs(buf.lat.degree - 180) < std::numeric_limits<double>::min()));
-  }
-
-  return ret;
+  return false;
 }
 
 /**
@@ -236,14 +239,16 @@ bool GCCacheSpider::coord(Coordinate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::desc(CacheDesc& buf) {
-  QRegExp startRx("(<span [^>]*id=\"ctl00_ContentBody_LongDescription\""
-    "[^>]*>)");
-  int start = text.indexOf(startRx) + startRx.cap(1).length();
-  int end = text.indexOf(QRegExp("<div [^>]*class=\"CacheDetailNavigation"
-    "Widget\""));
+  QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\".*>)");
+  startRx.setMinimal(true);
+  QRegExp endRx("<div .*class=\"CacheDetailNavigationWidget\"");
+  endRx.setMinimal(true);
+  int start = text.indexOf(startRx) + startRx.cap(1).length(); // after regex
+  int end = text.indexOf(endRx);
 
   // TODO process images
   // TODO process links to other caches?
+  // TODO what about html tags in the text?
 
   // TODO maybe html flag is not needed?
   buf.desc = text.mid(start, end - start);
@@ -257,10 +262,10 @@ bool GCCacheSpider::desc(CacheDesc& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::shortDesc(QString& buf) {
-  QRegExp rx("<span [^>]*id=\"ctl00_ContentBody_ShortDescription\"[^>]*>"
-    "([^>]*)</span");
+  QRegExp rx("<span .*id=\"ctl00_ContentBody_ShortDescription\".*>(.+)</span");
+  rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
-  buf = rx.cap(1);
+  buf = rx.cap(1).trimmed();
   return ret;
 }
 
@@ -270,41 +275,26 @@ bool GCCacheSpider::shortDesc(QString& buf) {
  * extracted
  */
 CacheSize GCCacheSpider::size() {
-  // Micro
-  QRegExp rx("<img[^>]*src=\"/images/icons/container/micro.gif\".*");
+  QRegExp rx("<img .*src=\"/images/icons/container/(micro|small|regular|large|"
+    "other|not_chosen|virtual.gif\".*>");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_MICRO;
-  }
-  // Small
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/small.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_SMALL;
-  }
-  // Regular
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/regular.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_REGULAR;
-  }
-  // Large
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/large.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_LARGE;
-  }
-  // Other
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/other.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_OTHER;
-  }
-  // Not chosen
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/not_chosen.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_NONE;
-  }
-  // Virtual => Not chosen
-  rx.setPattern("<img[^>]*src=\"/images/icons/container/virtual.gif\".*");
-  if(rx.indexIn(text) >= 0) {
-    return SIZE_NONE;
+  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+    QString cap = rx.cap(1);
+    if(cap == "micro") {
+      return SIZE_MICRO;
+    } else if(cap == "small") {
+      return SIZE_SMALL;
+    } else if(cap == "regular") {
+      return SIZE_REGULAR;
+    } else if(cap == "large") {
+      return SIZE_LARGE;
+    } else if(cap == "other") {
+      return SIZE_OTHER;
+    } else if(cap == "not_chosen") {
+      return SIZE_NONE;
+    } else if(cap == "virtual") { // Virtual => Not chosen
+      return SIZE_NONE;
+    }
   }
   return SIZE_UNKNOWN;
 }
@@ -315,7 +305,7 @@ CacheSize GCCacheSpider::size() {
  * not be extracted
  */
 unsigned int GCCacheSpider::difficulty() {
-  QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img [^>]*src="
+  QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
   if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
@@ -338,7 +328,7 @@ unsigned int GCCacheSpider::difficulty() {
  * be extracted
  */
 unsigned int GCCacheSpider::terrain() {
-  QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img [^>]*src="
+  QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
   if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
@@ -406,12 +396,11 @@ bool GCCacheSpider::found(QDate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::owner(QString& buf) {
-  // FIXME
-  QRegExp rx("<td[^>]*>\\s*<strong>\\s*A\\s*cache\\s*</strong>\\s*by\\s*"
-    "<a[^>]*>([^<]+)</a");
+  QRegExp rx("<td.*>\\s*<strong>\\s*A\\s*cache\\s*</strong>\\s*by\\s*"
+    "<a .*>(.+)</a");
   rx.setMinimal(true);
   if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
-    buf = rx.cap(1);
+    buf = rx.cap(1).trimmed();
     return true;
   }
   return false;
@@ -419,23 +408,79 @@ bool GCCacheSpider::owner(QString& buf) {
 
 /**
  * Extract additional waypoints
- * @param buf a vector of additional waypoints, or the null pointer if no
- * waypoints exist or the data could be extracted
- * @return @c false if the data could not be extracted, @c true otherwise.
+ * @param buf a vector of additional waypoints, or an empty vector if no
+ * waypoints exist or the data could be extracted. In any case, the buffer is
+ * cleared before extracted waypoints are inserted.
+ * @return @c false if the data could not be extracted, @c true otherwise, even
+ * if there are no additional waypoints.
  */
 bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
-  // FIXME
-  QRegExp rx("");
+  buf.clear();
+
+  QRegExp rx("<tr .*class=\"BorderBottom .*\".*>\\s*<td>.*</td>\\s*<td>\\s*"
+    "<img src=\"(:?http://www.geocaching.com)/images/wpttypes/sm/(puzzle|flag|"
+    "stage|pkg|waypoint|trailhead).jpg\".*>\\s*</td>\\s*<td>\\s*([a-zA-Z0-9]"
+    "{1,2})\\s*</td>\\s*<td>.*</td>\\s*<td>.*</td><td>(.*)</td>\\s*" // coord
+    "<td>.*</td>\\s*</tr><tr class=\"BorderBottom .*\">\\s*<td>\\s*Note:\\s*"
+    "</td>\\s*<td .*>(.*)</td>\\s*</tr>"); // note
   rx.setMinimal(true);
 
-  return false;
+  // walk through the document and search for chunks which match our regex
+  int curPos = 0;
+  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+    curPos += rx.cap(0).size(); // move to end of current chunk
+    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
+      return false;
+    }
+
+    // Type of waypoint
+    Waypoint wp;
+    QString type = rx.cap(1); // puzzle|flag|stage|pkg|waypoint|trailhead
+    if(type == "puzzle") {
+      wp.type = TYPE_QUESTION;
+    } else if(type == "flag") {
+      wp.type = TYPE_FINAL;
+    } else if(type == "stage") {
+      wp.type = TYPE_STAGE;
+    } else if(type == "pkg") {
+      wp.type = TYPE_PARKING;
+    } else if(type == "waypoint") {
+      wp.type = TYPE_REFERENCE;
+    } else if(type == "trailhead") {
+      wp.type = TYPE_TRAILHEAD;
+    } else {
+      wp.type = TYPE_OTHER;
+    }
+
+    // Prefix
+    wp.waypoint = rx.cap(2);
+
+    // Coordinate
+    QString coord = rx.cap(3);
+    GCCacheSpider cs(coord);
+    if(!cs.coord(wp.coord)) {
+      return false;
+    }
+
+    // Note, may be HTML
+    if(!rx.cap(4).isEmpty()) {
+      CacheDesc desc;
+      desc.descHtml = true;
+      desc.desc = rx.cap(4).trimmed();
+    }
+
+    buf.append(wp);
+  }
+  return true;
 }
 
 /**
  * Extract logs written by other users
- * @param buf a vector containing the log messages, or the null pointer if no
- * logs exist or the data could be extracted
- * @return @c false if the data could not be extracted, @c true otherwise.
+ * @param buf a vector containing the log messages, or an empty vector if no
+ * logs exist or the data could be extracted. In any case, the buffer is
+ * cleared before extracted logs are inserted.
+ * @return @c false if the data could not be extracted, @c true otherwise, even
+ * if there are no log messages.
  */
 bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
   // FIXME
@@ -447,9 +492,11 @@ bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
 
 /**
  * Extract cache attributes
- * @param buf a vector of cache attributes, or the null pointer if no attributes
- * exist or the data could be extracted
- * @return @c false if the data could not be extracted, @c true otherwise.
+ * @param buf a vector of cache attributes, or an empty vector if no attributes
+ * exist or the data could be extracted. In any case, the buffer is
+ * cleared before extracted attributes are inserted.
+ * @return @c false if the data could not be extracted, @c true otherwise, even
+ * if there are no attributes.
  */
 bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
   // FIXME
@@ -466,10 +513,8 @@ bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::hint(QString& buf) {
-  // FIXME
-  QRegExp rx("<div[^>]* id=\"div_hint\"[^>]*>(.*)</div");
+  QRegExp rx("<div .*id=\"div_hint\".*>(.*)</div");
   rx.setMinimal(true);
-
   if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
     buf = rx.cap(1);
     return true;
