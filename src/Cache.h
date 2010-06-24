@@ -27,10 +27,11 @@ struct DescriptedIcon {
    * @param d description
    * @param i icon
    */
-  DescriptedIcon(QString d, QIcon i) :
+  DescriptedIcon(QString d = QString(), QIcon i = QIcon()) :
     desc(d), icon(i) {
   }
-  virtual ~DescriptedIcon() {}
+  virtual ~DescriptedIcon() {
+  }
 };
 
 /**
