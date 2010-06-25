@@ -485,6 +485,8 @@ struct Cache : Waypoint {
   QVector<CacheAttribute> attrs;
   /** Hints and spoiler info, ROT13-ecrypted */
   QString hint;
+  /** @c true if the cache is archived, @false otherwise */
+  bool archived;
 };
 
 /**
