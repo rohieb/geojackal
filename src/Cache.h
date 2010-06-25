@@ -39,7 +39,7 @@ struct DescriptedIcon {
  */
 typedef DescriptedIcon WaypointType;
 /**
- * @defgroup waypointTypes Icon constants for cache/waypoint types
+ * @defgroup waypointTypes Constants for cache/waypoint types
  * @{
  */
 /** Traditional Cache */
@@ -105,7 +105,7 @@ static const WaypointType TYPE_OTHER("Other, not classified", QIcon());
 
 typedef DescriptedIcon CacheAttribute;
 /**
- * @defgroup cacheAttributes Icon constants for cache attributes
+ * @defgroup cacheAttributes Constants for cache attributes
  * @{
  */
 /** Not always available */
@@ -316,7 +316,7 @@ static const CacheAttribute ATTR_WINTER_YES("Available in winter", QIcon(
 
 typedef DescriptedIcon LogType;
 /**
- * @defgroup logTypes  Icon constants for log types
+ * @defgroup logTypes Constants for log types
  * @{
  */
 /** Attended */
@@ -414,8 +414,8 @@ struct LogMessage {
   QString author;
   /** Log message */
   QString msg;
-  /** Log icon, see @ref logTypes */
-  LogType icon;
+  /** Type of logs, see @ref logTypes */
+  LogType type;
   /** Whether the log message is (partially) encrypted (ROT13) */
   bool encrypted;
   /** Additional images */
