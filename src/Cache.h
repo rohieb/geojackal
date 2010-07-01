@@ -298,6 +298,8 @@ struct LogMessage {
   LogType type;
   /** Whether the log message is (partially) encrypted (ROT13) */
   bool encrypted;
+  /** Date of the log entry (should equal date found) */
+  QDate date;
   /** Additional images */
   QVector<CacheImage> * images;
 };
