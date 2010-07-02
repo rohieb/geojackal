@@ -9,3 +9,4 @@ Makefile*
 geojackal.pro
 *.exe
 *.dll
+.settings/org.eclipse.ltk.core.refactoring.prefs
