@@ -8,8 +8,8 @@
 #define CACHE_H
 
 #include <QString>
-#include <QIcon>
 #include <QDateTime>
+#include <QVector>
 #include "Coordinate.h"
 
 namespace geojackal {
@@ -59,7 +59,9 @@ enum WaypointType {
   /** Trailhead */
   TYPE_TRAILHEAD,
   /** Other, not classified */
-  TYPE_OTHER
+  TYPE_OTHER,
+  /** Unknown */
+  TYPE_UNKNOWN
 };
 
 /**
@@ -251,7 +253,9 @@ enum LogType {
   /** Archive */
   LOG_ARCHIVE,
   /** Unarchive */
-  LOG_UNARCHIVE
+  LOG_UNARCHIVE,
+  /** Unknown */
+  LOG_UNKNOWN
 };
 
 /**
@@ -299,9 +303,16 @@ struct LogMessage {
   /** Whether the log message is (partially) encrypted (ROT13) */
   bool encrypted;
   /** Date of the log entry (should equal date found) */
-  QDate date;
+  QDate * date;
   /** Additional images */
   QVector<CacheImage> * images;
+
+  LogMessage() : date(0), images(0) {}
+
+  ~LogMessage() {
+    if(images != 0) delete images;
+    if(date != 0) delete date;
+  }
 };
 
 /**
@@ -323,7 +334,7 @@ struct Waypoint {
    * this field stores the 2-letter prefix code
    */
   QString waypoint;
-  /** Name of the waypoint, like <em>Wayward Drive!</em>*/
+  /** Name of the waypoint, like <em>Wayward Drive!</em> */
   QString name;
   /** Coordinate of the waypoint, or @c 0 if not set */
   Coordinate * coord;
@@ -331,6 +342,13 @@ struct Waypoint {
   WaypointType type;
   /** Cache description */
   CacheDesc * desc;
+
+  Waypoint() : coord(0), desc(0) {}
+
+  ~Waypoint() {
+    if(coord != 0) delete coord;
+    if(desc != 0) delete desc;
+  }
 };
 
 /**
@@ -360,15 +378,25 @@ struct Cache : Waypoint {
   /** Person who placed the cache */
   QString owner;
   /** Additional waypoints */
-  QVector<Waypoint> waypoints;
+  QVector<Waypoint> * waypoints;
   /** Log messages */
-  QVector<LogMessage> logs;
+  QVector<LogMessage> * logs;
   /** Attributes, see @ref cacheAttributes */
-  QVector<CacheAttribute> attrs;
+  QVector<CacheAttribute> * attrs;
   /** Hints and spoiler info, ROT13-ecrypted */
   QString hint;
   /** @c true if the cache is archived, @false otherwise */
   bool archived;
+
+  Cache() : placed(0), found(0), waypoints(0), logs(0), attrs(0) {}
+
+  ~Cache() {
+    if(placed != 0) delete placed;
+    if(found != 0) delete found;
+    if(waypoints != 0) delete waypoints;
+    if(logs != 0) delete found;
+    if(attrs != 0) delete attrs;
+  }
 };
 
 /**

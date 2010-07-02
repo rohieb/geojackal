@@ -41,6 +41,7 @@ public:
   bool logs(QVector<LogMessage>& buf);
   bool attrs(QVector<CacheAttribute>& buf);
   bool hint(QString& buf);
+  bool archived();
 };
 
 }

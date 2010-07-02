@@ -95,7 +95,7 @@ struct Angle {
 };
 
 /** The invalid angle used to determine unset values */
-static Angle ANGLE_INVALID(361.0);
+const static Angle ANGLE_INVALID = 361.0;
 
 /**
  * Model of a geographic coordinate with latitude and longitude.

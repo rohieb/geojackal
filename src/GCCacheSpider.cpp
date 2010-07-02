@@ -6,7 +6,8 @@
 
 #include "GCCacheSpider.h"
 #include <limits>
-#include <QtGlobal>
+#include <QRegExp>
+//#include <QtGlobal>
 
 namespace geojackal {
 
@@ -20,6 +21,7 @@ GCCacheSpider::GCCacheSpider(QString& text) :
 
 GCCacheSpider::~GCCacheSpider() {
 }
+
 
 /**
  * @defgroup Extractor Functions
@@ -38,19 +40,25 @@ bool GCCacheSpider::all(Cache& buf) {
   ret |= name(buf.name);
   ret |= waypoint(buf.waypoint);
   ret |= type(buf.type);
-  ret |= coord(buf.coord);
-  ret |= desc(buf.desc);
+  if(!buf.coord) buf.coord = new Coordinate;
+  ret |= coord(*buf.coord);
+  if(!buf.desc) buf.desc = new CacheDesc;
+  ret |= desc(*buf.desc);
   ret |= shortDesc(buf.shortDesc);
   ret |= ((buf.size = size()) != SIZE_UNKNOWN);
   ret |= ((buf.difficulty = difficulty()) != 0);
   ret |= ((buf.terrain = terrain()) != 0);
-  ret |= placed(buf.placed);
-  ret |= found(buf.found);
+  ret |= placed(*buf.placed);
+  ret |= found(*buf.found);
   ret |= owner(buf.owner);
-  ret |= waypoints(buf.waypoints);
-  ret |= logs(buf.logs);
-  ret |= attrs(buf.attrs);
+  if(!buf.waypoints) buf.waypoints = new QVector<Waypoint>;
+  ret |= waypoints(*buf.waypoints);
+  if(!buf.logs) buf.logs = new QVector<LogMessage>;
+  ret |= logs(*buf.logs);
+  if(!buf.attrs) buf.attrs = new QVector<CacheAttribute>;
+  ret |= attrs(*buf.attrs);
   ret |= hint(buf.hint);
+  buf.archived = archived();
   return ret;
 }
 
@@ -83,9 +91,8 @@ bool GCCacheSpider::waypoint(QString& buf) {
 
 /**
  * Extract the type of a cache
- * @param buf Buffer to receive the type of the cache. See @ref waypointTypes
- * for possible returned values. If the extraction fails, this buffer receives
- * the value @c TYPE_OTHER.
+ * @param buf Buffer to receive the type of the cache. If the extraction fails,
+ * this buffer receives the value @c TYPE_OTHER.
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCCacheSpider::type(WaypointType& buf) {
@@ -119,7 +126,7 @@ bool GCCacheSpider::type(WaypointType& buf) {
     } else if(cap == "453") {
       buf = TYPE_MEGAEVENT;
       return true;
-    } else if(cap == "13") { // CITO
+    } else if(cap == "13") { /** @todo no CITO icon yet */
       buf = TYPE_TRADI;
       return true;
     } else if(cap == "137") {
@@ -246,11 +253,10 @@ bool GCCacheSpider::desc(CacheDesc& buf) {
   int start = text.indexOf(startRx) + startRx.cap(1).length(); // after regex
   int end = text.indexOf(endRx);
 
-  // TODO process images
-  // TODO process links to other caches?
-  // TODO what about html tags in the text?
-
-  // TODO maybe html flag is not needed?
+  // @todo process images
+  // @todo process links to other caches?
+  // @todo what about html tags in the text?
+  // @todo maybe html flag is not needed at all?
   buf.desc = text.mid(start, end - start);
   buf.descHtml = true;
   return (start != -1 && end != -1 && start < end);
@@ -458,7 +464,7 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
     // Coordinate
     QString coord = rx.cap(3);
     GCCacheSpider cs(coord);
-    if(!cs.coord(wp.coord)) {
+    if(!cs.coord(*wp.coord)) {
       return false;
     }
 
@@ -474,6 +480,41 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
   return true;
 }
 
+
+/**
+ * Convert english month name to ordinal number
+ * @return Ordinal number of the month or @c 0 on error
+ */
+int monthToOrd(QString month) {
+  if(month == "January") {
+    return 1;
+  } else if(month == "February") {
+    return 2;
+  } else if(month == "March") {
+    return 3;
+  } else if(month == "April") {
+    return 4;
+  } else if(month == "May") {
+    return 5;
+  } else if(month == "June") {
+    return 6;
+  } else if(month == "July") {
+    return 7;
+  } else if(month == "August") {
+    return 8;
+  } else if(month == "September") {
+    return 9;
+  } else if(month == "October") {
+    return 10;
+  } else if(month == "November") {
+    return 11;
+  } else if(month == "December") {
+    return 12;
+  } else {
+    return 0;
+  }
+}
+
 /**
  * Extract logs written by other users
  * @param buf a vector containing the log messages, or an empty vector if no
@@ -483,11 +524,98 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
  * if there are no log messages.
  */
 bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
-  // FIXME
-  QRegExp rx("");
+  QRegExp rx("<tr>\\s*<td.*>\\s*<strong></td>\\s*<img .*src=\"(:?http://www."
+    "geocaching.com)?/images/icons/icon_(attended|big-smile|camera|coord-"
+    "update|disabled|dropped-off|enabled|greenlight|maint|needsmaint|note|"
+    "picked-up|redlight|remove|rsvp|sad|smile|traffic-cone).gif\".*/>"
+    "(:?&nbsp;)?(January|February|March|April|May|June|July|August|September|"
+    "October|November|December)\\s+(\\d{1,2})(:?, (\\d{4}))?\\s+by\\s+<a .*>"
+    "(.*)</a>\\s*</strong>\\s+(:?\\d*\\s+found)<br />\\s*<br />(.*)<br />\\s*"
+    "<br /><small><a .*>View Log</a>\\s*</small>\\s*</td>\\s*</tr>");
   rx.setMinimal(true);
 
-  return false;
+  int curPos = 0;
+  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+    curPos += rx.cap(0).size(); // move to end of current chunk
+    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty() ||
+      rx.cap(5).isEmpty() || rx.cap(6).isEmpty()) {
+      return false;
+    }
+
+    bool ok;
+    LogMessage log;
+
+    // type of log
+    QString icon = rx.cap(1);
+    if(icon == "attended") {
+      log.type = LOG_ATTENDED;
+    } else if(icon == "big-smile") {
+      log.type = LOG_REVIEWER_NOTE;
+    } else if(icon == "camera") {
+      log.type = LOG_WEBCAM_PHOTO;
+    } else if(icon == "coord-update") {
+      log.type = LOG_COORD_UPDATE;
+    } else if(icon == "disabled") {
+      log.type = LOG_DISABLED;
+    } else if(icon == "dropped-off") {
+      log.type = LOG_TB_DROPPED;
+    } else if(icon == "enabled") {
+      log.type = LOG_ENABLED;
+    } else if(icon == "greenlight") {
+      log.type = LOG_PUBLISH;
+    } else if(icon == "maint") {
+      log.type = LOG_MAINT;
+    } else if(icon == "needsmaint") {
+      log.type = LOG_NEEDSMAINT;
+    } else if(icon == "note") {
+      log.type = LOG_NOTE;
+    } else if(icon == "picked-up") {
+      log.type = LOG_TB_GRABBED;
+    } else if(icon == "redlight") {
+      log.type = LOG_RETRACT;
+    } else if(icon == "remove") {
+      log.type = LOG_NEED_ARCHV;
+    } else if(icon == "rsvp") {
+      log.type = LOG_WILL_ATTEND;
+    } else if(icon == "sad") {
+      log.type = LOG_NOT_FOUND;
+    } else if(icon == "smile") {
+      log.type = LOG_FOUND;
+    } else if(icon == "traffic-cone") {
+      log.type = LOG_ARCHIVE;
+    } else {
+      return false;
+    }
+
+    // month
+    int month = monthToOrd(rx.cap(2));
+    if(month == 0) return false;
+
+    // day
+    int day = rx.cap(3).toInt(&ok);
+    if(!ok) return false;
+
+    // year, if given
+    int year = QDate::currentDate().year();
+    if(!rx.cap(4).isEmpty()) {
+      year = rx.cap(4).toInt(&ok);
+      if(!ok) return false;
+    }
+
+    // put date together
+    if(log.date) delete log.date;
+    log.date = new QDate(year, month, day);
+
+    // author
+    log.author = rx.cap(5);
+
+    // log text
+    log.msg = rx.cap(6);
+    // @todo Parse smileys, images, encryptedc logs, links to other caches etc
+
+    buf.append(log);
+  }
+  return true;
 }
 
 /**
@@ -499,11 +627,116 @@ bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
  * if there are no attributes.
  */
 bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
-  // FIXME
-  QRegExp rx("");
+  QRegExp rx("<img src=\"/images/attributes/(available-yes|bicycles-yes|"
+    "boat-yes|campfires-yes|camping-yes|camping-yes|cliff-yes|climbing-yes|"
+    "cow-yes|danger-yes|dogs-yes|fee-yes|firstaid-yes|flashlight-yes|"
+    "hiking-yes|horses-yes|hunting-yes|jeeps-yes|kids-yes|mine-yes|"
+    "motorcycles-yes|night-yes|onehour-yes|parking-yes|phone-yes|picnic-yes|"
+    "poisonoak-yes|public-yes|quads-yes|rappelling-yes|restrooms-yes|"
+    "scenic-yes|scuba-yes|snakes-yes|snowmobiles-yes|stealth-yes|stroller-yes|"
+    "swimming-yes|thorn-yes|ticks-yes|wading-yes|water-yes|wheelchair-yes|"
+    "winter-yes).gif)\" .*width=\"30\" height=\"30\" />");
   rx.setMinimal(true);
 
-  return false;
+  int curPos = 0;
+  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+    curPos += rx.cap(0).size(); // move to end of current chunk
+    if(rx.cap(1).isEmpty()) {
+      return false;
+    }
+
+    QString sattr = rx.cap(1);
+    if(sattr == "available-yes") {
+      buf.append(ATTR_AVAILABLE_YES);
+    } else if(sattr == "bicycles-yes") {
+      buf.append(ATTR_BICYCLES_YES);
+    } else if(sattr == "boat-yes") {
+      buf.append(ATTR_BOAT);
+    } else if(sattr == "campfires-yes") {
+      buf.append(ATTR_CAMPFIRES_YES);
+    } else if(sattr == "camping-yes") {
+      buf.append(ATTR_CAMPING_YES);
+    } else if(sattr == "cliff-yes") {
+      buf.append(ATTR_CLIFF);
+    } else if(sattr == "climbing-yes") {
+      buf.append(ATTR_CLIMBING_YES);
+    } else if(sattr == "cow-yes") {
+      buf.append(ATTR_COW);
+    } else if(sattr == "danger-yes") {
+      buf.append(ATTR_DANGER);
+    } else if(sattr == "dogs-yes") {
+      buf.append(ATTR_DOGS_YES);
+    } else if(sattr == "fee-yes") {
+      buf.append(ATTR_FEE);
+    } else if(sattr == "firstaid-yes") {
+      buf.append(ATTR_MAINT);
+    } else if(sattr == "flashlight-yes") {
+      buf.append(ATTR_FLASHLIGHT);
+    } else if(sattr == "hiking-yes") {
+      buf.append(ATTR_HIKING_YES);
+    } else if(sattr == "horses-yes") {
+      buf.append(ATTR_HORSES_YES);
+    } else if(sattr == "hunting-yes") {
+      buf.append(ATTR_HUNTING);
+    } else if(sattr == "jeeps-yes") {
+      buf.append(ATTR_JEEPS_YES);
+    } else if(sattr == "kids-yes") {
+      buf.append(ATTR_KIDS_YES);
+    } else if(sattr == "mine-yes") {
+      buf.append(ATTR_MINE);
+    } else if(sattr == "motorcycles-yes") {
+      buf.append(ATTR_MOTORCYCLES_YES);
+    } else if(sattr == "night-yes") {
+      buf.append(ATTR_NIGHT_YES);
+    } else if(sattr == "onehour-yes") {
+      buf.append(ATTR_ONEHOUR_YES);
+    } else if(sattr == "parking-yes") {
+      buf.append(ATTR_PARKING_YES);
+    } else if(sattr == "phone-yes") {
+      buf.append(ATTR_PHONE_YES);
+    } else if(sattr == "picnic-yes") {
+      buf.append(ATTR_PICNIC_YES);
+    } else if(sattr == "poisonoak-yes") {
+      buf.append(ATTR_POISONOAK_YES);
+    } else if(sattr == "public-yes") {
+      buf.append(ATTR_PUBLIC);
+    } else if(sattr == "quads-yes") {
+      buf.append(ATTR_QUADS_YES);
+    } else if(sattr == "rappelling-yes") {
+      buf.append(ATTR_RAPPELLING);
+    } else if(sattr == "restrooms-yes") {
+      buf.append(ATTR_RESTROOMS_YES);
+    } else if(sattr == "scenic-yes") {
+      buf.append(ATTR_SCENIC_YES);
+    } else if(sattr == "scuba-yes") {
+      buf.append(ATTR_SCUBA);
+    } else if(sattr == "snakes-yes") {
+      buf.append(ATTR_SNAKES);
+    } else if(sattr == "snowmobiles-yes") {
+      buf.append(ATTR_SNOWMOBILES_YES);
+    } else if(sattr == "stealth-yes") {
+      buf.append(ATTR_STEALTH_YES);
+    } else if(sattr == "stroller-yes") {
+      buf.append(ATTR_STROLLER_YES);
+    } else if(sattr == "swimming-yes") {
+      buf.append(ATTR_SWIMMING);
+    } else if(sattr == "thorn-yes") {
+      buf.append(ATTR_THORNS);
+    } else if(sattr == "ticks-yes") {
+      buf.append(ATTR_TICKS);
+    } else if(sattr == "wading-yes") {
+      buf.append(ATTR_WADING);
+    } else if(sattr == "water-yes") {
+      buf.append(ATTR_WATER_YES);
+    } else if(sattr == "wheelchair-yes") {
+      buf.append(ATTR_WHEELCHAIR_YES);
+    } else if(sattr == "winter-yes") {
+      buf.append(ATTR_WINTER_YES);
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -511,6 +744,7 @@ bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
  * @param buf the hints, ROT13-encrypted, or an empty string if there are no
  * hints or the data could be extracted
  * @return @c false if the data could not be extracted, @c true otherwise.
+ * @see rot13()
  */
 bool GCCacheSpider::hint(QString& buf) {
   QRegExp rx("<div .*id=\"div_hint\".*>(.*)</div");
@@ -522,6 +756,15 @@ bool GCCacheSpider::hint(QString& buf) {
   return false;
 }
 
+/**
+ * Determine whether the cache has beed archived.
+ * @return the archive status. @c true means the cache has been archived,
+ * @c false means the cache is still active or the data could not be extracted.
+ */
+bool GCCacheSpider::archived() {
+  return text.indexOf("This cache has been archived, but is available for "
+    "viewing for archival purposes.") > 0;
+}
 /** @} */
 
 }
