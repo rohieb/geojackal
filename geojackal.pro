@@ -4,12 +4,14 @@ CONFIG += debug_and_release \
 TARGET = GeoJackal
 QT = core \
     gui
-SOURCES = src/Coordinate.cpp \
+SOURCES = src/functions.cpp \
+    src/Coordinate.cpp \
     src/GCSpider.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/Cache.h \
+HEADERS = src/functions.h \
+    src/Cache.h \
     src/Coordinate.h \
     src/GCSpider.h \
     src/GCSpiderCachePage.h \
