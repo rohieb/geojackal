@@ -1,10 +1,10 @@
 /**
- * @file GCCacheSpider.cpp
+ * @file GCSpiderCachePage.cpp
  * @date Jun 11, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  */
 
-#include "GCCacheSpider.h"
+#include "GCSpiderCachePage.h"
 #include <limits>
 #include <QRegExp>
 //#include <QtGlobal>
@@ -15,11 +15,11 @@ namespace geojackal {
  * Constructor
  * @param text Text of the cache description page
  */
-GCCacheSpider::GCCacheSpider(QString& text) :
+GCSpiderCachePage::GCSpiderCachePage(QString& text) :
   text(text) {
 }
 
-GCCacheSpider::~GCCacheSpider() {
+GCSpiderCachePage::~GCSpiderCachePage() {
 }
 
 
@@ -35,7 +35,7 @@ GCCacheSpider::~GCCacheSpider() {
  * object.
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::all(Cache& buf) {
+bool GCSpiderCachePage::all(Cache& buf) {
   bool ret = true;
   ret |= name(buf.name);
   ret |= waypoint(buf.waypoint);
@@ -67,7 +67,7 @@ bool GCCacheSpider::all(Cache& buf) {
  * @param buf Buffer to receives the name of the cache
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::name(QString& buf) {
+bool GCSpiderCachePage::name(QString& buf) {
   QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\".*>(.+)</span>");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
@@ -81,7 +81,7 @@ bool GCCacheSpider::name(QString& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  *
  */
-bool GCCacheSpider::waypoint(QString& buf) {
+bool GCSpiderCachePage::waypoint(QString& buf) {
   QRegExp rx("<div .*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>(.+)</p");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
@@ -95,7 +95,7 @@ bool GCCacheSpider::waypoint(QString& buf) {
  * this buffer receives the value @c TYPE_OTHER.
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::type(WaypointType& buf) {
+bool GCSpiderCachePage::type(WaypointType& buf) {
   // Traditional
   QRegExp rx("<h2.*<img .*src=\"/images/WptTypes/(2|3|9|8|5|1858|6|453|13|137|"
     "1304|4|11|3653|12).gif\".*</h2");
@@ -162,7 +162,7 @@ bool GCCacheSpider::type(WaypointType& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise, even
  *  if the coordinate is invisible.
  */
-bool GCCacheSpider::coord(Coordinate& buf) {
+bool GCSpiderCachePage::coord(Coordinate& buf) {
   QRegExp rx("<span .*id=\"ctl00_ContentBody_LatLon\".*>(:?\\?{1,3}|(N|S) "
     "(\\d{2})° (\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3}))</span");
   rx.setMinimal(true);
@@ -245,7 +245,7 @@ bool GCCacheSpider::coord(Coordinate& buf) {
  * @param buf Buffer to receive the description
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::desc(CacheDesc& buf) {
+bool GCSpiderCachePage::desc(CacheDesc& buf) {
   QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\".*>)");
   startRx.setMinimal(true);
   QRegExp endRx("<div .*class=\"CacheDetailNavigationWidget\"");
@@ -267,7 +267,7 @@ bool GCCacheSpider::desc(CacheDesc& buf) {
  * @param buf Buffer to receive the short description
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::shortDesc(QString& buf) {
+bool GCSpiderCachePage::shortDesc(QString& buf) {
   QRegExp rx("<span .*id=\"ctl00_ContentBody_ShortDescription\".*>(.+)</span");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text) >= 0);
@@ -280,7 +280,7 @@ bool GCCacheSpider::shortDesc(QString& buf) {
  * @return The size of the cache, or @c SIZE_UNKNOWN if the data could not be
  * extracted
  */
-CacheSize GCCacheSpider::size() {
+CacheSize GCSpiderCachePage::size() {
   QRegExp rx("<img .*src=\"/images/icons/container/(micro|small|regular|large|"
     "other|not_chosen|virtual.gif\".*>");
   rx.setMinimal(true);
@@ -310,7 +310,7 @@ CacheSize GCCacheSpider::size() {
  * @return the difficulty rating multiplied by two or @c 0 if the data could
  * not be extracted
  */
-unsigned int GCCacheSpider::difficulty() {
+unsigned int GCSpiderCachePage::difficulty() {
   QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
@@ -333,7 +333,7 @@ unsigned int GCCacheSpider::difficulty() {
  * @return the terrain rating multiplied by two or @c 0 if the data could not
  * be extracted
  */
-unsigned int GCCacheSpider::terrain() {
+unsigned int GCSpiderCachePage::terrain() {
   QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
@@ -356,7 +356,7 @@ unsigned int GCCacheSpider::terrain() {
  * @param buf Buffer to receive the date of the placement
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::placed(QDate& buf) {
+bool GCSpiderCachePage::placed(QDate& buf) {
   QRegExp rx("<td>\\s*<strong>\\s*Hidden\\s*:</strong>(\\d{1,2})/(\\d{1,2})/"
     "(\\d{4})\\s*</td>");
   rx.setMinimal(true);
@@ -389,7 +389,7 @@ bool GCCacheSpider::placed(QDate& buf) {
  * cache was not found yet
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::found(QDate& buf) {
+bool GCSpiderCachePage::found(QDate& buf) {
   // FIXME: extract from logs
   buf.setDate(0,0,0);
   return false;
@@ -401,7 +401,7 @@ bool GCCacheSpider::found(QDate& buf) {
  * could not be extracted
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCCacheSpider::owner(QString& buf) {
+bool GCSpiderCachePage::owner(QString& buf) {
   QRegExp rx("<td.*>\\s*<strong>\\s*A\\s*cache\\s*</strong>\\s*by\\s*"
     "<a .*>(.+)</a");
   rx.setMinimal(true);
@@ -420,7 +420,7 @@ bool GCCacheSpider::owner(QString& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise, even
  * if there are no additional waypoints.
  */
-bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
+bool GCSpiderCachePage::waypoints(QVector<Waypoint>& buf) {
   buf.clear();
 
   QRegExp rx("<tr .*class=\"BorderBottom .*\".*>\\s*<td>.*</td>\\s*<td>\\s*"
@@ -463,7 +463,7 @@ bool GCCacheSpider::waypoints(QVector<Waypoint>& buf) {
 
     // Coordinate
     QString coord = rx.cap(3);
-    GCCacheSpider cs(coord);
+    GCSpiderCachePage cs(coord);
     if(!cs.coord(*wp.coord)) {
       return false;
     }
@@ -523,7 +523,7 @@ int monthToOrd(QString month) {
  * @return @c false if the data could not be extracted, @c true otherwise, even
  * if there are no log messages.
  */
-bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
+bool GCSpiderCachePage::logs(QVector<LogMessage>& buf) {
   QRegExp rx("<tr>\\s*<td.*>\\s*<strong></td>\\s*<img .*src=\"(:?http://www."
     "geocaching.com)?/images/icons/icon_(attended|big-smile|camera|coord-"
     "update|disabled|dropped-off|enabled|greenlight|maint|needsmaint|note|"
@@ -626,7 +626,7 @@ bool GCCacheSpider::logs(QVector<LogMessage>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise, even
  * if there are no attributes.
  */
-bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
+bool GCSpiderCachePage::attrs(QVector<CacheAttribute>& buf) {
   QRegExp rx("<img src=\"/images/attributes/(available-yes|bicycles-yes|"
     "boat-yes|campfires-yes|camping-yes|camping-yes|cliff-yes|climbing-yes|"
     "cow-yes|danger-yes|dogs-yes|fee-yes|firstaid-yes|flashlight-yes|"
@@ -746,7 +746,7 @@ bool GCCacheSpider::attrs(QVector<CacheAttribute>& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  * @see rot13()
  */
-bool GCCacheSpider::hint(QString& buf) {
+bool GCSpiderCachePage::hint(QString& buf) {
   QRegExp rx("<div .*id=\"div_hint\".*>(.*)</div");
   rx.setMinimal(true);
   if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
@@ -761,7 +761,7 @@ bool GCCacheSpider::hint(QString& buf) {
  * @return the archive status. @c true means the cache has been archived,
  * @c false means the cache is still active or the data could not be extracted.
  */
-bool GCCacheSpider::archived() {
+bool GCSpiderCachePage::archived() {
   return text.indexOf("This cache has been archived, but is available for "
     "viewing for archival purposes.") > 0;
 }
