@@ -7,7 +7,6 @@
 #include "GCSpiderCachePage.h"
 #include <limits>
 #include <QRegExp>
-//#include <QtGlobal>
 
 namespace geojackal {
 
@@ -16,7 +15,7 @@ namespace geojackal {
  * @param text Text of the cache description page
  */
 GCSpiderCachePage::GCSpiderCachePage(QString& text) :
-  text(text) {
+  text_(text) {
 }
 
 GCSpiderCachePage::~GCSpiderCachePage() {
@@ -70,7 +69,7 @@ bool GCSpiderCachePage::all(Cache& buf) {
 bool GCSpiderCachePage::name(QString& buf) {
   QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\".*>(.+)</span>");
   rx.setMinimal(true);
-  bool ret = (rx.indexIn(text) >= 0);
+  bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1);
   return ret;
 }
@@ -84,7 +83,7 @@ bool GCSpiderCachePage::name(QString& buf) {
 bool GCSpiderCachePage::waypoint(QString& buf) {
   QRegExp rx("<div .*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>(.+)</p");
   rx.setMinimal(true);
-  bool ret = (rx.indexIn(text) >= 0);
+  bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1).trimmed();
   return ret;
 }
@@ -100,7 +99,7 @@ bool GCSpiderCachePage::type(WaypointType& buf) {
   QRegExp rx("<h2.*<img .*src=\"/images/WptTypes/(2|3|9|8|5|1858|6|453|13|137|"
     "1304|4|11|3653|12).gif\".*</h2");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     QString cap = rx.cap(1);
     if(cap == "2") {
       buf = TYPE_TRADI;
@@ -166,7 +165,7 @@ bool GCSpiderCachePage::coord(Coordinate& buf) {
   QRegExp rx("<span .*id=\"ctl00_ContentBody_LatLon\".*>(:?\\?{1,3}|(N|S) "
     "(\\d{2})° (\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3}))</span");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     // is the coordinate "???" or something real?
     if(rx.cap(1).at(0) == QChar('?')) {
       // invisible coordinate
@@ -250,14 +249,14 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) {
   startRx.setMinimal(true);
   QRegExp endRx("<div .*class=\"CacheDetailNavigationWidget\"");
   endRx.setMinimal(true);
-  int start = text.indexOf(startRx) + startRx.cap(1).length(); // after regex
-  int end = text.indexOf(endRx);
+  int start = text_.indexOf(startRx) + startRx.cap(1).length(); // after regex
+  int end = text_.indexOf(endRx);
 
   // @todo process images
   // @todo process links to other caches?
   // @todo what about html tags in the text?
   // @todo maybe html flag is not needed at all?
-  buf.desc = text.mid(start, end - start);
+  buf.desc = text_.mid(start, end - start);
   buf.descHtml = true;
   return (start != -1 && end != -1 && start < end);
 }
@@ -270,7 +269,7 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) {
 bool GCSpiderCachePage::shortDesc(QString& buf) {
   QRegExp rx("<span .*id=\"ctl00_ContentBody_ShortDescription\".*>(.+)</span");
   rx.setMinimal(true);
-  bool ret = (rx.indexIn(text) >= 0);
+  bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1).trimmed();
   return ret;
 }
@@ -284,7 +283,7 @@ CacheSize GCSpiderCachePage::size() {
   QRegExp rx("<img .*src=\"/images/icons/container/(micro|small|regular|large|"
     "other|not_chosen|virtual.gif\".*>");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     QString cap = rx.cap(1);
     if(cap == "micro") {
       return SIZE_MICRO;
@@ -314,7 +313,7 @@ unsigned int GCSpiderCachePage::difficulty() {
   QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     bool ok = false;
     int rating = rx.cap(1).toInt(&ok); // full stars
     if(ok && rating != 0) {
@@ -337,7 +336,7 @@ unsigned int GCSpiderCachePage::terrain() {
   QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img .*src="
     "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     bool ok = false;
     int rating = rx.cap(1).toInt(&ok); // full stars
     if(ok && rating != 0) {
@@ -361,7 +360,7 @@ bool GCSpiderCachePage::placed(QDate& buf) {
     "(\\d{4})\\s*</td>");
   rx.setMinimal(true);
 
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty() && !rx.cap(2).isEmpty() &&
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty() && !rx.cap(2).isEmpty() &&
     !rx.cap(3).isEmpty()) {
     bool ok = true;
     int month, day, year;
@@ -405,7 +404,7 @@ bool GCSpiderCachePage::owner(QString& buf) {
   QRegExp rx("<td.*>\\s*<strong>\\s*A\\s*cache\\s*</strong>\\s*by\\s*"
     "<a .*>(.+)</a");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     buf = rx.cap(1).trimmed();
     return true;
   }
@@ -433,7 +432,7 @@ bool GCSpiderCachePage::waypoints(QVector<Waypoint>& buf) {
 
   // walk through the document and search for chunks which match our regex
   int curPos = 0;
-  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+  while((curPos = rx.indexIn(text_, curPos)) >= 0) {
     curPos += rx.cap(0).size(); // move to end of current chunk
     if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
       return false;
@@ -535,7 +534,7 @@ bool GCSpiderCachePage::logs(QVector<LogMessage>& buf) {
   rx.setMinimal(true);
 
   int curPos = 0;
-  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+  while((curPos = rx.indexIn(text_, curPos)) >= 0) {
     curPos += rx.cap(0).size(); // move to end of current chunk
     if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty() ||
       rx.cap(5).isEmpty() || rx.cap(6).isEmpty()) {
@@ -639,7 +638,7 @@ bool GCSpiderCachePage::attrs(QVector<CacheAttribute>& buf) {
   rx.setMinimal(true);
 
   int curPos = 0;
-  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+  while((curPos = rx.indexIn(text_, curPos)) >= 0) {
     curPos += rx.cap(0).size(); // move to end of current chunk
     if(rx.cap(1).isEmpty()) {
       return false;
@@ -749,7 +748,7 @@ bool GCSpiderCachePage::attrs(QVector<CacheAttribute>& buf) {
 bool GCSpiderCachePage::hint(QString& buf) {
   QRegExp rx("<div .*id=\"div_hint\".*>(.*)</div");
   rx.setMinimal(true);
-  if(rx.indexIn(text) >= 0 && !rx.cap(1).isEmpty()) {
+  if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     buf = rx.cap(1);
     return true;
   }
@@ -762,7 +761,7 @@ bool GCSpiderCachePage::hint(QString& buf) {
  * @c false means the cache is still active or the data could not be extracted.
  */
 bool GCSpiderCachePage::archived() {
-  return text.indexOf("This cache has been archived, but is available for "
+  return text_.indexOf("This cache has been archived, but is available for "
     "viewing for archival purposes.") > 0;
 }
 /** @} */

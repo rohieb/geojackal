@@ -13,12 +13,12 @@
 namespace geojackal {
 
 /**
- * Extracts cache information from a cache description page
+ * Extracts cache information from a geocaching.com cache description page
  */
 class GCSpiderCachePage {
 private:
   /** Text of the cache description page */
-  QString& text;
+  QString& text_;
 
 public:
   GCSpiderCachePage(QString& text);
