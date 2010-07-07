@@ -3,7 +3,8 @@ CONFIG += debug_and_release \
     ordered
 TARGET = GeoJackal
 QT = core \
-    gui
+    gui \
+    network
 SOURCES = src/Failure.cpp \
     src/functions.cpp \
     src/Coordinate.cpp \
@@ -20,3 +21,4 @@ HEADERS = src/Failure.h \
     src/MainWindow.h
 FORMS = src/MainWindow.ui
 RESOURCES = resource/geojackal.qrc
+TARGET.CAPABILITY = true;
