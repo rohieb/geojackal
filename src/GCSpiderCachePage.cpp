@@ -15,7 +15,7 @@ namespace geojackal {
  * Constructor
  * @param text Text of the cache description page
  */
-GCSpiderCachePage::GCSpiderCachePage(const QString& text) :
+GCSpiderCachePage::GCSpiderCachePage(QString text) :
   text_(text) {
 }
 
@@ -73,7 +73,7 @@ bool GCSpiderCachePage::all(Cache& buf) const {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::name(QString& buf) const {
-  QRegExp rx("<meta name=\"og:title\" content=\"([^\"]+)\".*/>");
+  QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\">(.*)</span");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1);

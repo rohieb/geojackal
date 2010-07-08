@@ -21,10 +21,10 @@ namespace geojackal {
 class GCSpiderCachePage {
 private:
   /** Text of the cache description page */
-  const QString& text_;
+  QString& text_;
 
 public:
-  GCSpiderCachePage(const QString& text);
+  GCSpiderCachePage(QString text);
   virtual ~GCSpiderCachePage();
 
   bool all(Cache& buf) const;
