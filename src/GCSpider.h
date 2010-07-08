@@ -36,21 +36,23 @@ public:
 
   bool nearest(const Coordinate center, const float maxDist,
     QVector<Cache *>& buf);
-  bool loadCache(QString waypoint, Cache& buf);
+  bool loadCache(const QString waypoint, Cache& buf);
 
   /** HTTP User Agent to use */
   static const QByteArray USER_AGENT;
 
 public slots:
-  void loginFinished(QNetworkReply * reply);
-  void loadCacheFinished(QNetworkReply * reply);
+  void loadPageFinished(QNetworkReply * reply);
 
 protected:
   void login();
+  QNetworkReply * loadPage(const QUrl& url, const QByteArray * formData = 0);
 
 private:
   /** QNetworkAccessManager instance for HTTP communication */
   QNetworkAccessManager * pnam_;
+  /** QNetworkReply of the currently loaded page, used by @a loadPage() */
+  QNetworkReply * loadPageNetReply_;
   /** geocaching.com user name to use for log in */
   QString username_;
   /** geocaching.com password to use for log in */
@@ -59,8 +61,6 @@ private:
   bool loggedIn_;
   /** Cookies sent by the server on login */
   QList<QNetworkCookie> loginCookies_;
-  /** Text of cache description page currently loaded */
-  QString cacheText_;
 };
 
 }

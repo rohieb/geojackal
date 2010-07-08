@@ -9,12 +9,12 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include <QRegExp>
 
 using namespace geojackal;
 
-const QByteArray GCSpider::USER_AGENT =
-  "Mozilla/5.0 (X11; U; Linux x86; en-US; "
-    "rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6";
+const QByteArray GCSpider::USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86; "
+  "en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6";
 
 /**
  * Constructor.
@@ -23,7 +23,8 @@ const QByteArray GCSpider::USER_AGENT =
  * @throws Failure if anything goes wrong
  */
 GCSpider::GCSpider(const QString username, const QString password) :
-  pnam_(0), username_(username), password_(password), loggedIn_(false) {
+  pnam_(0), loadPageNetReply_(0), username_(username), password_(password),
+  loggedIn_(false) {
   pnam_ = new QNetworkAccessManager(this);
   if(!pnam_) {
     throw Failure("Could not create QNetworkAccessManager instance!");
@@ -36,6 +37,69 @@ GCSpider::GCSpider(const QString username, const QString password) :
 GCSpider::~GCSpider() {
   if(pnam_)
     delete pnam_;
+}
+
+/**
+ * Load a web page over HTTP. If the member variable @a loginCookies_ contains
+ * cookies, these are also included in the HTTP request.
+ * @param url URL to load
+ * @param formData If this parameter is set, an HTTP POST request is sent, along
+ *  with this form data. Otherwise, an HTTP GET request is sent.
+ * @return The QNetworkReply received by the unterlying framework. You can use
+ * this request to get the HTTP headers and the contents of the page. Do not
+ * delete the request by yourself, instead, you can use
+ * QNetworkReply::deleteLater().
+ * @throws Failure if anything goes wrong
+ */
+QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
+  formData) {
+  if(!pnam_) {
+    throw Failure("No QNetworkAccessManager instance!");
+  }
+  if(!url.toString().startsWith("http://")) {
+    throw Failure("Only URLs beginning with http:// are supported");
+  }
+  qDebug() << "fetching" << url.toString();
+
+  // prepare network request
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
+    SLOT(loadPageFinished(QNetworkReply*)));
+  QNetworkRequest req = QNetworkRequest(url);
+  req.setRawHeader("User-Agent", USER_AGENT);
+  req.setRawHeader("Host", "www.geocaching.com");
+  if(loginCookies_.length() > 0) {
+    req.setHeader(QNetworkRequest::CookieHeader,
+      qVariantFromValue(loginCookies_));
+  }
+  if(formData != 0) {
+    // HTTP POST with form data
+    pnam_->post(req, *formData);
+  } else {
+    // HTTP GET
+    pnam_->get(req);
+  }
+  // execute an event loop to process the request (nearly-synchronous)
+  QEventLoop eventLoop;
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+
+  // loadPageFinished() stuffs the QNetworkReply to loadPageNetReply_
+
+  if(loadPageNetReply_->error() != QNetworkReply::NoError) {
+    throw Failure(loadPageNetReply_->errorString());
+  }
+  return loadPageNetReply_;
+}
+
+/**
+ * @internal
+ * Called from @a loadPage() when the QNetworkAccessManager finishes to load a
+ * cache page. This function just saves the network reply for later use to the
+ * member @a loadPageNetReply_.
+ * @param reply Network reply
+ */
+void GCSpider::loadPageFinished(QNetworkReply * reply) {
+  loadPageNetReply_ = reply;
 }
 
 /**
@@ -52,9 +116,6 @@ void GCSpider::login() {
   }
   if(password_.trimmed().isEmpty()) {
     throw Failure("Password is empty!");
-  }
-  if(!pnam_) {
-    throw Failure("No QNetworkAccessManager instance!");
   }
 
   // login magic for post data
@@ -88,30 +149,8 @@ void GCSpider::login() {
   postData.append(password_);
 
   // Request login page
-  connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
-    SLOT(loginFinished(QNetworkReply*)));
-  QNetworkRequest req(QUrl("http://www.geocaching.com/login/Default.aspx"));
-  req.setRawHeader("User-Agent", USER_AGENT);
-  req.setRawHeader("Host", "www.geocaching.com");
-  pnam_->post(req, postData);
-
-  // execute an event loop to process the request (nearly-synchronous)
-  QEventLoop eventLoop;
-  connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
-  eventLoop.exec();
-  disconnect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
-    SLOT(loginFinished(QNetworkReply*))); // so we don't get called again
-}
-
-/**
- * Called when the QNetworkAccessManager finishes the login
- * @param reply Network reply
- * @throws Failure if anything goes wrong
- */
-void GCSpider::loginFinished(QNetworkReply * reply) {
-  if(reply->error() != QNetworkReply::NoError) {
-    throw Failure(reply->errorString());
-  }
+  QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/login/"
+    "Default.aspx"), &postData);
   // extract cookies
   QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
   if(var.isValid()) {
@@ -159,6 +198,27 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
   if(!pnam_) {
     throw Failure("No QNetworkAccessManager instance!");
   }
+
+  QNetworkReply * reply = loadPage(QUrl(QString("http://www.geocaching.com/seek"
+    "/nearest.aspx?lat=%1&lng=%2").arg(center.lat).arg(center.lon)));
+  QString text = reply->readAll();
+  reply->deleteLater();
+
+  // cap order: bearing, distance, cache guid
+  QRegExp rx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
+    "|NE|SE|SW)<br />([0-9]+(?:\\.[0-9])?+)km\\s*</td>\\s*<td>\\s*</td>\\s*<td>"
+    "<a .*>\\s*<img .* /></a>.*</td>\\s*<td>.*</td><td>.*</td>\\s*<td><a .*"
+    "href=\"/seek/cache_details.aspx?guid=([-0-9a-f]{36})\".*>.*</a>.*</td>");
+  rx.setMinimal(true);
+
+  int curPos = 0;
+  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+    curPos += rx.cap(0).size(); // move to end of current chunk
+    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
+      return false;
+    }
+  }
+
   return false;
 }
 
@@ -179,43 +239,9 @@ bool GCSpider::loadCache(QString waypoint, Cache& buf) {
     throw Failure("Waypoint must begin with \"GC\"");
   }
 
-  QString url = "http://www.geocaching.com/seek/cache_details.aspx?wp=";
-  url.append(waypoint);
+  QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/seek/cache_"
+    "details.aspx?wp=" + waypoint));
 
-  // prepare network request
-  qDebug() << "fetching" << url;
-  connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
-    SLOT(loadCacheFinished(QNetworkReply*)));
-  QNetworkRequest req = QNetworkRequest(QUrl(url));
-  req.setRawHeader("User-Agent", USER_AGENT);
-  req.setRawHeader("Host", "www.geocaching.com");
-  req.setHeader(QNetworkRequest::CookieHeader,
-    qVariantFromValue(loginCookies_));
-  pnam_->get(req);
-
-  // execute an event loop to process the request (nearly-synchronous)
-  QEventLoop eventLoop;
-  connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
-  eventLoop.exec();
-
-  // loadCacheFinished() fills the cacheText_ variable
-
-  GCSpiderCachePage gcscp(cacheText_);
+  GCSpiderCachePage gcscp(QString(reply->readAll()));
   return gcscp.all(buf);
-}
-
-/**
- * Called when the QNetworkAccessManager finishes to load a cache page. The
- * content of the page is written to the cacheText_ member variable.
- * @param reply Network reply
- * @throws Failure if anything goes wrong
- */
-void GCSpider::loadCacheFinished(QNetworkReply * reply) {
-  //throw Failure("Not yet implemented!");
-  if(reply->error() != QNetworkReply::NoError) {
-    throw Failure(reply->errorString());
-  }
-  cacheText_ = reply->readAll();
-//  qDebug() << cacheText_;
-  reply->deleteLater();
 }
