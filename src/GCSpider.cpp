@@ -5,11 +5,9 @@
  */
 
 #include "GCSpider.h"
-#include "Failure.h"
 #include "GCSpiderCachePage.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QDebug>
 #include <QEventLoop>
 
 using namespace geojackal;
@@ -153,10 +151,14 @@ void GCSpider::loginFinished(QNetworkReply * reply) {
  *  context is responsible for freeing the members of this vector.
  * @return @c true if all caches could be retrieved correctly, @c false
  *  otherwise
+ * @throws Failure if anything goes wrong
  */
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
   Cache *>& buf) {
   // @todo
+  if(!pnam_) {
+    throw Failure("No QNetworkAccessManager instance!");
+  }
   return false;
 }
 

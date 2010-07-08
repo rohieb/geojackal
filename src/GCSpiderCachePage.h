@@ -7,8 +7,9 @@
 #ifndef GCCACHESPIDER_H_
 #define GCCACHESPIDER_H_
 
-#include <QString>
+#include "global.h"
 #include "Cache.h"
+#include <QString>
 
 namespace geojackal {
 

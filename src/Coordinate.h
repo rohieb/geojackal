@@ -7,6 +7,7 @@
 #ifndef COORDINATE_H
 #define COORDINATE_H
 
+#include "global.h"
 #include <QString>
 
 namespace geojackal {

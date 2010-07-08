@@ -12,7 +12,8 @@ SOURCES = src/Failure.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/Failure.h \
+HEADERS = src/global.h \
+    src/Failure.h \
     src/functions.h \
     src/Cache.h \
     src/Coordinate.h \

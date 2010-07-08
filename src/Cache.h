@@ -7,6 +7,7 @@
 #ifndef CACHE_H
 #define CACHE_H
 
+#include "global.h"
 #include <QString>
 #include <QDateTime>
 #include <QVector>

@@ -7,7 +7,6 @@
 #include "GCSpiderCachePage.h"
 #include <limits>
 #include <QRegExp>
-#include <QDebug>
 #include <QStringList>
 
 namespace geojackal {

@@ -7,6 +7,7 @@
 #ifndef GCSPIDER_H_
 #define GCSPIDER_H_
 
+#include "global.h"
 #include "Cache.h"
 #include "Coordinate.h"
 #include <QObject>
