@@ -7,6 +7,8 @@
 #include "GCSpiderCachePage.h"
 #include <limits>
 #include <QRegExp>
+#include <QDebug>
+#include <QStringList>
 
 namespace geojackal {
 
@@ -36,27 +38,32 @@ GCSpiderCachePage::~GCSpiderCachePage() {
  */
 bool GCSpiderCachePage::all(Cache& buf) {
   bool ret = true;
-  ret |= name(buf.name);
-  ret |= waypoint(buf.waypoint);
-  ret |= type(buf.type);
+  ret &= name(buf.name);
+//  qDebug() << buf.name;
+  ret &= waypoint(buf.waypoint);
+//  qDebug() << buf.waypoint;
+  ret &= type(buf.type);
+//  qDebug() << buf.type;
   if(!buf.coord) buf.coord = new Coordinate;
-  ret |= coord(*buf.coord);
+  ret &= coord(*buf.coord);
   if(!buf.desc) buf.desc = new CacheDesc;
-  ret |= desc(*buf.desc);
-  ret |= shortDesc(buf.shortDesc);
-  ret |= ((buf.size = size()) != SIZE_UNKNOWN);
-  ret |= ((buf.difficulty = difficulty()) != 0);
-  ret |= ((buf.terrain = terrain()) != 0);
-  ret |= placed(*buf.placed);
-  ret |= found(*buf.found);
-  ret |= owner(buf.owner);
+  ret &= desc(*buf.desc);
+  ret &= shortDesc(buf.shortDesc);
+  ret &= ((buf.size = size()) != SIZE_UNKNOWN);
+  ret &= ((buf.difficulty = difficulty()) != 0);
+  ret &= ((buf.terrain = terrain()) != 0);
+  if(!buf.placed) buf.placed = new QDate;
+  ret &= placed(*buf.placed);
+  if(!buf.found) buf.found = new QDate;
+  ret &= found(*buf.found);
+  ret &= owner(buf.owner);
   if(!buf.waypoints) buf.waypoints = new QVector<Waypoint>;
-  ret |= waypoints(*buf.waypoints);
+  ret &= waypoints(*buf.waypoints);
   if(!buf.logs) buf.logs = new QVector<LogMessage>;
-  ret |= logs(*buf.logs);
+  ret &= logs(*buf.logs);
   if(!buf.attrs) buf.attrs = new QVector<CacheAttribute>;
-  ret |= attrs(*buf.attrs);
-  ret |= hint(buf.hint);
+  ret &= attrs(*buf.attrs);
+  ret &= hint(buf.hint);
   buf.archived = archived();
   return ret;
 }
@@ -67,7 +74,7 @@ bool GCSpiderCachePage::all(Cache& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::name(QString& buf) {
-  QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\".*>(.+)</span>");
+  QRegExp rx("<meta name=\"og:title\" content=\"([^\"]+)\".*/>");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1);
@@ -81,7 +88,7 @@ bool GCSpiderCachePage::name(QString& buf) {
  *
  */
 bool GCSpiderCachePage::waypoint(QString& buf) {
-  QRegExp rx("<div .*id=\"ctl00_cacheCodeWidget\"[^>]*>\\s*<p>(.+)</p");
+  QRegExp rx("<span .*id=\"ctl00_uxWaypointName\".*>([^<]+)</span");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1).trimmed();
@@ -162,9 +169,9 @@ bool GCSpiderCachePage::type(WaypointType& buf) {
  *  if the coordinate is invisible.
  */
 bool GCSpiderCachePage::coord(Coordinate& buf) {
-  QRegExp rx("<span .*id=\"ctl00_ContentBody_LatLon\".*>(:?\\?{1,3}|(N|S) "
-    "(\\d{2})° (\\d{2}\\.\\d{3}) (W|E) (\\d{3})° (\\d{2}\\.\\d{3}))</span");
-  rx.setMinimal(true);
+  QRegExp rx("<span [^i]*id=\"ctl00_ContentBody_LatLon\"[^>]*>(?:(\\?{1,3}|N|S)"
+    "\\s+(\\d{2})°\\s+(\\d{2}\\.\\d{3})\\s+(W|E)\\s+(\\d{3})°\\s+(\\d{2}\\."
+    "\\d{3}))</span");
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     // is the coordinate "???" or something real?
     if(rx.cap(1).at(0) == QChar('?')) {
@@ -173,10 +180,8 @@ bool GCSpiderCachePage::coord(Coordinate& buf) {
       buf.lon = ANGLE_INVALID;
       return true;
 
-    } else if( (rx.cap(1).at(0) == QChar('N') || rx.cap(1).at(0) == QChar('S'))
-      && !rx.cap(2).isEmpty() && !rx.cap(3).isEmpty() && !rx.cap(4).isEmpty()
-      && !rx.cap(5).isEmpty() && !rx.cap(6).isEmpty() && !rx.cap(7).isEmpty()
-      && !rx.cap(8).isEmpty()) {
+    } else if(!rx.cap(2).isEmpty() && !rx.cap(3).isEmpty()
+      && !rx.cap(4).isEmpty() && !rx.cap(5).isEmpty() && !rx.cap(6).isEmpty()) {
       // real coordinate
       bool ret;
 
@@ -195,14 +200,12 @@ bool GCSpiderCachePage::coord(Coordinate& buf) {
       if(rx.cap(1) == "S") {
         buf.lat = ((double)buf.lat * -1);
         // must be -90 <= value <= 0
-        if(buf.lat.degree <= 0 && (buf.lat.degree >= -90 || abs(buf.lat.degree
-          + 90) < std::numeric_limits<double>::min())) {
+        if(!(-90 <= buf.lat.degree && buf.lat.degree <= 0)) {
           return false;
         }
       } else {
         // must be 0 <= value <= 90
-        if(buf.lat.degree >= 0 && (buf.lat.degree <= 90 || abs(buf.lat.degree
-          - 90) < std::numeric_limits<double>::min())) {
+        if(!(0 <= buf.lat.degree && buf.lat.degree <= 90)) {
           return false;
         }
       }
@@ -222,14 +225,12 @@ bool GCSpiderCachePage::coord(Coordinate& buf) {
       if(rx.cap(4) == "W") {
         buf.lon = ((double)buf.lon * -1);
         // must be -180 <= value <= 0
-        if(buf.lat.degree <= 0 && (buf.lat.degree >= -180 || abs(buf.lat.degree
-          + 180) < std::numeric_limits<double>::min())) {
+        if(!(-180 <= buf.lat.degree && buf.lat.degree <= 0)) {
           return false;
         }
       } else {
         // must be 0 <= value <= 180
-        if(buf.lat.degree >= 0 && (buf.lat.degree <= 180 || abs(buf.lat.degree
-          - 180) < std::numeric_limits<double>::min())) {
+        if(!(0 <= buf.lat.degree && buf.lat.degree <= 180)) {
           return false;
         }
       }
@@ -245,13 +246,16 @@ bool GCSpiderCachePage::coord(Coordinate& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::desc(CacheDesc& buf) {
-  QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\".*>)");
+  QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\"[^>]*>)");
+  QRegExp endRx("<div [^c]*class=\"CacheDetailNavigationWidget\"");
   startRx.setMinimal(true);
-  QRegExp endRx("<div .*class=\"CacheDetailNavigationWidget\"");
   endRx.setMinimal(true);
   int start = text_.indexOf(startRx) + startRx.cap(1).length(); // after regex
   int end = text_.indexOf(endRx);
 
+//  for(size_t i = rx.capturedTexts().size()-1; i > 0; --i) {
+//    qDebug() << i << ":" << rx.capturedTexts()[i];
+//  }
   // @todo process images
   // @todo process links to other caches?
   // @todo what about html tags in the text?
@@ -267,7 +271,8 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::shortDesc(QString& buf) {
-  QRegExp rx("<span .*id=\"ctl00_ContentBody_ShortDescription\".*>(.+)</span");
+  QRegExp rx("<span .*id=\"ctl00_ContentBody_ShortDescription\"[^>]*>(.+)"
+    "</span");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text_) >= 0);
   buf = rx.cap(1).trimmed();
@@ -281,7 +286,7 @@ bool GCSpiderCachePage::shortDesc(QString& buf) {
  */
 CacheSize GCSpiderCachePage::size() {
   QRegExp rx("<img .*src=\"/images/icons/container/(micro|small|regular|large|"
-    "other|not_chosen|virtual.gif\".*>");
+    "other|not_chosen|virtual).gif\"");
   rx.setMinimal(true);
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     QString cap = rx.cap(1);
@@ -310,8 +315,8 @@ CacheSize GCSpiderCachePage::size() {
  * not be extracted
  */
 unsigned int GCSpiderCachePage::difficulty() {
-  QRegExp rx("<strong>\\s*Difficulty:\\s*</strong>\\s*<img .*src="
-    "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
+  QRegExp rx("Difficulty:\\s*</strong>\\s*<img .*src=\"(?:http://www.geocaching"
+    ".com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     bool ok = false;
@@ -333,8 +338,8 @@ unsigned int GCSpiderCachePage::difficulty() {
  * be extracted
  */
 unsigned int GCSpiderCachePage::terrain() {
-  QRegExp rx("<strong>\\s*Terrain:\\s*</strong>\\s*<img .*src="
-    "\"(:?http://www.geocaching.com)?/images/stars/stars(\\d)(_5)?.gif\"");
+  QRegExp rx("Terrain:\\s*</strong>\\s*<img .*src=\"(?:http://www.geocaching"
+    ".com)?/images/stars/stars(\\d)(_5)?.gif\"");
   rx.setMinimal(true);
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty()) {
     bool ok = false;
@@ -356,8 +361,8 @@ unsigned int GCSpiderCachePage::terrain() {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::placed(QDate& buf) {
-  QRegExp rx("<td>\\s*<strong>\\s*Hidden\\s*:</strong>(\\d{1,2})/(\\d{1,2})/"
-    "(\\d{4})\\s*</td>");
+  QRegExp rx("<td>\\s*<strong>\\s*(?:Hidden|Event Date)\\s*:</strong>\\s*"
+    "(\\d{1,2})/(\\d{1,2})/(\\d{4})\\s*</td>");
   rx.setMinimal(true);
 
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty() && !rx.cap(2).isEmpty() &&
@@ -384,7 +389,7 @@ bool GCSpiderCachePage::placed(QDate& buf) {
 
 /**
  * Extract the date when the cache was found by the user
- * @param buf Buffer to receive the found date, or the null pointer if the
+ * @param buf Buffer to receive the found date, or the date 0-0-0000 if the
  * cache was not found yet
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
@@ -422,6 +427,7 @@ bool GCSpiderCachePage::owner(QString& buf) {
 bool GCSpiderCachePage::waypoints(QVector<Waypoint>& buf) {
   buf.clear();
 
+  /** @todo test! */
   QRegExp rx("<tr .*class=\"BorderBottom .*\".*>\\s*<td>.*</td>\\s*<td>\\s*"
     "<img src=\"(:?http://www.geocaching.com)/images/wpttypes/sm/(puzzle|flag|"
     "stage|pkg|waypoint|trailhead).jpg\".*>\\s*</td>\\s*<td>\\s*([a-zA-Z0-9]"
@@ -523,13 +529,14 @@ int monthToOrd(QString month) {
  * if there are no log messages.
  */
 bool GCSpiderCachePage::logs(QVector<LogMessage>& buf) {
-  QRegExp rx("<tr>\\s*<td.*>\\s*<strong></td>\\s*<img .*src=\"(:?http://www."
+  /** @todo TEST */
+  QRegExp rx("<tr>\\s*<td.*>\\s*<strong>\\s*<img .*src=\"(:?http://www."
     "geocaching.com)?/images/icons/icon_(attended|big-smile|camera|coord-"
     "update|disabled|dropped-off|enabled|greenlight|maint|needsmaint|note|"
     "picked-up|redlight|remove|rsvp|sad|smile|traffic-cone).gif\".*/>"
-    "(:?&nbsp;)?(January|February|March|April|May|June|July|August|September|"
-    "October|November|December)\\s+(\\d{1,2})(:?, (\\d{4}))?\\s+by\\s+<a .*>"
-    "(.*)</a>\\s*</strong>\\s+(:?\\d*\\s+found)<br />\\s*<br />(.*)<br />\\s*"
+    "(?:&nbsp;)?(January|February|March|April|May|June|July|August|September|"
+    "October|November|December)\\s+(\\d{1,2})(?:, (\\d{4}))?\\s+by\\s+<a .*>"
+    "(.*)</a>\\s*</strong>\\s+(?:\\d*\\s+found)<br />\\s*<br />(.*)<br />\\s*"
     "<br /><small><a .*>View Log</a>\\s*</small>\\s*</td>\\s*</tr>");
   rx.setMinimal(true);
 
@@ -634,7 +641,7 @@ bool GCSpiderCachePage::attrs(QVector<CacheAttribute>& buf) {
     "poisonoak-yes|public-yes|quads-yes|rappelling-yes|restrooms-yes|"
     "scenic-yes|scuba-yes|snakes-yes|snowmobiles-yes|stealth-yes|stroller-yes|"
     "swimming-yes|thorn-yes|ticks-yes|wading-yes|water-yes|wheelchair-yes|"
-    "winter-yes).gif)\" .*width=\"30\" height=\"30\" />");
+    "winter-yes).gif\" .*width=\"30\" height=\"30\" />");
   rx.setMinimal(true);
 
   int curPos = 0;

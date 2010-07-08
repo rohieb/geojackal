@@ -42,6 +42,7 @@ public:
 
 public slots:
   void loginFinished(QNetworkReply * reply);
+  void loadCacheFinished(QNetworkReply * reply);
 
 protected:
   void login();
@@ -57,6 +58,8 @@ private:
   bool loggedIn_;
   /** Cookies sent by the server on login */
   QList<QNetworkCookie> loginCookies_;
+  /** Text of cache description page currently loaded */
+  QString cacheText_;
 };
 
 }

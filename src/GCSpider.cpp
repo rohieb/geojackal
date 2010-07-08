@@ -6,6 +6,7 @@
 
 #include "GCSpider.h"
 #include "Failure.h"
+#include "GCSpiderCachePage.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDebug>
@@ -100,6 +101,8 @@ void GCSpider::login() {
   QEventLoop eventLoop;
   connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
   eventLoop.exec();
+  disconnect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
+    SLOT(loginFinished(QNetworkReply*))); // so we don't get called again
 }
 
 /**
@@ -167,5 +170,50 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
  */
 bool GCSpider::loadCache(QString waypoint, Cache& buf) {
   // @todo
-  return false;
+  if(!loggedIn_) {
+    throw Failure("Not logged in!");
+  }
+  if(!waypoint.startsWith("GC", Qt::CaseInsensitive)) {
+    throw Failure("Waypoint must begin with \"GC\"");
+  }
+
+  QString url = "http://www.geocaching.com/seek/cache_details.aspx?wp=";
+  url.append(waypoint);
+
+  // prepare network request
+  qDebug() << "fetching" << url;
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
+    SLOT(loadCacheFinished(QNetworkReply*)));
+  QNetworkRequest req = QNetworkRequest(QUrl(url));
+  req.setRawHeader("User-Agent", USER_AGENT);
+  req.setRawHeader("Host", "www.geocaching.com");
+  req.setHeader(QNetworkRequest::CookieHeader,
+    qVariantFromValue(loginCookies_));
+  pnam_->get(req);
+
+  // execute an event loop to process the request (nearly-synchronous)
+  QEventLoop eventLoop;
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+
+  // loadCacheFinished() fills the cacheText_ variable
+
+  GCSpiderCachePage gcscp(cacheText_);
+  return gcscp.all(buf);
+}
+
+/**
+ * Called when the QNetworkAccessManager finishes to load a cache page. The
+ * content of the page is written to the cacheText_ member variable.
+ * @param reply Network reply
+ * @throws Failure if anything goes wrong
+ */
+void GCSpider::loadCacheFinished(QNetworkReply * reply) {
+  //throw Failure("Not yet implemented!");
+  if(reply->error() != QNetworkReply::NoError) {
+    throw Failure(reply->errorString());
+  }
+  cacheText_ = reply->readAll();
+//  qDebug() << cacheText_;
+  reply->deleteLater();
 }
