@@ -19,11 +19,12 @@ namespace geojackal {
 class Failure : public std::exception {
 public:
   Failure(QString message);
+  virtual ~Failure() throw() {}
   virtual const char* what() const throw();
 
 protected:
   /** Internal message */
-  QString& message_;
+  QString message_;
 };
 
 }
