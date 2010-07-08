@@ -8,6 +8,8 @@
 #include "Failure.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QDebug>
+#include <QEventLoop>
 
 using namespace geojackal;
 
@@ -22,13 +24,13 @@ const QByteArray GCSpider::USER_AGENT =
  * @throws Failure if anything goes wrong
  */
 GCSpider::GCSpider(const QString username, const QString password) :
-  pnam_(0), username_(username), password_(password), loggedIn(false) {
+  pnam_(0), username_(username), password_(password), loggedIn_(false) {
   pnam_ = new QNetworkAccessManager(this);
   if(!pnam_) {
     throw Failure("Could not create QNetworkAccessManager instance!");
   }
   login();
-  if(!loggedIn)
+  if(!loggedIn_)
     throw Failure("Not logged in!");
 }
 
@@ -40,6 +42,9 @@ GCSpider::~GCSpider() {
 /**
  * Log in to geocaching.com.
  * Logs the user in and saves the HTTP authentication cookie for later use.
+ * This function blocks until the login cookie has ben retrieved. The cookies
+ * are saved to the loginCookie_ member variable, and the loggedIn_ member
+ * variable is set according to whether the login was successful.
  * @throws Failure if anything goes wrong
  */
 void GCSpider::login() {
@@ -84,12 +89,57 @@ void GCSpider::login() {
   postData.append(password_);
 
   // Request login page
-  QNetworkRequest req(QUrl("/login/Default.aspx"));
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
+    SLOT(loginFinished(QNetworkReply*)));
+  QNetworkRequest req(QUrl("http://www.geocaching.com/login/Default.aspx"));
   req.setRawHeader("User-Agent", USER_AGENT);
   req.setRawHeader("Host", "www.geocaching.com");
-  connect(pnam_, SIGNAL(finished(QNetworkReply*)), this,
-    SLOT(replyFinished(PHASE_LOGIN, QNetworkReply*)));
   pnam_->post(req, postData);
+
+  // execute an event loop to process the request (nearly-synchronous)
+  QEventLoop eventLoop;
+  connect(pnam_, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+}
+
+/**
+ * Called when the QNetworkAccessManager finishes the login
+ * @param reply Network reply
+ * @throws Failure if anything goes wrong
+ */
+void GCSpider::loginFinished(QNetworkReply * reply) {
+  if(reply->error() != QNetworkReply::NoError) {
+    throw Failure(reply->errorString());
+  }
+  // extract cookies
+  QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
+  if(var.isValid()) {
+    bool aspNetCookie = false, userIdCookie = false;
+    loginCookies_ = qvariant_cast<QList<QNetworkCookie> > (var);
+    QList<QNetworkCookie>::iterator it = loginCookies_.begin();
+    for(it = loginCookies_.begin(); it != loginCookies_.end(); ++it) {
+      if((*it).name() == "ASP.NET_SessionId") {
+        aspNetCookie = true;
+      } else if((*it).name() == "userid") {
+        userIdCookie = true;
+      } else {
+        // we don't need this
+        loginCookies_.removeOne(*it);
+      }
+    }
+    loggedIn_ = aspNetCookie && userIdCookie;
+    if(loggedIn_) {
+      qDebug() << "Login successful with username" << username_;
+    } else {
+      qDebug() << "Login failed with username" << username_;
+    }
+  } else {
+    // who took the cookies from the cookie jar?
+    loginCookies_ = QList<QNetworkCookie>();
+    loggedIn_ = false;
+    throw Failure("No valid cookies found!");
+  }
+  reply->deleteLater();
 }
 
 /**
@@ -98,45 +148,24 @@ void GCSpider::login() {
  * @param maxDist Maximum distance of cache to center point
  * @param buf Buffer that receives the caches to be retrieved. The calling
  *  context is responsible for freeing the members of this vector.
+ * @return @c true if all caches could be retrieved correctly, @c false
+ *  otherwise
  */
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
   Cache *>& buf) {
+  // @todo
   return false;
 }
 
 /**
- * Called when a QNetworkAccessManager finishes the connection
- * @param phase current phase of the spider
- * @param reply Network reply
- * @throws Failure if anything goes wrong
+ * Load a single cache.
+ * @param waypoint Waypoint of the cache (e.g. <em>GC132V6</em>)
+ * @param buf Buffer that receives the retrieved cache data. The calling
+ *  context is responsible for freeing the members of this vector.
+ * @return @c true if the cache could be retrieved correctly, @c false
+ *  otherwise
  */
-void GCSpider::replyFinished(SpiderPhase phase, QNetworkReply * reply) {
-  if(reply->error()) {
-    throw Failure(reply->errorString());
-  }
-  switch(phase) {
-    case PHASE_LOGIN: {
-      // extract cookies
-      QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
-      if(var.isValid()) {
-        loginCookies = qvariant_cast<QList<QNetworkCookie> > (var);
-        QList<QNetworkCookie>::iterator it = loginCookies.begin();
-        for(it = loginCookies.begin(); it != loginCookies.end(); ++it) {
-          // FIXME: look for ASP.NET_SessionId and userid
-        }
-        //loggedIn = true;
-      } else {
-        loginCookies = QList<QNetworkCookie>(); // no cookies
-        loggedIn = false;
-        throw Failure("No valid cookies found!");
-      }
-      reply->deleteLater();
-      break;
-    }
-    case PHASE_SEARCH:
-    case PHASE_LOAD:
-    default:
-      break;
-  }
+bool GCSpider::loadCache(QString waypoint, Cache& buf) {
+  // @todo
+  return false;
 }
-
