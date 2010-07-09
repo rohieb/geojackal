@@ -1,17 +1,25 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QWidget>
-#include "ui_MainWindow.h"
+#include "OsmSlippyMap.h"
+#include <QObject>
+#include <QtGui>
 
-class MainWindow : public QWidget
-{
+using namespace geojackal;
+
+class MainWindow : public QWidget {
+  Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    virtual ~MainWindow();
+  MainWindow();
+  virtual ~MainWindow();
+
+public slots:
+  void plusClicked(bool);
+  void minusClicked(bool);
 
 private:
-    Ui::MainWindowClass ui;
+  OsmSlippyMap * pmap;
+  uchar zoomLevel_;
 };
 
 #endif // MAINWINDOW_H

@@ -1,17 +1,22 @@
 #include "MainWindow.h"
 
-#include <QtGui>
-#include <QApplication>
 #include "global.h"
 #include "Cache.h"
 #include "GCSpider.h"
+#include "OsmSlippyMap.h"
+#include <QtGui>
+#include <QApplication>
 
 using namespace geojackal;
+
+QVector<Cache *> * caches = new QVector<Cache *>;
 
 class GeojackalApplication : public QApplication {
 public:
   GeojackalApplication(int& argc, char ** argv) :
     QApplication(argc, argv) {
+    // we want to do some cleanup afterwards
+    connect(this, SIGNAL(aboutToQuit()), qApp, SLOT(onQuit()));
   }
   virtual ~GeojackalApplication() {
   }
@@ -24,7 +29,17 @@ public:
       // @todo maybe a nice dialog box
       qCritical() << "Exception thrown:" << f.what();
     }
-    return false; // maybe this is ok
+    return false;
+  }
+
+protected slots:
+  /** cleanup */
+  void onQuit() {
+    // FIXME
+    qDebug() << "cleaning up";
+    foreach(Cache * c, *caches) {
+      delete c;
+    }
   }
 };
 
@@ -45,26 +60,26 @@ QDebug& operator<<(QDebug dbg, Cache& cache) {
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
 
-  Cache cache;
-  QVector<Cache *> * caches = new QVector<Cache *> ;
-  try {
-    GCSpider spider("username", "mypassword");
-    spider.nearest(Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)),
-      0.5, *caches);
-    for(QVector<Cache *>::iterator it = caches->begin(); it != caches->end();
-      ++it) {
-      qDebug() << *(*it);
-      delete (*it); // clean up
+  /*
+    // spider
+    try {
+      GCSpider spider("username", "password");
+      spider.nearest(Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)), 0.2,
+        *caches);
+    } catch(Failure& f) {
+      // @todo maybe a nice dialog box
+      qCritical() << "Exception thrown:" << f.what();
     }
-    //spider.loadCache("GC1552D", cache);
-    //qDebug() << cache;
-  } catch(Failure& f) {
-    // @todo maybe a nice dialog box
-    qCritical() << "Exception thrown:" << f.what();
-  }
-  //qDebug() << "nearest to 51 N 10 E:" << *caches;
-  //MainWindow w;
-  //w.show();
-  //return app.exec();
-  return 0;
+    qDebug() << "nearest to 51 N 10 E:";
+    foreach(Cache * c, *caches)
+      {
+        qDebug() << *c;
+      }
+  */
+  MainWindow w;
+  w.resize(600, 400);
+  w.show();
+
+  return app.exec();
+  //return 0;
 }

@@ -5,14 +5,16 @@ TARGET = GeoJackal
 QT = core \
     gui \
     network
-SOURCES = src/Failure.cpp \
+SOURCES = src/OsmSlippyMap.cpp \
+    src/Failure.cpp \
     src/functions.cpp \
     src/Coordinate.cpp \
     src/GCSpider.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/global.h \
+HEADERS = src/OsmSlippyMap.h \
+    src/global.h \
     src/Failure.h \
     src/functions.h \
     src/Cache.h \
