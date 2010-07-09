@@ -19,10 +19,10 @@ Coordinate::Coordinate() :
 
 /**
  * Constructor to set latitude and longitude
- * @param latitude The latitude part of the coordinate, in degree
- * @param longitude The longitude part of the coordinate, in degree
+ * @param latitude The latitude (north-south) part of the coordinate, in degree
+ * @param longitude The longitude (east-west) part of the coordinate, in degree
  */
-Coordinate::Coordinate(Angle longitude, Angle latitude) :
+Coordinate::Coordinate(Angle latitude, Angle longitude) :
   lon(longitude), lat(latitude) {
 }
 
