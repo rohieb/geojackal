@@ -10,7 +10,7 @@
 
 #include "Failure.h"
 #include <QDebug>
-#include <QStringBuilder>
+//#include <QStringBuilder>
 // fast string concatenation with + instead of %
 #define QT_USE_FAST_CONCATENATION
 #define QT_USE_FAST_OPERATOR_PLUS
