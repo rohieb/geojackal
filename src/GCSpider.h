@@ -46,6 +46,7 @@ public slots:
 
 protected:
   void login();
+  void logout();
   QNetworkReply * loadPage(const QUrl& url, const QByteArray * formData = 0);
 
 private:
@@ -60,7 +61,6 @@ private:
   /** Is the user already logged in? */
   bool loggedIn_;
   /** Cookies sent by the server on login */
-  QList<QNetworkCookie> loginCookies_;
 };
 
 }

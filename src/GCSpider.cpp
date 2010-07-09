@@ -11,6 +11,8 @@
 #include <QEventLoop>
 #include <QRegExp>
 
+#include <QStringList>
+
 using namespace geojackal;
 
 const QByteArray GCSpider::USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86; "
@@ -30,8 +32,9 @@ GCSpider::GCSpider(const QString username, const QString password) :
     throw Failure("Could not create QNetworkAccessManager instance!");
   }
   login();
-  if(!loggedIn_)
+  if(!loggedIn_) {
     throw Failure("Not logged in!");
+  }
 }
 
 GCSpider::~GCSpider() {
@@ -67,10 +70,6 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
   QNetworkRequest req = QNetworkRequest(url);
   req.setRawHeader("User-Agent", USER_AGENT);
   req.setRawHeader("Host", "www.geocaching.com");
-  if(loginCookies_.length() > 0) {
-    req.setHeader(QNetworkRequest::CookieHeader,
-      qVariantFromValue(loginCookies_));
-  }
   if(formData != 0) {
     // HTTP POST with form data
     pnam_->post(req, *formData);
@@ -151,20 +150,18 @@ void GCSpider::login() {
   // Request login page
   QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/login/"
     "Default.aspx"), &postData);
-  // extract cookies
+  // extract and validate cookies
+  QList<QNetworkCookie> loginCookies;
   QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
   if(var.isValid()) {
     bool aspNetCookie = false, userIdCookie = false;
-    loginCookies_ = qvariant_cast<QList<QNetworkCookie> > (var);
-    QList<QNetworkCookie>::iterator it = loginCookies_.begin();
-    for(it = loginCookies_.begin(); it != loginCookies_.end(); ++it) {
+    loginCookies = qvariant_cast<QList<QNetworkCookie> > (var);
+    QList<QNetworkCookie>::iterator it = loginCookies.begin();
+    for(it = loginCookies.begin(); it != loginCookies.end(); ++it) {
       if((*it).name() == "ASP.NET_SessionId") {
         aspNetCookie = true;
       } else if((*it).name() == "userid") {
         userIdCookie = true;
-      } else {
-        // we don't need this
-        loginCookies_.removeOne(*it);
       }
     }
     loggedIn_ = aspNetCookie && userIdCookie;
@@ -175,7 +172,6 @@ void GCSpider::login() {
     }
   } else {
     // who took the cookies from the cookie jar?
-    loginCookies_ = QList<QNetworkCookie>();
     loggedIn_ = false;
     throw Failure("No valid cookies found!");
   }
@@ -183,9 +179,17 @@ void GCSpider::login() {
 }
 
 /**
+ * Log out of geocaching.com. Deletes the cookies with the identity information.
+ */
+void GCSpider::logout() {
+  // simpy delete the whole cookie jar
+  pnam_->setCookieJar(new QNetworkCookieJar(pnam_));
+}
+
+/**
  * Get nearest caches around a coordinate up to a specified distance.
  * @param center Center coordinates
- * @param maxDist Maximum distance of cache to center point
+ * @param maxDist Maximum distance in km from cache to center point
  * @param buf Buffer that receives the caches to be retrieved. The calling
  *  context is responsible for freeing the members of this vector.
  * @return @c true if all caches could be retrieved correctly, @c false
@@ -195,31 +199,55 @@ void GCSpider::login() {
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
   Cache *>& buf) {
   // @todo
-  if(!pnam_) {
-    throw Failure("No QNetworkAccessManager instance!");
-  }
 
-  QNetworkReply * reply = loadPage(QUrl(QString("http://www.geocaching.com/seek"
-    "/nearest.aspx?lat=%1&lng=%2").arg(center.lat).arg(center.lon)));
-  QString text = reply->readAll();
-  reply->deleteLater();
+  QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com/seek"
+    "/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
+    arg(center.lon, 0, 'f')));
+  QString text = listReply->readAll();
 
-  // cap order: bearing, distance, cache guid
-  QRegExp rx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
-    "|NE|SE|SW)<br />([0-9]+(?:\\.[0-9])?+)km\\s*</td>\\s*<td>\\s*</td>\\s*<td>"
-    "<a .*>\\s*<img .* /></a>.*</td>\\s*<td>.*</td><td>.*</td>\\s*<td><a .*"
-    "href=\"/seek/cache_details.aspx?guid=([-0-9a-f]{36})\".*>.*</a>.*</td>");
+//  // cap order: bearing, distance, cache guid
+//  QRegExp rx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
+//    "|NE|SE|SW)<br />([0-9]+(?:\\.[0-9])?+)km\\s*</td>\\s*<td>\\s*</td>\\s*<td>"
+//    "<a .*>\\s*<img .* /></a>.*</td>\\s*<td>.*</td><td>.*</td>\\s*<td><a .*"
+//    "href=\"/seek/cache_details.aspx?guid=([-0-9a-f]{36})\".*>.*</a>.*</td>");
+//  QRegExp rx("<tr bgcolor='[^\']+'\\s*class=\"Data BorderTop\">\\s*<td>.*<br />\\s*"
+//    "([0-9]+(?:\\.[0-9]+)?)\\s*km\\s*</td>.*"
+//    "<a href=\"/seek/cache_details.aspx?guid=(.{36})\">");
+
+  QRegExp rx("<tr bgcolor='[^']+'\\s*class=\"Data BorderTop\">\\s*<td>.*"
+    "([0-9]+(?:\\.[0-9]+)?)\\s*km\\s*</td>.*<a href=\"/seek/cache_details"
+    "\\.aspx\\?guid=([-0-9a-zA-Z]+)\">.*</a>");
   rx.setMinimal(true);
 
   int curPos = 0;
-  while((curPos = rx.indexIn(text, curPos)) >= 0) {
+  double cacheDist = 0; // distance to current cache
+  while((curPos = rx.indexIn(text, curPos)) >= 0 && cacheDist <= maxDist) {
     curPos += rx.cap(0).size(); // move to end of current chunk
-    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
+    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty()) {
       return false;
     }
+
+    // check for distance
+    bool ok = false;
+    cacheDist = rx.cap(1).toDouble(&ok);
+    if(!ok) {
+      return false;
+    }
+    if(cacheDist > maxDist) {
+      break;
+    }
+
+    // load cache page
+    QNetworkReply * cacheReply = loadPage(QUrl("http://www.geocaching.com/"
+        "seek/cache_details.aspx?guid=" + rx.cap(2)));
+    GCSpiderCachePage gcscp(QString(cacheReply->readAll()));
+    Cache * pCache = new Cache;
+    gcscp.all(*pCache);
+    buf.append(pCache);
   }
 
-  return false;
+  listReply->deleteLater();
+  return true;
 }
 
 /**
@@ -232,6 +260,7 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
  */
 bool GCSpider::loadCache(QString waypoint, Cache& buf) {
   // @todo
+  // try to login
   if(!loggedIn_) {
     throw Failure("Not logged in!");
   }
@@ -242,6 +271,7 @@ bool GCSpider::loadCache(QString waypoint, Cache& buf) {
   QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/seek/cache_"
     "details.aspx?wp=" + waypoint));
 
-  GCSpiderCachePage gcscp(QString(reply->readAll()));
+  QString content = reply->readAll();
+  GCSpiderCachePage gcscp(content);
   return gcscp.all(buf);
 }

@@ -2,9 +2,9 @@
 
 #include <QtGui>
 #include <QApplication>
+#include "global.h"
 #include "Cache.h"
 #include "GCSpider.h"
-#include "Failure.h"
 
 using namespace geojackal;
 
@@ -28,13 +28,41 @@ public:
   }
 };
 
+QDebug& operator<<(QDebug dbg, Cache& cache) {
+  dbg << "{ wp:" << cache.waypoint;
+  dbg << ", name:" << cache.name;
+  dbg << ", coord:" << cache.coord->lon << "," << cache.coord->lat;
+  dbg << ", type:" << cache.type;
+  dbg << ", size:" << cache.size;
+  dbg << ", diff:" << cache.difficulty;
+  dbg << ", terr:" << cache.terrain;
+  dbg << ", placed:" << cache.placed;
+  dbg << ", owner:" << cache.owner;
+  dbg << ", archived:" << cache.archived;
+  dbg << " }";
+  return dbg.nospace();
+}
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
 
+  Cache cache;
   QVector<Cache *> * caches = new QVector<Cache *> ;
-  GCSpider spider("username", "mypassword");
-  spider.nearest(Coordinate(51, 10), 0.5, *caches);
-  qDebug() << *caches;
+  try {
+    GCSpider spider("username", "mypassword");
+    spider.nearest(Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)),
+      0.5, *caches);
+    for(QVector<Cache *>::iterator it = caches->begin(); it != caches->end();
+      ++it) {
+      qDebug() << *(*it);
+      delete (*it); // clean up
+    }
+    //spider.loadCache("GC1552D", cache);
+    //qDebug() << cache;
+  } catch(Failure& f) {
+    // @todo maybe a nice dialog box
+    qCritical() << "Exception thrown:" << f.what();
+  }
+  //qDebug() << "nearest to 51 N 10 E:" << *caches;
   //MainWindow w;
   //w.show();
   //return app.exec();
