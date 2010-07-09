@@ -21,7 +21,7 @@ namespace geojackal {
 class GCSpiderCachePage {
 private:
   /** Text of the cache description page */
-  QString& text_;
+  QString text_;
 
 public:
   GCSpiderCachePage(QString text);
