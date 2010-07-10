@@ -182,6 +182,9 @@ void OsmSlippyMap::httpFinished(QNetworkReply * rply) {
     tilePixmaps_[tileCoord] = QPixmap::fromImage(img);
   }
   rply->deleteLater();
+
+  // update the map so the tile is shown
+  update();
 }
 
 /**
