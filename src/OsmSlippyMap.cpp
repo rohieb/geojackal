@@ -184,7 +184,7 @@ void OsmSlippyMap::httpFinished(QNetworkReply * rply) {
   rply->deleteLater();
 
   // update the map so the tile is shown
-  update();
+  update(tileRect(tileCoord));
 }
 
 /**
