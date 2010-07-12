@@ -25,6 +25,8 @@ public:
 
   /** Height and width of each tile, in pixels */
   static const ushort TILE_DIM;
+  /** Maximum zoom level (in OSM zoom level units...) */
+  static const uchar MAX_ZOOM;
 
   OsmSlippyMap(const Coordinate& center, const uchar zoom,
     QWidget * parent = 0);
@@ -54,7 +56,7 @@ public:
    * @throws Failure if anything goes wrong
    */
   inline void setZoom(const uchar zoom) {
-    if(zoom > 18) {
+    if(zoom > MAX_ZOOM) {
       throw Failure("Zoom level must be between 0 and 18");
     }
     zoomLevel_ = zoom;
@@ -68,15 +70,18 @@ public:
     return zoomLevel_;
   }
 
+
 protected:
   void download(const uint xTile, const uint yTile);
   void invalidate();
   QRect tileRect(const QPoint& tileCoord);
   void paintEvent(QPaintEvent *event);
   void resizeEvent(QResizeEvent *);
+  void mouseDoubleClickEvent(QMouseEvent * event);
   void mousePressEvent(QMouseEvent * event);
   void mouseMoveEvent(QMouseEvent * event);
   void mouseReleaseEvent(QMouseEvent *);
+  void wheelEvent(QWheelEvent * event);
 
 protected slots:
   void httpFinished(QNetworkReply * reply);

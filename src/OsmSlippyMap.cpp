@@ -13,6 +13,7 @@ using namespace geojackal;
 #define PI 3.1412653589
 
 const ushort OsmSlippyMap::TILE_DIM = 256;
+const uchar OsmSlippyMap::MAX_ZOOM = 18;
 
 /**
  * Primitive hash function for QPoints, but suffice for our needs
@@ -33,7 +34,7 @@ uint qHash(const QPoint& p) {
  * explanation what is done here
  */
 QPointF tileForCoordinate(const Coordinate& coord, const uchar zoom) {
-  if(zoom > 18) {
+  if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }
   int n = (1 << zoom); // number of tiles on the zoom level
@@ -58,7 +59,7 @@ QPointF tileForCoordinate(const Coordinate& coord, const uchar zoom) {
  */
 void coordFromTile(const float xTile, const float yTile, const uchar zoom,
   Coordinate& buf) {
-  if(zoom > 18) {
+  if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }
   uint zn = (1 << zoom); // number of tiles on the zoom level
@@ -239,15 +240,19 @@ void OsmSlippyMap::resizeEvent(QResizeEvent *) {
 
 void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
   // drag on left button
-  if(event->buttons() != Qt::LeftButton)
-    return;
-  dragPos = event->pos();
+  if(event->buttons() == Qt::LeftButton) {
+    dragPos = event->pos();
+    event->accept();
+  } else {
+    event->ignore();
+  }
 }
 
 void OsmSlippyMap::mouseMoveEvent(QMouseEvent * event) {
   // Mouse drag, move map
   if(!event->buttons()) {
     // only with buttons pressed
+    event->ignore();
     return;
   }
 
@@ -256,9 +261,38 @@ void OsmSlippyMap::mouseMoveEvent(QMouseEvent * event) {
   coordFromTile(newCenter.x(), newCenter.y(), zoomLevel_, center_);
   dragPos = event->pos();
   invalidate();
+  event->accept();
 }
 
-void OsmSlippyMap::mouseReleaseEvent(QMouseEvent *) {
+void OsmSlippyMap::mouseReleaseEvent(QMouseEvent * event) {
   invalidate();
+  event->ignore();
 }
 
+void OsmSlippyMap::mouseDoubleClickEvent(QMouseEvent * event) {
+  // zoom in on left button double click
+  qDebug() << "mouse double click at " << event->pos();
+  if(event->buttons() == Qt::LeftButton) {
+    setZoom(zoom() + 1);
+    invalidate();
+    event->accept();
+  } else {
+    event->ignore();
+  }
+}
+
+void OsmSlippyMap::wheelEvent(QWheelEvent * event) {
+  // zoom on mouse wheel events
+  int delta = event->delta();
+  if(delta > 0) {
+    setZoom(zoom() + 1);
+    invalidate();
+    event->accept();
+  } else if(delta < 0) {
+    setZoom(zoom() - 1);
+    invalidate();
+    event->accept();
+  } else { // should not occur ...
+    event->ignore();
+  }
+}
