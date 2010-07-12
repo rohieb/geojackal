@@ -15,6 +15,10 @@ using namespace geojackal;
 const ushort OsmSlippyMap::TILE_DIM = 256;
 const uchar OsmSlippyMap::MAX_ZOOM = 18;
 
+const QPoint OsmSlippyMap::zoomButtonTopLeft(3, 3);
+const uint OsmSlippyMap::zoomButtonSize = 15;
+const uint OsmSlippyMap::zoomButtonPadding = 4;
+
 /**
  * Primitive hash function for QPoints, but suffice for our needs
  */
@@ -230,6 +234,26 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
 #endif
   p.drawText(rect(), Qt::AlignBottom | Qt::TextWordWrap,
     "Map data CC-BY-SA 2009 OpenStreetMap.org contributors");
+
+  // draw zoom "buttons" in upper left corner
+  QRect zoomBtn(zoomButtonTopLeft,
+    QSize(zoomButtonSize - 1, zoomButtonSize - 1));
+  p.fillRect(zoomBtn, Qt::white);
+  p.drawRect(zoomBtn);
+  float s = zoomButtonSize / 4.0f;
+  p.drawLine(zoomBtn.x() + floor(s),
+    zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s) + 1,
+    zoomBtn.y() + floor(zoomButtonSize / 2.0f));
+  p.drawLine(zoomBtn.x() + floor(zoomButtonSize / 2.0f),
+    zoomBtn.y() + floor(s), zoomBtn.x() + floor(zoomButtonSize / 2.0f),
+    zoomBtn.bottom() - floor(s) + 1);
+  zoomBtn.moveTop(zoomButtonSize + zoomButtonPadding);
+  p.fillRect(zoomBtn, Qt::white);
+  p.drawRect(zoomBtn);
+  p.drawLine(zoomBtn.x() + floor(s),
+    zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s) + 1,
+    zoomBtn.y() + floor(zoomButtonSize / 2.0f));
+
   p.end();
 }
 
@@ -241,7 +265,19 @@ void OsmSlippyMap::resizeEvent(QResizeEvent *) {
 void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
   // drag on left button
   if(event->buttons() == Qt::LeftButton) {
-    dragPos = event->pos();
+    // if on zoom button
+    QRect zoomInBtn(zoomButtonTopLeft, QSize(zoomButtonSize, zoomButtonSize));
+    QRect zoomOutBtn = zoomInBtn.adjusted(0, zoomButtonSize + zoomButtonPadding,
+      0, zoomButtonSize + zoomButtonPadding);
+
+    if(zoomInBtn.contains(event->pos())) {
+      setZoom(zoom() + 1);
+    } else if(zoomOutBtn.contains(event->pos())) {
+      setZoom(zoom() - 1);
+    } else {
+      // not on zoom button
+      dragPos = event->pos();
+    }
     event->accept();
   } else {
     event->ignore();

@@ -7,19 +7,14 @@
 
 using namespace geojackal;
 
-class MainWindow : public QWidget {
+class MainWindow : public QMainWindow {
   Q_OBJECT
 public:
   MainWindow();
   virtual ~MainWindow();
 
-public slots:
-  void plusClicked(bool);
-  void minusClicked(bool);
-
 private:
   OsmSlippyMap * pmap;
-  uchar zoomLevel_;
 };
 
 #endif // MAINWINDOW_H

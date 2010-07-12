@@ -104,10 +104,15 @@ private:
   QHash<QPoint, QPixmap> tilePixmaps_;
   /** Currently shown tile area */
   QRect shownTiles_;
-  /** stuff to detect mouse drags */
-  //bool mouseDrag;
+  /** Mouse drag start position */
   QPoint dragPos;
 
+  /** Position of the zoom buttons, pixels from upper-left corner of widget */
+  static const QPoint zoomButtonTopLeft;
+  /** Size (height and width) of the zoom buttons, in pixels */
+  static const uint zoomButtonSize;
+  /** Horizontal padding between the zoom buttons, in pixels */
+  static const uint zoomButtonPadding;
 };
 
 }
