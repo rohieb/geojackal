@@ -395,7 +395,7 @@ struct Cache : Waypoint {
     if(placed != 0) delete placed;
     if(found != 0) delete found;
     if(waypoints != 0) delete waypoints;
-    if(logs != 0) delete found;
+    if(logs != 0) delete logs;
     if(attrs != 0) delete attrs;
   }
 };
