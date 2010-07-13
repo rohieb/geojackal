@@ -118,7 +118,7 @@ void GCSpider::login() {
   }
 
   // login magic for post data
-  static QByteArray LOGIN_MAGIC =
+  const static QByteArray LOGIN_MAGIC =
     "__VIEWSTATE=/wEPDwULLTE4MjM1Mjc4MzIPFgIeDkxv"
     "Z2luLlJlZGlyZWN0ZRYCZg9kFgQCAQ9kFhQCAg8WAh4EVGV4dGRkAgQPFgIfAQUWWW91IGFyZS"
     "Bub3QgbG9nZ2VkIGluLmQCBQ8PFgQeC05hdmlnYXRlVXJsBXFodHRwOi8vd3d3Lmdlb2NhY2hp"
@@ -143,9 +143,10 @@ void GCSpider::login() {
     "Y2tLZXlfXxYBBRhjdGwwMCRDb250ZW50Qm9keSRjb29raWVxOtnyvDYWzN6BAcyo9eo9tADd2A"
     "%3D%3D&ctl00%24ContentBody%24cookie=on&ctl00%24ContentBody%24Button1="
     "Login&ctl00%24ContentBody%24myUsername=";
-  QByteArray postData = LOGIN_MAGIC.append(username_);
+  QByteArray postData = LOGIN_MAGIC;
+  postData.append(QUrl::toPercentEncoding(username_));
   postData.append("&ctl00%24ContentBody%24myPassword=");
-  postData.append(password_);
+  postData.append(QUrl::toPercentEncoding(password_));
 
   // Request login page
   QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/login/"

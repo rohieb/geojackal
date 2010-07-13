@@ -41,6 +41,13 @@ public:
   /** HTTP User Agent to use */
   static const QByteArray USER_AGENT;
 
+  /**
+   * @return @c true if the user has beed successfully logged in
+   */
+  bool loggedIn() {
+    return loggedIn_;
+  }
+
 public slots:
   void loadPageFinished(QNetworkReply * reply);
 
