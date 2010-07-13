@@ -13,6 +13,9 @@ public:
   MainWindow();
   virtual ~MainWindow();
 
+protected slots:
+  void importCaches();
+
 private:
   OsmSlippyMap * pmap;
 };
