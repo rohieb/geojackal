@@ -9,7 +9,7 @@
 #include <QRegExp>
 #include <QStringList>
 
-namespace geojackal {
+using namespace geojackal;
 
 /**
  * Constructor
@@ -770,5 +770,3 @@ bool GCSpiderCachePage::archived() const {
     "viewing for archival purposes.") > 0;
 }
 /** @} */
-
-}
