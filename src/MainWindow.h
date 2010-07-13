@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QtGui>
 
-using namespace geojackal;
+namespace geojackal {
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -14,10 +14,12 @@ public:
   virtual ~MainWindow();
 
 protected slots:
+  void showPrefDialog();
   void importCaches();
 
 private:
   OsmSlippyMap * pmap;
 };
 
+}
 #endif // MAINWINDOW_H

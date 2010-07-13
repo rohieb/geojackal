@@ -5,7 +5,8 @@ TARGET = GeoJackal
 QT = core \
     gui \
     network
-SOURCES = src/OsmSlippyMap.cpp \
+SOURCES = src/PrefDialog.cpp \
+    src/OsmSlippyMap.cpp \
     src/Failure.cpp \
     src/functions.cpp \
     src/Coordinate.cpp \
@@ -13,7 +14,8 @@ SOURCES = src/OsmSlippyMap.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/OsmSlippyMap.h \
+HEADERS = src/PrefDialog.h \
+    src/OsmSlippyMap.h \
     src/global.h \
     src/Failure.h \
     src/functions.h \
