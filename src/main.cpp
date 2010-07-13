@@ -59,6 +59,7 @@ QDebug& operator<<(QDebug dbg, Cache& cache) {
 }
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
+  GeojackalApplication::setApplicationName(APPNAME);
 
   /*
     // spider
@@ -77,9 +78,8 @@ int main(int argc, char *argv[]) {
       }
   */
   MainWindow w;
-  w.resize(600, 400);
+  w.resize(640, 480);
   w.show();
 
   return app.exec();
-  //return 0;
 }
