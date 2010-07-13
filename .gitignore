@@ -10,3 +10,5 @@ geojackal.pro
 *.exe
 *.dll
 .settings/org.eclipse.ltk.core.refactoring.prefs
+map-cache/
+callgrind.out.*

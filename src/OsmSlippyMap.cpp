@@ -85,8 +85,9 @@ OsmSlippyMap::OsmSlippyMap(const Coordinate& center, const uchar zoom,
 
   // set up network cache so we don't have to load every tile multiple times
   QNetworkDiskCache * cache = new QNetworkDiskCache;
-  cache->setCacheDirectory(QDesktopServices::storageLocation
-    (QDesktopServices::CacheLocation));
+  QDir cacheDir = QDir(QCoreApplication::applicationDirPath() + "/map-cache");
+  qDebug() << "caching maps in" << cacheDir.path();
+  cache->setCacheDirectory(cacheDir.path());
   pnam_->setCache(cache);
 
   // handle incoming HTTP data
@@ -179,7 +180,9 @@ void OsmSlippyMap::httpFinished(QNetworkReply * rply) {
     // load image from data
     img.load(rply, 0);
   }
+
   // put into our hash
+  qDebug() << "got" << rply->url().toString();
   QPoint tileCoord = rply->request().attribute(QNetworkRequest::User).toPoint();
   if(img.isNull()) {
     tilePixmaps_[tileCoord] = emptyTile_;
