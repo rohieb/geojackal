@@ -15,10 +15,13 @@
 #define QT_USE_FAST_CONCATENATION
 #define QT_USE_FAST_OPERATOR_PLUS
 
+namespace geojackal {
+
 /** The program name */
 static const QString APPNAME = "GeoJackal";
 /** The current program version */
 static const QString VERSION = "0.1alpha";
 
+}
 
 #endif /* GLOBAL_H_ */

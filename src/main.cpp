@@ -7,16 +7,12 @@
 #include <QtGui>
 #include <QApplication>
 
-using namespace geojackal;
-
-QVector<Cache *> * caches = new QVector<Cache *>;
+namespace geojackal {
 
 class GeojackalApplication : public QApplication {
 public:
   GeojackalApplication(int& argc, char ** argv) :
     QApplication(argc, argv) {
-    // we want to do some cleanup afterwards
-    connect(this, SIGNAL(aboutToQuit()), qApp, SLOT(onQuit()));
   }
   virtual ~GeojackalApplication() {
   }
@@ -31,17 +27,11 @@ public:
     }
     return false;
   }
-
-protected slots:
-  /** cleanup */
-  void onQuit() {
-    // FIXME
-    qDebug() << "cleaning up";
-    foreach(Cache * c, *caches) {
-      delete c;
-    }
-  }
 };
+
+}
+
+using namespace geojackal;
 
 QDebug& operator<<(QDebug dbg, Cache& cache) {
   dbg << "{ wp:" << cache.waypoint;
@@ -57,9 +47,13 @@ QDebug& operator<<(QDebug dbg, Cache& cache) {
   dbg << " }";
   return dbg.nospace();
 }
+
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
   GeojackalApplication::setApplicationName(APPNAME);
+  GeojackalApplication::setApplicationVersion(VERSION);
+  GeojackalApplication::setOrganizationDomain("rohieb.name");
+  GeojackalApplication::setOrganizationName(APPNAME);
 
   /*
     // spider
