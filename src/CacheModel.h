@@ -34,6 +34,7 @@ public:
 //  int rowCount(const QModelIndex &parent = QModelIndex()) const;
 //  QVariant data(const QModelIndex &index, int role) const;
   void addCaches(QList<Cache *>& caches);
+  QList<Cache *> caches() const;
 
 protected:
 

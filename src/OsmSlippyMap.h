@@ -9,7 +9,9 @@
 
 #include "global.h"
 #include "Coordinate.h"
+#include "Cache.h"
 #include <QtGui>
+#include <QList>
 #include <QtNetwork>
 
 namespace geojackal {
@@ -70,6 +72,10 @@ public:
     return zoomLevel_;
   }
 
+  void setCaches(QList<Cache *> caches) {
+    qDebug() << "got cache list" << caches;
+    cacheList = caches;
+  }
 
 protected:
   void download(const uint xTile, const uint yTile);
@@ -113,6 +119,9 @@ private:
   static const uint zoomButtonSize;
   /** Horizontal padding between the zoom buttons, in pixels */
   static const uint zoomButtonPadding;
+
+  /** List of caches */
+  QList<Cache *> cacheList;
 };
 
 }

@@ -20,6 +20,8 @@ MainWindow::MainWindow() :
   Angle lon = settings.value("gc/centerLon", 52.273).toDouble(&ok);
   Angle lat = settings.value("gc/centerLat", 10.52524).toDouble(&ok);
   pmap = new OsmSlippyMap(Coordinate(lon, lat), 16);
+  qDebug() << "cache list" << pModel->caches();
+  pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
   pmap->setFocus();
   setCentralWidget(pmap);
@@ -81,5 +83,6 @@ void MainWindow::importCaches() {
   spider.nearest(center, maxDist, cacheList);
 
   pModel->addCaches(cacheList);
+  pmap->setCaches(pModel->caches());
   pmap->setCenter(center);
 }
