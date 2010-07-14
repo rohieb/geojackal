@@ -408,19 +408,7 @@ struct Cache : Waypoint {
 };
 
 /** dumps caches to a debug stream */
-QDebug& operator<<(QDebug dbg, Cache& cache) {
-  dbg << "{ wp:" << cache.waypoint;
-  dbg << ", name:" << cache.name;
-  dbg << ", coord:" << cache.coord->lon << "," << cache.coord->lat;
-  dbg << ", type:" << cache.type;
-  dbg << ", size:" << cache.size;
-  dbg << ", diff:" << cache.difficulty;
-  dbg << ", terr:" << cache.terrain;
-  dbg << ", placed:" << cache.placed;
-  dbg << ", owner:" << cache.owner;
-  dbg << ", archived:" << cache.archived;
-  dbg << " }";
-  return dbg.nospace();
-}
+QDebug& operator<<(QDebug dbg, Cache& cache);
+
 }
 #endif // CACHE_H
