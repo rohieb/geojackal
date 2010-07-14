@@ -12,3 +12,4 @@ geojackal.pro
 .settings/org.eclipse.ltk.core.refactoring.prefs
 map-cache/
 callgrind.out.*
+cachestore.sqlite
