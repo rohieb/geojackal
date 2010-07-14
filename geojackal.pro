@@ -30,6 +30,6 @@ HEADERS = src/PrefDialog.h \
     src/GCSpider.h \
     src/GCSpiderCachePage.h \
     src/MainWindow.h
-FORMS = src/MainWindow.ui
+FORMS = 
 RESOURCES = resource/geojackal.qrc
 TARGET.CAPABILITY = true;
