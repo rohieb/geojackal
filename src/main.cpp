@@ -40,22 +40,6 @@ int main(int argc, char *argv[]) {
   GeojackalApplication::setOrganizationDomain("rohieb.name");
   GeojackalApplication::setOrganizationName(APPNAME);
 
-  /*
-    // spider
-    try {
-      GCSpider spider("username", "password");
-      spider.nearest(Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)), 0.2,
-        *caches);
-    } catch(Failure& f) {
-      // @todo maybe a nice dialog box
-      qCritical() << "Exception thrown:" << f.what();
-    }
-    qDebug() << "nearest to 51 N 10 E:";
-    foreach(Cache * c, *caches)
-      {
-        qDebug() << *c;
-      }
-  */
   MainWindow w;
   w.resize(640, 480);
   w.show();

@@ -8,6 +8,7 @@ QT = core \
     sql
 SOURCES = src/Cache.cpp \
     src/PrefDialog.cpp \
+    src/GCSpiderDialog.cpp \
     src/CacheModel.cpp \
     src/OsmSlippyMap.cpp \
     src/Failure.cpp \
@@ -18,6 +19,7 @@ SOURCES = src/Cache.cpp \
     src/MainWindow.cpp \
     src/main.cpp
 HEADERS = src/PrefDialog.h \
+    src/GCSpiderDialog.h \
     src/CacheModel.h \
     src/OsmSlippyMap.h \
     src/global.h \

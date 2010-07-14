@@ -3,6 +3,8 @@
 #include "Cache.h"
 #include "GCSpider.h"
 #include "CacheModel.h"
+#include "GCSpiderDialog.h"
+#include <QSettings>
 
 using namespace geojackal;
 
@@ -12,10 +14,12 @@ MainWindow::MainWindow() :
   pModel = new CacheModel(this);
 
   // map widget as central widget
-  // start at IZ Coordinates
-  // @todo change this to profile center
-  pmap = new OsmSlippyMap(
-    Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)), 16);
+  bool ok;
+  QSettings settings;
+  // default: IZ coordinates
+  Angle lon = settings.value("gc/centerLon", 52.273).toDouble(&ok);
+  Angle lat = settings.value("gc/centerLat", 10.52524).toDouble(&ok);
+  pmap = new OsmSlippyMap(Coordinate(lon, lat), 16);
   pmap->setZoom(16);
   pmap->setFocus();
   setCentralWidget(pmap);
@@ -38,7 +42,6 @@ MainWindow::MainWindow() :
   cacheMenu->addAction(importAction);
 
   // show prefs dialogue if no password or username set
-  QSettings settings;
   if(settings.value("gc/username").isNull()
     || settings.value("gc/password").isNull()) {
     showPrefDialog();
@@ -60,7 +63,6 @@ void MainWindow::showPrefDialog() {
 }
 
 void MainWindow::importCaches() {
-  // TODO
   // show prefs dialogue if no password or username set
   QSettings settings;
   QVariant userName = settings.value("gc/username");
@@ -69,12 +71,15 @@ void MainWindow::importCaches() {
     showPrefDialog();
   }
   // TODO customize this
-  Coordinate center(Angle(52, 16, 22.79), Angle(10, 31, 30.87));
-  float maxDist = 0.2f;
+  GCSpiderDialog dialog(this);
+  dialog.exec();
+  Coordinate center(dialog.lon(), dialog.lat());
+  float maxDist = dialog.maxDist();
 
   QList<Cache *> cacheList;
   GCSpider spider(userName.toString(), password.toString());
   spider.nearest(center, maxDist, cacheList);
 
   pModel->addCaches(cacheList);
+  pmap->setCenter(center);
 }
