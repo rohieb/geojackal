@@ -7,6 +7,7 @@
 #ifndef GCSPIDERDIALOG_H_
 #define GCSPIDERDIALOG_H_
 
+#include "Coordinate.h"
 #include <QtGui>
 
 namespace geojackal {
@@ -21,12 +22,26 @@ public:
   GCSpiderDialog(QWidget * parent = 0);
   virtual ~GCSpiderDialog();
 
+  float maxDist() const {
+    return maxDist_;
+  }
+  const Angle& lat() const {
+    return lat_;
+  }
+  const Angle& lon() const {
+    return lon_;
+  }
+
 public slots:
   void accept();
 
 private:
-  QLineEdit * maxDist;
-
+  QLineEdit * maxDistEdit;
+  QLineEdit * latEdit;
+  QLineEdit * lonEdit;
+  float maxDist_;
+  Angle lat_;
+  Angle lon_;
 };
 
 }
