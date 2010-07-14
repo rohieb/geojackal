@@ -4,8 +4,11 @@ CONFIG += debug_and_release \
 TARGET = GeoJackal
 QT = core \
     gui \
-    network
-SOURCES = src/PrefDialog.cpp \
+    network \
+    sql
+SOURCES = src/Cache.cpp \
+    src/PrefDialog.cpp \
+    src/CacheModel.cpp \
     src/OsmSlippyMap.cpp \
     src/Failure.cpp \
     src/functions.cpp \
@@ -15,6 +18,7 @@ SOURCES = src/PrefDialog.cpp \
     src/MainWindow.cpp \
     src/main.cpp
 HEADERS = src/PrefDialog.h \
+    src/CacheModel.h \
     src/OsmSlippyMap.h \
     src/global.h \
     src/Failure.h \
