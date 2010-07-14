@@ -33,21 +33,6 @@ public:
 
 using namespace geojackal;
 
-QDebug& operator<<(QDebug dbg, Cache& cache) {
-  dbg << "{ wp:" << cache.waypoint;
-  dbg << ", name:" << cache.name;
-  dbg << ", coord:" << cache.coord->lon << "," << cache.coord->lat;
-  dbg << ", type:" << cache.type;
-  dbg << ", size:" << cache.size;
-  dbg << ", diff:" << cache.difficulty;
-  dbg << ", terr:" << cache.terrain;
-  dbg << ", placed:" << cache.placed;
-  dbg << ", owner:" << cache.owner;
-  dbg << ", archived:" << cache.archived;
-  dbg << " }";
-  return dbg.nospace();
-}
-
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
   GeojackalApplication::setApplicationName(APPNAME);
