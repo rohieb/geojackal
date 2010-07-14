@@ -1,13 +1,19 @@
 #include "MainWindow.h"
 #include "PrefDialog.h"
+#include "Cache.h"
+#include "GCSpider.h"
+#include "CacheModel.h"
 
 using namespace geojackal;
 
 MainWindow::MainWindow() :
-  QMainWindow(0), pmap(0) {
+  QMainWindow(0), pmap(0), pModel(0) {
+
+  pModel = new CacheModel(this);
 
   // map widget as central widget
   // start at IZ Coordinates
+  // @todo change this to profile center
   pmap = new OsmSlippyMap(
     Coordinate(Angle(52, 16, 22.79), Angle(10, 31, 30.87)), 16);
   pmap->setZoom(16);
@@ -40,6 +46,12 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow() {
+  if(pmap) {
+    delete pmap;
+  }
+  if(pModel) {
+    delete pModel;
+  }
 }
 
 void MainWindow::showPrefDialog() {
@@ -49,5 +61,20 @@ void MainWindow::showPrefDialog() {
 
 void MainWindow::importCaches() {
   // TODO
-  QMessageBox(QMessageBox::Information, "Import Caches", "foo bar");
+  // show prefs dialogue if no password or username set
+  QSettings settings;
+  QVariant userName = settings.value("gc/username");
+  QVariant password = settings.value("gc/password");
+  if(userName.isNull() || password.isNull()) {
+    showPrefDialog();
+  }
+  // TODO customize this
+  Coordinate center(Angle(52, 16, 22.79), Angle(10, 31, 30.87));
+  float maxDist = 0.2f;
+
+  QList<Cache *> cacheList;
+  GCSpider spider(userName.toString(), password.toString());
+  spider.nearest(center, maxDist, cacheList);
+
+  pModel->addCaches(cacheList);
 }

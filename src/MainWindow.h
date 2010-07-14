@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "OsmSlippyMap.h"
+#include "CacheModel.h"
 #include <QObject>
 #include <QtGui>
 
@@ -19,6 +20,7 @@ protected slots:
 
 private:
   OsmSlippyMap * pmap;
+  CacheModel * pModel;
 };
 
 }
