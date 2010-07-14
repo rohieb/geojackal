@@ -5,6 +5,7 @@
  */
 
 #include "OsmSlippyMap.h"
+#include "CacheInfoDialog.h"
 #include <cmath>
 #include <QPointF>
 
@@ -24,6 +25,12 @@ const uint OsmSlippyMap::zoomButtonPadding = 4;
  */
 uint qHash(const QPoint& p) {
   return p.x() * 17 ^ p.y();
+}
+/** Hash function for QRects */
+uint qHash(const QRect& r) {
+  // just make a string out of it
+  return qHash(QString("%1,%2,%3,%4").arg(r.left()).arg(r.top()).
+    arg(r.right()).arg(r.bottom()));
 }
 
 /**
@@ -268,6 +275,7 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
     int x = (int) (t.x() * TILE_DIM + offset_.x());
     int y = (int) (t.y() * TILE_DIM + offset_.y());
     QRect target(QPoint(x, y), QSize(24, 24));
+    cacheRects[target] = cache; // save for later
     qDebug() << "drawing" << cache->name << "at" << tileCoordF <<
       ", client coordinates" << target.topLeft();
     target.adjust(-12, -12, -12, -12);
@@ -324,7 +332,14 @@ void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
     } else if(zoomOutBtn.contains(event->pos())) {
       setZoom(zoom() - 1);
     } else {
-      // not on zoom button
+      // not on zoom button, maybe on cache icon
+      foreach(QRect cacheRect, cacheRects.keys()) {
+        if(cacheRect.contains(event->pos())) {
+          qDebug() << "you clicked on" << cacheRects.value(cacheRect)->name;
+          CacheInfoDialog dialog(cacheRects.value(cacheRect), this);
+          dialog.exec();
+        }
+      }
       dragPos = event->pos();
     }
     event->accept();

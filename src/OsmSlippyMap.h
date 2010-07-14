@@ -122,6 +122,7 @@ private:
 
   /** List of caches */
   QList<Cache *> cacheList;
+  QHash<QRect, Cache *> cacheRects;
 };
 
 }
