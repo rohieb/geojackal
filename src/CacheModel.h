@@ -7,31 +7,41 @@
 #ifndef CACHEMODEL_H_
 #define CACHEMODEL_H_
 
-#include <QAbstractTableModel>
+#include <QObject>
+#include <QtSql>
+#include <QAbstractListModel>
+#include "Cache.h"
 
 namespace geojackal {
 
-/** Cache Model, implemented as singleton */
-class CacheModel : public QAbstractTableModel {
-Q_OBJECT
-
+/**
+ * Cache Model. Loads the caches from a SQLite database and defines the
+ * interface to access them.
+ * All changes to the data are cached in memory, and not transferred to the
+ * database until @a save() is called.
+ */
+class CacheModel : public QObject {
+  Q_OBJECT
 public:
+  static const QString sqlFileName;
 
-  static QString sqlFileName = "cachestore.sqlite";
-
+  CacheModel(QObject * parent = 0);
   virtual ~CacheModel();
-  static CacheModel * getInstance();
 
   bool open();
+  bool save();
 
-  int rowCount(const QModelIndex &parent = QModelIndex()) const;
-  QVariant data(const QModelIndex &index, int role) const;
+//  int rowCount(const QModelIndex &parent = QModelIndex()) const;
+//  QVariant data(const QModelIndex &index, int role) const;
+  void addCaches(QList<Cache *>& caches);
+
+protected:
 
 private:
-  static QSqlQuery q;
-  static CacheModel * pInstance;
-  CacheModel();
-
+  QSqlDatabase db;
+  QSqlQuery q;
+  /** List of caches in the model, indexed by waypoint */
+  QHash<QString, Cache *> cacheList;
 };
 
 }
