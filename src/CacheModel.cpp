@@ -216,8 +216,8 @@ bool CacheModel::open() {
     bool ok;
     cache->waypoint = q.value(0).toString();
     cache->name = q.value(1).toString();
-    cache->coord = new Coordinate(q.value(2).toFloat(&ok),
-      q.value(3).toFloat(&ok));
+    cache->coord = new Coordinate(q.value(2).toDouble(&ok),
+      q.value(3).toDouble(&ok));
     cache->type = static_cast<WaypointType>(q.value(4).toInt(&ok));
     cache->desc = new CacheDesc;
     cache->desc->desc = q.value(5).toString();
