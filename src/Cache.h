@@ -70,144 +70,147 @@ enum WaypointType {
  */
 enum CacheAttribute {
   /** Not always available */
-  ATTR_AVAILABLE_NO,
+  ATTR_AVAILABLE_NO = 0,
   /** Always available */
-  ATTR_AVAILABLE_YES,
+  ATTR_AVAILABLE_YES = 1,
   /** Not suitable for bike tour */
-  ATTR_BICYCLES_NO,
+  ATTR_BICYCLES_NO = 2,
   /** Suitable for bike tour */
-  ATTR_BICYCLES_YES,
+  ATTR_BICYCLES_YES = 3,
   /** Boat required */
-  ATTR_BOAT,
+  ATTR_BOAT = 4,
   /** Campfires not allowed */
-  ATTR_CAMPFIRES_NO,
+  ATTR_CAMPFIRES_NO = 5,
   /** Campfires allowed */
-  ATTR_CAMPFIRES_YES,
+  ATTR_CAMPFIRES_YES = 6,
   /** Camping not allowed */
-  ATTR_CAMPING_NO,
+  ATTR_CAMPING_NO = 7,
   /** Camping allowed */
-  ATTR_CAMPING_YES,
+  ATTR_CAMPING_YES = 8,
   /** Beware of falling rocks */
-  ATTR_CLIFF,
+  ATTR_CLIFF = 9,
   /** Difficult climb */
-  ATTR_CLIMBING_NO,
+  ATTR_CLIMBING_NO = 10,
   /** Easy climb */
-  ATTR_CLIMBING_YES,
+  ATTR_CLIMBING_YES = 11,
   /** Beware of cattle */
-  ATTR_COW,
+  ATTR_COW = 12,
   /** Danger! */
-  ATTR_DANGER,
+  ATTR_DANGER = 13,
   /** Dogs not allowed */
-  ATTR_DOGS_NO,
+  ATTR_DOGS_NO = 14,
   /** Dogs allowed */
-  ATTR_DOGS_YES,
+  ATTR_DOGS_YES = 15,
   /** Fee required */
-  ATTR_FEE,
+  ATTR_FEE = 16,
   /** Flashlight required */
-  ATTR_FLASHLIGHT,
+  ATTR_FLASHLIGHT = 17,
   /** Not suitable for hiking */
-  ATTR_HIKING_NO,
+  ATTR_HIKING_NO = 18,
   /** Suitable for hiking */
-  ATTR_HIKING_YES,
+  ATTR_HIKING_YES = 19,
   /** Not suitable for horses */
-  ATTR_HORSES_NO,
+  ATTR_HORSES_NO = 20,
   /** Suitable for horses */
-  ATTR_HORSES_YES,
+  ATTR_HORSES_YES = 21,
   /** Hunting ground */
-  ATTR_HUNTING,
+  ATTR_HUNTING = 22,
   /** Not suitable for jeeps */
-  ATTR_JEEPS_NO,
+  ATTR_JEEPS_NO = 23,
   /** Suitable for jeeps */
-  ATTR_JEEPS_YES,
+  ATTR_JEEPS_YES = 24,
   /** Not suitable for kids */
-  ATTR_KIDS_NO,
+  ATTR_KIDS_NO = 25,
   /** Suitable for kids */
-  ATTR_KIDS_YES,
+  ATTR_KIDS_YES = 26,
   /** Needs maintenance */
-  ATTR_MAINT,
+  ATTR_MAINT = 27,
   /** Abandoned mine */
-  ATTR_MINE,
+  ATTR_MINE = 28,
   /** Not suitable for motorbikes */
-  ATTR_MOTORCYCLES_NO,
+  ATTR_MOTORCYCLES_NO = 29,
   /** Suitable for motorbikes */
-  ATTR_MOTORCYCLES_YES,
+  ATTR_MOTORCYCLES_YES = 30,
   /** Not recommended at night */
-  ATTR_NIGHT_NO,
+  ATTR_NIGHT_NO = 31,
   /** Recommended at night */
-  ATTR_NIGHT_YES,
+  ATTR_NIGHT_YES = 32,
   /** Estimated time over one hour */
-  ATTR_ONEHOUR_NO,
+  ATTR_ONEHOUR_NO = 33,
   /** Estimated time below one hour */
-  ATTR_ONEHOUR_YES,
+  ATTR_ONEHOUR_YES = 34,
   /** No parking available */
-  ATTR_PARKING_NO,
+  ATTR_PARKING_NO = 35,
   /** Parking available */
-  ATTR_PARKING_YES,
+  ATTR_PARKING_YES = 36,
   /** No phone available */
-  ATTR_PHONE_NO,
+  ATTR_PHONE_NO = 37,
   /** Phone available */
-  ATTR_PHONE_YES,
+  ATTR_PHONE_YES = 38,
   /** Picnic area not available */
-  ATTR_PICNIC_NO,
+  ATTR_PICNIC_NO = 39,
   /** Picnic area available */
-  ATTR_PICNIC_YES,
+  ATTR_PICNIC_YES = 40,
   /** Poison oak around */
-  ATTR_POISONOAK_NO,
+  ATTR_POISONOAK_NO = 41,
   /** No poison oak around */
-  ATTR_POISONOAK_YES,
+  ATTR_POISONOAK_YES = 42,
   /** Nearby public transportation available */
-  ATTR_PUBLIC,
+  ATTR_PUBLIC = 43,
   /** Not suitable for quads */
-  ATTR_QUADS_NO,
+  ATTR_QUADS_NO = 44,
   /** Suitable for quads */
-  ATTR_QUADS_YES,
+  ATTR_QUADS_YES = 45,
   /** Rapelling required */
-  ATTR_RAPPELLING,
+  ATTR_RAPPELLING = 46,
   /** No restrooms available */
-  ATTR_RESTROOMS_NO,
+  ATTR_RESTROOMS_NO = 47,
   /** Restrooms available */
-  ATTR_RESTROOMS_YES,
+  ATTR_RESTROOMS_YES = 48,
   /** Scenic view */
-  ATTR_SCENIC_NO,
+  ATTR_SCENIC_NO = 49,
   /** No scenic view */
-  ATTR_SCENIC_YES,
+  ATTR_SCENIC_YES = 50,
   /** Scuba diving required */
-  ATTR_SCUBA,
+  ATTR_SCUBA = 51,
   /** Beware of snakes */
-  ATTR_SNAKES,
+  ATTR_SNAKES = 52,
   /** Not suitable for snowmobiles */
-  ATTR_SNOWMOBILES_NO,
+  ATTR_SNOWMOBILES_NO = 53,
   /** Suitable for snowmobiles */
-  ATTR_SNOWMOBILES_YES,
+  ATTR_SNOWMOBILES_YES = 54,
   /** No stealth required */
-  ATTR_STEALTH_NO,
+  ATTR_STEALTH_NO = 55,
   /** Stealth required */
-  ATTR_STEALTH_YES,
+  ATTR_STEALTH_YES = 56,
   /** Not stroller accessible */
-  ATTR_STROLLER_NO,
+  ATTR_STROLLER_NO = 57,
   /** Stroller accessible */
-  ATTR_STROLLER_YES,
+  ATTR_STROLLER_YES = 58,
   /** Swimming required */
-  ATTR_SWIMMING,
+  ATTR_SWIMMING = 59,
   /** Beware of thorns */
-  ATTR_THORNS,
+  ATTR_THORNS = 60,
   /** Beware of ticks */
-  ATTR_TICKS,
+  ATTR_TICKS = 61,
   /** Wading required */
-  ATTR_WADING,
+  ATTR_WADING = 62,
   /** No drinking water available */
-  ATTR_WATER_NO,
+  ATTR_WATER_NO = 63,
   /** Drinking water available */
-  ATTR_WATER_YES,
+  ATTR_WATER_YES = 64,
   /** Not wheelchair accessible */
-  ATTR_WHEELCHAIR_NO,
+  ATTR_WHEELCHAIR_NO = 65,
   /** Wheelchair accessible */
-  ATTR_WHEELCHAIR_YES,
+  ATTR_WHEELCHAIR_YES = 66,
   /** Not available in winter */
-  ATTR_WINTER_NO,
+  ATTR_WINTER_NO = 67,
   /** Available in winter */
-  ATTR_WINTER_YES
+  ATTR_WINTER_YES = 68
 };
+
+/** Number of attributes */
+const ushort NUM_ATTRIBUTES = static_cast<ushort>(ATTR_WINTER_YES) + 1;
 
 /**
  * Log types
@@ -326,13 +329,17 @@ struct CacheDesc {
   bool descHtml;
 };
 
+/** String to indicate invalid waypoints */
+const QString WAYPOINT_INVALID = "!!!INVALID!!!";
+
 /**
  * Waypoint of a cache
  */
 struct Waypoint {
   /**
    * The waypoint, like <em>GC1Q743</em>. For additional waypoints of a cache,
-   * this field stores the 2-letter prefix code
+   * this field stores the 2-letter prefix code. Use WAYPOINT_INVALID to
+   * indicate an invalid value.
    */
   QString waypoint;
   /** Name of the waypoint, like <em>Wayward Drive!</em> */
@@ -400,5 +407,20 @@ struct Cache : Waypoint {
   }
 };
 
+/** dumps caches to a debug stream */
+QDebug& operator<<(QDebug dbg, Cache& cache) {
+  dbg << "{ wp:" << cache.waypoint;
+  dbg << ", name:" << cache.name;
+  dbg << ", coord:" << cache.coord->lon << "," << cache.coord->lat;
+  dbg << ", type:" << cache.type;
+  dbg << ", size:" << cache.size;
+  dbg << ", diff:" << cache.difficulty;
+  dbg << ", terr:" << cache.terrain;
+  dbg << ", placed:" << cache.placed;
+  dbg << ", owner:" << cache.owner;
+  dbg << ", archived:" << cache.archived;
+  dbg << " }";
+  return dbg.nospace();
+}
 }
 #endif // CACHE_H
