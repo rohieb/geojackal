@@ -15,7 +15,7 @@ GCSpiderDialog::GCSpiderDialog(QWidget * parent) :
 
   bool ok;
   QSettings settings;
-  maxDist_ = settings.value("gc/maxdist", 1.0).toFloat(&ok);
+  maxDist_ = settings.value("gc/maxdist", 1.0).toDouble(&ok);
   lat_ = settings.value("gc/centerLat", 10.52524).toDouble(&ok);
   lon_ = settings.value("gc/centerLon", 52.273).toDouble(&ok);
 
