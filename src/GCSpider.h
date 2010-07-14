@@ -12,7 +12,6 @@
 #include "Coordinate.h"
 #include <QObject>
 #include <QString>
-#include <QVector>
 #include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkCookie>
@@ -35,7 +34,7 @@ public:
   virtual ~GCSpider();
 
   bool nearest(const Coordinate center, const float maxDist,
-    QVector<Cache *>& buf);
+    QList<Cache *>& buf);
   bool loadCache(const QString waypoint, Cache& buf);
 
   /** HTTP User Agent to use */

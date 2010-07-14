@@ -197,9 +197,8 @@ void GCSpider::logout() {
  *  otherwise
  * @throws Failure if anything goes wrong
  */
-bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
+bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
   Cache *>& buf) {
-  // @todo
 
   QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com/seek"
     "/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
@@ -246,6 +245,8 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QVector<
     gcscp.all(*pCache);
     buf.append(pCache);
   }
+
+  qDebug() << "finished import from geocaching.com";
 
   listReply->deleteLater();
   return true;
