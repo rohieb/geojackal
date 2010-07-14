@@ -238,6 +238,7 @@ bool CacheModel::open() {
     qDebug() << "loaded" << cache->waypoint << "from database:";
     qDebug() << *cache;
     qDebug() << *cache->attrs;
+    cacheList[cache->waypoint] = cache;
   }
   return true;
 }
@@ -339,4 +340,11 @@ void CacheModel::addCaches(QList<Cache *>& caches) {
     cacheList[cache->waypoint] = cache;
   }
   save();
+}
+
+/**
+ * Get list of caches
+ */
+QList<Cache *> CacheModel::caches() const {
+  return cacheList.values();
 }

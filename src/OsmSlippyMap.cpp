@@ -5,6 +5,7 @@
  */
 
 #include "OsmSlippyMap.h"
+#include "CacheInfoDialog.h"
 #include <cmath>
 #include <QPointF>
 
@@ -24,6 +25,12 @@ const uint OsmSlippyMap::zoomButtonPadding = 4;
  */
 uint qHash(const QPoint& p) {
   return p.x() * 17 ^ p.y();
+}
+/** Hash function for QRects */
+uint qHash(const QRect& r) {
+  // just make a string out of it
+  return qHash(QString("%1,%2,%3,%4").arg(r.left()).arg(r.top()).
+    arg(r.right()).arg(r.bottom()));
 }
 
 /**
@@ -207,6 +214,37 @@ QRect OsmSlippyMap::tileRect(const QPoint& tileCoord) {
   return QRect(x, y, TILE_DIM, TILE_DIM);
 }
 
+/** return the cache icon for a cache */
+QPixmap cacheIcon(Cache * cache) {
+  QString fileName;
+  switch(cache->type) {
+    case TYPE_TRADI: fileName = "type-tradi.gif"; break;
+    case TYPE_MULTI: fileName = "type-multi.gif"; break;
+    case TYPE_MYSTERY: fileName = "type-mystery.gif"; break;
+    case TYPE_EVENT: fileName = "type-event.gif"; break;
+    case TYPE_VIRTUAL: fileName = "type-virtual.gif"; break;
+    case TYPE_WEBCAM: fileName = "type-webcam.gif"; break;
+    case TYPE_MEGAEVENT: fileName = "type-mega.gif"; break;
+    case TYPE_LETTERBOX: fileName = "type-letterbox.gif"; break;
+    case TYPE_WHEREIGO: fileName = "type-whereigo.gif"; break;
+    case TYPE_CITO: fileName = "type-cito.gif"; break;
+    case TYPE_EARTH: fileName = "type-earth.gif"; break;
+    case TYPE_REVERSE: fileName = "type-reverse.gif"; break;
+    case TYPE_GAME: fileName = "type-game.gif"; break;
+    case TYPE_PROJECTAPE: fileName = "type-ape.gif"; break;
+    case TYPE_STAGE: fileName = "type-stage.gif"; break;
+    case TYPE_FINAL: fileName = "type-final.gif"; break;
+    case TYPE_QUESTION: fileName = "type-question.gif"; break;
+    case TYPE_REFERENCE: fileName = "type-reference.gif"; break;
+    case TYPE_PARKING: fileName = "type-parking.gif"; break;
+    case TYPE_TRAILHEAD: fileName = "type-trailhead.gif"; break;
+    case TYPE_OTHER: fileName = "type-final.gif"; break;
+    default: return QPixmap();
+  }
+  QPixmap icon;
+  icon.load(":/" + fileName);
+  return icon;
+}
 /** from QWidget */
 void OsmSlippyMap::paintEvent(QPaintEvent * event) {
   QPainter p;
@@ -226,6 +264,22 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
         }
       }
     }
+  }
+
+  // draw cache icons
+  foreach(Cache * cache, cacheList) {
+    QPixmap icon = cacheIcon(cache).scaled(24, 24, Qt::KeepAspectRatio);
+    QPointF tileCoordF = tileForCoordinate(*cache->coord, zoomLevel_);
+    QPointF t = tileCoordF - shownTiles_.topLeft();
+    // FIXME
+    int x = (int) (t.x() * TILE_DIM + offset_.x());
+    int y = (int) (t.y() * TILE_DIM + offset_.y());
+    QRect target(QPoint(x, y), QSize(24, 24));
+    cacheRects[target] = cache; // save for later
+    qDebug() << "drawing" << cache->name << "at" << tileCoordF <<
+      ", client coordinates" << target.topLeft();
+    target.adjust(-12, -12, -12, -12);
+    p.drawPixmap(target, icon);
   }
 
   // draw copyright text
@@ -278,7 +332,14 @@ void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
     } else if(zoomOutBtn.contains(event->pos())) {
       setZoom(zoom() - 1);
     } else {
-      // not on zoom button
+      // not on zoom button, maybe on cache icon
+      foreach(QRect cacheRect, cacheRects.keys()) {
+        if(cacheRect.contains(event->pos())) {
+          qDebug() << "you clicked on" << cacheRects.value(cacheRect)->name;
+          CacheInfoDialog dialog(cacheRects.value(cacheRect), this);
+          dialog.exec();
+        }
+      }
       dragPos = event->pos();
     }
     event->accept();

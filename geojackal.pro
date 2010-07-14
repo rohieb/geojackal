@@ -6,7 +6,8 @@ QT = core \
     gui \
     network \
     sql
-SOURCES = src/Cache.cpp \
+SOURCES = src/CacheInfoDialog.cpp \
+    src/Cache.cpp \
     src/PrefDialog.cpp \
     src/GCSpiderDialog.cpp \
     src/CacheModel.cpp \
@@ -18,7 +19,8 @@ SOURCES = src/Cache.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/PrefDialog.h \
+HEADERS = src/CacheInfoDialog.h \
+    src/PrefDialog.h \
     src/GCSpiderDialog.h \
     src/CacheModel.h \
     src/OsmSlippyMap.h \
@@ -30,6 +32,6 @@ HEADERS = src/PrefDialog.h \
     src/GCSpider.h \
     src/GCSpiderCachePage.h \
     src/MainWindow.h
-FORMS = src/MainWindow.ui
+FORMS = 
 RESOURCES = resource/geojackal.qrc
 TARGET.CAPABILITY = true;
