@@ -73,7 +73,6 @@ public:
   }
 
   void setCaches(QList<Cache *> caches) {
-    qDebug() << "got cache list" << caches;
     cacheList = caches;
   }
 

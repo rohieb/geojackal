@@ -61,11 +61,8 @@ bool valueExists(const QString table, const QString column,
   QSqlQuery qe;
   qe.prepare(QString("SELECT * FROM %1 WHERE %2 = :value").arg(table).
     arg(column));
-//  qe.bindValue(":table", table);
-//  qe.bindValue(":column", column);
   qe.bindValue(":value", value);
   qe.exec();
-  qDebug() << "checking for value:" << qe.executedQuery();
   if(qe.next()) {
     return true;
   } else {
@@ -105,7 +102,6 @@ bool CacheModel::open() {
   q = QSqlQuery(db);
 
   QStringList tableList = db.tables(QSql::Tables);
-  qDebug() << "tables found in database:" << tableList;
 
   // if our tables do not exist yet, create them
   if(!tableList.contains("waypoints")) {
@@ -207,7 +203,6 @@ bool CacheModel::open() {
 //  }
 
   // load caches
-  // FIXME
   q.exec("SELECT w.waypoint,w.name,w.lat,w.lon,w.type,w.desc,c.shortdesc,"
     "c.size,c.terrain,c.difficulty,c.placed,c.found,c.owner,c.attrs,c.hint,"
     "c.archived FROM waypoints w JOIN caches c ON w.waypoint = c.waypoint");
@@ -235,9 +230,7 @@ bool CacheModel::open() {
     cache->hint = q.value(13).toString();
     cache->archived = q.value(14).toBool();
 
-    qDebug() << "loaded" << cache->waypoint << "from database:";
-    qDebug() << *cache;
-    qDebug() << *cache->attrs;
+    qDebug() << "loaded" << cache->waypoint << "from database";
     cacheList[cache->waypoint] = cache;
   }
   return true;
@@ -251,7 +244,6 @@ bool CacheModel::open() {
 bool CacheModel::save() {
   bool success = true;
 
-  //q = QSqlQuery(db);
   foreach(QString wp, cacheList.keys()) {
     Cache * cache = cacheList.value(wp);
 

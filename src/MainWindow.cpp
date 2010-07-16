@@ -11,16 +11,17 @@ using namespace geojackal;
 MainWindow::MainWindow() :
   QMainWindow(0), pmap(0), pModel(0) {
 
+  // load data
   pModel = new CacheModel(this);
 
-  // map widget as central widget
   bool ok;
   QSettings settings;
   // default: IZ coordinates
   Angle lon = settings.value("gc/centerLon", 52.273).toDouble(&ok);
   Angle lat = settings.value("gc/centerLat", 10.52524).toDouble(&ok);
+
+  // map widget as central widget
   pmap = new OsmSlippyMap(Coordinate(lon, lat), 16);
-  qDebug() << "cache list" << pModel->caches();
   pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
   pmap->setFocus();
@@ -72,7 +73,7 @@ void MainWindow::importCaches() {
   if(userName.isNull() || password.isNull()) {
     showPrefDialog();
   }
-  // TODO customize this
+
   GCSpiderDialog dialog(this);
   dialog.exec();
   Coordinate center(dialog.lon(), dialog.lat());

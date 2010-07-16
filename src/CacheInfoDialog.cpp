@@ -13,8 +13,8 @@ CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
 
   setWindowTitle("Cache Information");
   QVBoxLayout * mainLayout = new QVBoxLayout(this);
-  QString nameText = QString("<big>") + QString::fromUtf8(cache->name.
-    toStdString().c_str()) + "</big>";
+  QString nameText = QString("<big><b>") + QString::fromUtf8(cache->name.
+    toStdString().c_str()) + "</b></big>";
   nameLabel = new QLabel(nameText);
   mainLayout->addWidget(nameLabel);
   descEdit = new QTextEdit(QString::fromUtf8(cache->desc->desc.toStdString().
