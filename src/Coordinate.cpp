@@ -35,12 +35,12 @@ QString Coordinate::format(OutputFormat format) const {
 
   switch(format) {
     case FORMAT_DEG:
-      return QString("%f %s %f %s").arg(abslon).arg(ns).arg(abslat).arg(ew);
+      return QString("%1 %2 %3 %4").arg(abslon).arg(ns).arg(abslat).arg(ew);
     case FORMAT_DEG_MIN:
-      return QString("%d %f %s %d %f %s").arg((int)abslon).arg(abslon.min()).
+      return QString("%1 %2 %3 %4 %5 %6").arg((int)abslon).arg(abslon.min()).
         arg(ns).arg((int)abslat).arg(abslat.min()).arg(ew);
     case FORMAT_DEG_MIN_SEC:
-      return QString("%d %d %f %s %d %d %f %s").arg((int)abslon).arg(
+      return QString("%1 %2 %3 %4 %5 %6 %7 %8").arg((int)abslon).arg(
         (int)abslon.min()).arg(abslon.sec()).arg(ns).arg((int)abslat).arg(
         abslat.min()).arg(abslat.sec()).arg(ew);
     default:
