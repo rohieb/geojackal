@@ -80,13 +80,13 @@ public:
 protected:
   void download(const uint xTile, const uint yTile);
   void invalidate();
-  QRect tileRect(const QPoint& tileCoord);
+  QPoint tileToPixel(const QPoint& tileCoord);
+
   void paintEvent(QPaintEvent *event);
   void resizeEvent(QResizeEvent *);
   void mouseDoubleClickEvent(QMouseEvent * event);
   void mousePressEvent(QMouseEvent * event);
   void mouseMoveEvent(QMouseEvent * event);
-  void mouseReleaseEvent(QMouseEvent *);
   void wheelEvent(QWheelEvent * event);
 
 protected slots:

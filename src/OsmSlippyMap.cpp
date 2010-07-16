@@ -44,11 +44,11 @@ uint qHash(const QRect& r) {
  * @see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames for an
  * explanation what is done here
  */
-QPointF tileForCoordinate(const Coordinate& coord, const uchar zoom) {
+QPointF geoToTile(const Coordinate& coord, const uchar zoom) {
   if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }
-  int n = (1 << zoom); // number of tiles on the zoom level
+  int n = (1 << zoom); // number of tiles along the x and y axis
   float xTile = (coord.lon + 180.0) / 360.0 * n;
   float yTile = (1.0 - (log(tan(coord.lat * PI / 180.0) + 1.0 / cos(coord.lat
     * PI / 180.0)) / PI)) / 2.0 * n;
@@ -62,22 +62,20 @@ QPointF tileForCoordinate(const Coordinate& coord, const uchar zoom) {
  * @param xTile x tile coordinate
  * @param yTile y tile coordinate
  * @param zoom Zoom level, ranging from 0 (whole world) to 18 (detail)
- * @param buf Buffer that receives the coordinate of the northwestern
- *  coordinate of the given tile
+ * @return The geodetic coordinate of the northwestern edge of the given tile
  * @throws Failure if anything goes wrong
  * @see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames for an
  * explanation what is done here
  */
-void coordFromTile(const float xTile, const float yTile, const uchar zoom,
-  Coordinate& buf) {
+Coordinate tileToGeo(const QPointF tile, const uchar zoom) {
   if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }
   uint zn = (1 << zoom); // number of tiles on the zoom level
-  float lon = xTile / zn * 360.0 - 180.0;
-  float lat = atan(sinh(PI * (1 - 2 * yTile / zn))) * 180.0 / PI;
+  float lon = tile.x() / zn * 360.0 - 180.0;
+  float lat = atan(sinh(PI * (1 - 2 * tile.y() / zn))) * 180.0 / PI;
 
-  buf = Coordinate(lat, lon);
+  return Coordinate(lat, lon);
 }
 
 /**
@@ -114,7 +112,7 @@ OsmSlippyMap::~OsmSlippyMap() {
  */
 void OsmSlippyMap::invalidate() {
   // center coordinates
-  QPointF centerTile = tileForCoordinate(center_, zoomLevel_);
+  QPointF centerTile = geoToTile(center_, zoomLevel_);
   float centerX = centerTile.x();
   float centerY = centerTile.y();
 
@@ -168,7 +166,6 @@ void OsmSlippyMap::download(const uint xTile, const uint yTile) {
   QPoint tileCoord(xTile, yTile);
   QString path = "http://tile.openstreetmap.org/%1/%2/%3.png";
   QUrl url(path.arg(zoomLevel_).arg(xTile).arg(yTile));
-  qDebug() << "loading map" << url.toString();
   QNetworkRequest request(url);
   QByteArray userAgent = QByteArray("GeoJackal/") + VERSION.toAscii();
   request.setRawHeader("User-Agent", userAgent);
@@ -199,19 +196,21 @@ void OsmSlippyMap::httpFinished(QNetworkReply * rply) {
   rply->deleteLater();
 
   // update the map so the tile is shown
-  update(tileRect(tileCoord));
+  update(QRect(tileToPixel(tileCoord), QSize(256, 256)));
 }
 
 /**
- * Get rectangle of a tile, in client coordinates
+ * Transform tile coordinate to pixels, starting at the widget's upper left
+ * corner
  * @param tileCoord Tile coordinates
- * @return QRect with client coordinates
+ * @return QRect with pixels from the widget's upper left
+ * corner
  */
-QRect OsmSlippyMap::tileRect(const QPoint& tileCoord) {
+QPoint OsmSlippyMap::tileToPixel(const QPoint& tileCoord) {
   QPoint t = tileCoord - shownTiles_.topLeft();
   int x = t.x() * TILE_DIM + offset_.x();
   int y = t.y() * TILE_DIM + offset_.y();
-  return QRect(x, y, TILE_DIM, TILE_DIM);
+  return QPoint(x, y);
 }
 
 /** return the cache icon for a cache */
@@ -254,7 +253,7 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
   for(int x = 0; x <= shownTiles_.width(); ++x) {
     for(int y = 0; y <= shownTiles_.height(); ++y) {
       QPoint tileCoord(x + shownTiles_.left(), y + shownTiles_.top());
-      QRect box = tileRect(tileCoord);
+      QRect box(tileToPixel(tileCoord), QSize(256, 256));
       // redraw only needed tiles
       if(event->rect().intersects(box)) {
         if(tilePixmaps_.contains(tileCoord)) {
@@ -269,15 +268,15 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
   // draw cache icons
   foreach(Cache * cache, cacheList) {
     QPixmap icon = cacheIcon(cache).scaled(24, 24, Qt::KeepAspectRatio);
-    QPointF tileCoordF = tileForCoordinate(*cache->coord, zoomLevel_);
+    QPointF tileCoordF = geoToTile(*cache->coord, zoomLevel_);
     QPointF t = tileCoordF - shownTiles_.topLeft();
     // FIXME
     int x = (int) (t.x() * TILE_DIM + offset_.x());
     int y = (int) (t.y() * TILE_DIM + offset_.y());
     QRect target(QPoint(x, y), QSize(24, 24));
     cacheRects[target] = cache; // save for later
-    qDebug() << "drawing" << cache->name << "at" << tileCoordF <<
-      ", client coordinates" << target.topLeft();
+    qDebug() << "drawing" << cache->name << "at" << *cache->coord << "= tile"
+      << tileCoordF << " = " << target.topLeft() << "pixels";
     target.adjust(-12, -12, -12, -12);
     p.drawPixmap(target, icon);
   }
@@ -356,24 +355,24 @@ void OsmSlippyMap::mouseMoveEvent(QMouseEvent * event) {
     return;
   }
 
+  // drag distance in tile units
   QPointF dx = QPointF(event->pos() - dragPos) / float(TILE_DIM);
-  QPointF newCenter = tileForCoordinate(center_, zoomLevel_) - dx;
-  coordFromTile(newCenter.x(), newCenter.y(), zoomLevel_, center_);
+  QPointF newCenter = geoToTile(center_, zoomLevel_) - dx;
+  setCenter(tileToGeo(newCenter, zoomLevel_));
   dragPos = event->pos();
+  qDebug() << "Mouse move to " << center_;
   invalidate();
   event->accept();
 }
 
-void OsmSlippyMap::mouseReleaseEvent(QMouseEvent * event) {
-  invalidate();
-  event->ignore();
-}
-
 void OsmSlippyMap::mouseDoubleClickEvent(QMouseEvent * event) {
-  // zoom in on left button double click
-  qDebug() << "mouse double click at " << event->pos();
+  // zoom in on mouse position at left button double click
   if(event->buttons() == Qt::LeftButton) {
     setZoom(zoom() + 1);
+    // calc geo coordinate of mouse click
+    QPointF newCenter = geoToTile(center_, zoomLevel_);
+    setCenter(tileToGeo(newCenter, zoomLevel_));
+    qDebug() << "Mouse doubleclick at " << event->pos() << "=" << center_;
     invalidate();
     event->accept();
   } else {
