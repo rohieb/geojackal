@@ -132,7 +132,7 @@ struct Coordinate {
   Angle lat;
 
   Coordinate();
-  Coordinate(Angle longitude, Angle latitude);
+  Coordinate(Angle latitude, Angle longitude);
   QString format(OutputFormat format) const;
 };
 

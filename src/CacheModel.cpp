@@ -208,7 +208,7 @@ bool CacheModel::open() {
 
   // load caches
   // FIXME
-  q.exec("SELECT w.waypoint,w.name,w.lon,w.lat,w.type,w.desc,c.shortdesc,"
+  q.exec("SELECT w.waypoint,w.name,w.lat,w.lon,w.type,w.desc,c.shortdesc,"
     "c.size,c.terrain,c.difficulty,c.placed,c.found,c.owner,c.attrs,c.hint,"
     "c.archived FROM waypoints w JOIN caches c ON w.waypoint = c.waypoint");
   while(q.next()) {
