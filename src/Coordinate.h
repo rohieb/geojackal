@@ -136,5 +136,7 @@ struct Coordinate {
   QString format(OutputFormat format) const;
 };
 
+QDebug& operator<<(QDebug dbg, Coordinate& c);
+
 }
 #endif // COORDINATE_H

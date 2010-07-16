@@ -47,3 +47,9 @@ QString Coordinate::format(OutputFormat format) const {
       return QString("");
   }
 }
+
+/** Write Coordinate objects to debug stream */
+QDebug& geojackal::operator<<(QDebug dbg, Coordinate& c) {
+  dbg << c.format(Coordinate::FORMAT_DEG);
+  return dbg.nospace();
+}

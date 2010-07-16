@@ -8,10 +8,11 @@
 
 namespace geojackal {
 
+/** dump caches to a debug stream */
 QDebug& operator<<(QDebug dbg, Cache& cache) {
   dbg << "{ wp:" << cache.waypoint;
   dbg << ", name:" << cache.name;
-  dbg << ", coord:" << cache.coord->lon << "," << cache.coord->lat;
+  dbg << ", coord:" << *cache.coord;
   dbg << ", type:" << cache.type;
   dbg << ", size:" << cache.size;
   dbg << ", diff:" << cache.difficulty;

@@ -407,7 +407,6 @@ struct Cache : Waypoint {
   }
 };
 
-/** dumps caches to a debug stream */
 QDebug& operator<<(QDebug dbg, Cache& cache);
 
 }
