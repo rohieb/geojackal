@@ -116,11 +116,11 @@ void OsmSlippyMap::invalidate() {
   float centerX = centerTile.x();
   float centerY = centerTile.y();
 
-  // top-left corner of the center tile
+  // top-left corner of the center tile, in pixels from upper-left widget edge
   uint centerTop = height() / 2 - (centerY - floor(centerY)) * TILE_DIM;
   uint centerLeft = width() / 2 - (centerX - floor(centerX)) * TILE_DIM;
 
-  // first tile vertical and horizontal
+  // first tile vertical and horizontal, in tile coordinates
   uint dx = (centerLeft + TILE_DIM - 1) / TILE_DIM;
   uint dy = (centerTop + TILE_DIM - 1) / TILE_DIM;
   uint firstX = static_cast<int>(centerX) - dx;
@@ -186,11 +186,12 @@ void OsmSlippyMap::httpFinished(QNetworkReply * rply) {
   }
 
   // put into our hash
-  qDebug() << "got" << rply->url().toString();
   QPoint tileCoord = rply->request().attribute(QNetworkRequest::User).toPoint();
   if(img.isNull()) {
+    qDebug() << "req" << rply->url().toString() << "is null";
     tilePixmaps_[tileCoord] = emptyTile_;
   } else {
+    qDebug() << "got" << rply->url().toString();
     tilePixmaps_[tileCoord] = QPixmap::fromImage(img);
   }
   rply->deleteLater();
@@ -333,10 +334,14 @@ void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
     } else {
       // not on zoom button, maybe on cache icon
       foreach(QRect cacheRect, cacheRects.keys()) {
+        qDebug() << cacheRect << "?contains?" << event->pos();
         if(cacheRect.contains(event->pos())) {
           qDebug() << "you clicked on" << cacheRects.value(cacheRect)->name;
           CacheInfoDialog dialog(cacheRects.value(cacheRect), this);
           dialog.exec();
+          // only do it the first time
+          event->accept();
+          return;
         }
       }
       dragPos = event->pos();
