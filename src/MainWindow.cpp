@@ -17,11 +17,11 @@ MainWindow::MainWindow() :
   bool ok;
   QSettings settings;
   // default: IZ coordinates
-  Angle lon = settings.value("gc/centerLon", 52.273).toDouble(&ok);
-  Angle lat = settings.value("gc/centerLat", 10.52524).toDouble(&ok);
+  Angle lat = settings.value("gc/centerLat", 52.273).toDouble(&ok);
+  Angle lon = settings.value("gc/centerLon", 10.52524).toDouble(&ok);
 
   // map widget as central widget
-  pmap = new OsmSlippyMap(Coordinate(lon, lat), 16);
+  pmap = new OsmSlippyMap(Coordinate(lat, lon), 16);
   pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
   pmap->setFocus();
