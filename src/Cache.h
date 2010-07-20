@@ -346,7 +346,7 @@ struct Waypoint {
   QString name;
   /** Coordinate of the waypoint, or @c 0 if not set */
   Coordinate * coord;
-  /** Type of the waypoint, see @ref waypointTypes */
+  /** Type of the waypoint */
   WaypointType type;
   /** Cache description */
   CacheDesc * desc;
@@ -389,11 +389,11 @@ struct Cache : Waypoint {
   QVector<Waypoint> * waypoints;
   /** Log messages */
   QVector<LogMessage> * logs;
-  /** Attributes, see @ref cacheAttributes */
+  /** Additional attributes */
   QVector<CacheAttribute> * attrs;
   /** Hints and spoiler info, ROT13-ecrypted */
   QString hint;
-  /** @c true if the cache is archived, @false otherwise */
+  /** @c true if the cache is archived, @c false otherwise */
   bool archived;
 
   Cache() : placed(0), found(0), waypoints(0), logs(0), attrs(0) {}

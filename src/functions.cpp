@@ -10,7 +10,7 @@
 /**
  * ROT13 function to encode/decode a cache hint. Due to the nature of ROT13,
  * both these operations are absolutely equivalent.
- * @param Text to be encoded or decoded
+ * @param text Text to be encoded or decoded
  * @return Encoded/decoded text
  */
 QString rot13(QString& text) {
