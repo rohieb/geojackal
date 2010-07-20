@@ -14,14 +14,8 @@ MainWindow::MainWindow() :
   // load data
   pModel = new CacheModel(this);
 
-  bool ok;
-  QSettings settings;
-  // default: IZ coordinates
-  Angle lat = settings.value("gc/centerLat", 52.273).toDouble(&ok);
-  Angle lon = settings.value("gc/centerLon", 10.52524).toDouble(&ok);
-
   // map widget as central widget
-  pmap = new OsmSlippyMap(Coordinate(lat, lon), 16);
+  pmap = new OsmSlippyMap(g_settings.center(), 16);
   pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
   pmap->setFocus();
@@ -45,8 +39,7 @@ MainWindow::MainWindow() :
   cacheMenu->addAction(importAction);
 
   // show prefs dialogue if no password or username set
-  if(settings.value("gc/username").isNull()
-    || settings.value("gc/password").isNull()) {
+  if(g_settings.gcUsername().isEmpty() || g_settings.gcPassword().isEmpty()) {
     showPrefDialog();
   }
 }
@@ -67,20 +60,19 @@ void MainWindow::showPrefDialog() {
 
 void MainWindow::importCaches() {
   // show prefs dialogue if no password or username set
-  QSettings settings;
-  QVariant userName = settings.value("gc/username");
-  QVariant password = settings.value("gc/password");
-  if(userName.isNull() || password.isNull()) {
+  QString userName = g_settings.gcUsername();
+  QString password = g_settings.gcPassword();
+  if(userName.isEmpty() || password.isEmpty()) {
     showPrefDialog();
   }
 
   GCSpiderDialog dialog(this);
   dialog.exec();
-  Coordinate center(dialog.lon(), dialog.lat());
+  Coordinate center(dialog.lat(), dialog.lon());
   float maxDist = dialog.maxDist();
 
   QList<Cache *> cacheList;
-  GCSpider spider(userName.toString(), password.toString());
+  GCSpider spider(userName, password);
   spider.nearest(center, maxDist, cacheList);
 
   pModel->addCaches(cacheList);

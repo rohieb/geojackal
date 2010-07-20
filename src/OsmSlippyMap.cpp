@@ -11,8 +11,6 @@
 
 using namespace geojackal;
 
-#define PI 3.141592654
-
 const ushort OsmSlippyMap::TILE_DIM = 256;
 const uchar OsmSlippyMap::MAX_ZOOM = 18;
 
@@ -50,8 +48,8 @@ QPointF geoToTile(const Coordinate& coord, const uchar zoom) {
   }
   int n = (1 << zoom); // number of tiles along the x and y axis
   float xTile = (coord.lon + 180.0) / 360.0 * n;
-  float yTile = (1.0 - (log(tan(coord.lat * PI / 180.0) + (1.0 / cos(coord.lat
-    * PI / 180.0))) / PI)) / 2.0 * n;
+  float yTile = (1.0 - (log(tan(coord.lat * M_PI / 180.0) + (1.0 /
+    cos(coord.lat * M_PI / 180.0))) / M_PI)) / 2.0 * n;
   return QPointF(xTile, yTile);
 }
 
@@ -73,7 +71,7 @@ Coordinate tileToGeo(const QPointF tile, const uchar zoom) {
   }
   uint zn = (1 << zoom); // number of tiles on the zoom level
   float lon = tile.x() / zn * 360.0 - 180.0;
-  float lat = atan(sinh(PI * (1 - 2 * tile.y() / zn))) * 180.0 / PI;
+  float lat = atan(sinh(M_PI * (1 - 2 * tile.y() / zn))) * 180.0 / M_PI;
 
   return Coordinate(lat, lon);
 }

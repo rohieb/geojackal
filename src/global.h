@@ -9,6 +9,7 @@
 #define GLOBAL_H_
 
 #include "Failure.h"
+#include "SettingsManager.h"
 #include <QDebug>
 //#include <QStringBuilder>
 // fast string concatenation with + instead of %
@@ -17,10 +18,15 @@
 
 namespace geojackal {
 
+class SettingsManager;
+
 /** The program name */
 static const QString APPNAME = "GeoJackal";
 /** The current program version */
 static const QString VERSION = "0.1alpha";
+
+/** Global object for user defined settings */
+extern SettingsManager g_settings;
 
 }
 

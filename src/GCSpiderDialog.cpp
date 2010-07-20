@@ -13,19 +13,18 @@ GCSpiderDialog::GCSpiderDialog(QWidget * parent) :
 
   setWindowTitle("Import from geocaching.com");
 
-  bool ok;
-  QSettings settings;
-  maxDist_ = settings.value("gc/maxdist", 1.0).toDouble(&ok);
-  lat_ = settings.value("gc/centerLat", 52.273).toDouble(&ok);
-  lon_ = settings.value("gc/centerLon", 10.52524).toDouble(&ok);
+  maxDist_ = g_settings.maxImportDist();
+  Coordinate center = g_settings.center();
+  lat_ = center.lat;
+  lon_ = center.lon;
 
   QGridLayout * mainLayout = new QGridLayout(this);
-  mainLayout->addWidget(new QLabel("Longitude:", this), 0, 0);
-  lonEdit = new QLineEdit(QString::number(lon_, 'f', 6), this);
-  mainLayout->addWidget(lonEdit, 0, 1);
-  mainLayout->addWidget(new QLabel("Latitude:", this), 1, 0);
+  mainLayout->addWidget(new QLabel("Latitude:", this), 0, 0);
   latEdit = new QLineEdit(QString::number(lat_, 'f', 6), this);
-  mainLayout->addWidget(latEdit, 1, 1);
+  mainLayout->addWidget(latEdit, 0, 1);
+  mainLayout->addWidget(new QLabel("Longitude:", this), 1, 0);
+  lonEdit = new QLineEdit(QString::number(lon_, 'f', 6), this);
+  mainLayout->addWidget(lonEdit, 1, 1);
   mainLayout->addWidget(new QLabel("Max. distance (km):", this), 2, 0);
   maxDistEdit = new QLineEdit(QString::number(maxDist_, 'f', 2), this);
   mainLayout->addWidget(maxDistEdit, 2, 1);
@@ -43,9 +42,6 @@ GCSpiderDialog::~GCSpiderDialog() {
 }
 
 void GCSpiderDialog::accept() {
-  // save new preferences
-  QSettings settings;
-
   // validate user data
   bool ok;
   maxDist_ = maxDistEdit->text().toFloat(&ok);
@@ -67,11 +63,10 @@ void GCSpiderDialog::accept() {
     return;
   }
 
-  // everything ok
+  // everything ok, save new preferences
   qDebug() << "saving new prefs: { maxdist:" << maxDist_ << "centerLon:" << lon_
     << "centerLat" << lat_ << "}";
-  settings.setValue("gc/maxdist", maxDist_);
-  settings.setValue("gc/centerLon", static_cast<double>(lon_));
-  settings.setValue("gc/centerLat", static_cast<double>(lat_));
+  g_settings.setMaxImportDist(maxDist_);
+  g_settings.setCenter(Coordinate(lat_, lon_));
   QDialog::accept();
 }
