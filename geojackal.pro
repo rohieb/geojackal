@@ -6,7 +6,8 @@ QT = core \
     gui \
     network \
     sql
-SOURCES = src/CacheInfoDialog.cpp \
+SOURCES = src/SettingsManager.cpp \
+    src/CacheInfoDialog.cpp \
     src/Cache.cpp \
     src/PrefDialog.cpp \
     src/GCSpiderDialog.cpp \
@@ -19,7 +20,8 @@ SOURCES = src/CacheInfoDialog.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/CacheInfoDialog.h \
+HEADERS = src/SettingsManager.h \
+    src/CacheInfoDialog.h \
     src/PrefDialog.h \
     src/GCSpiderDialog.h \
     src/CacheModel.h \

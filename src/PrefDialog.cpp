@@ -14,7 +14,6 @@ PrefDialog::PrefDialog(QWidget * parent) :
 
   setWindowTitle("Preferences");
 
-  QSettings settings;
   QVBoxLayout * mainLayout = new QVBoxLayout(this);
 
   QGroupBox * loginBox = new QGroupBox("Geocaching.com login", this);
@@ -25,10 +24,10 @@ PrefDialog::PrefDialog(QWidget * parent) :
   loginLayout->addWidget(new QLabel("Password:"), 2, 0, Qt::AlignLeft);
   userNameEdit = new QLineEdit;
   loginLayout->addWidget(userNameEdit, 1, 1);
-  userNameEdit->setText(settings.value("gc/username").toString());
+  userNameEdit->setText(g_settings.gcUsername());
   passwordEdit = new QLineEdit;
   passwordEdit->setEchoMode(QLineEdit::Password);
-  passwordEdit->setText(settings.value("gc/password").toString());
+  passwordEdit->setText(g_settings.gcPassword());
   loginLayout->addWidget(passwordEdit, 2, 1);
   loginBox->setLayout(loginLayout);
   loginLayout->addWidget(new QLabel("Please note that your password is stored "
@@ -51,7 +50,6 @@ PrefDialog::~PrefDialog() {
 
 void PrefDialog::accept() {
   // save new preferences
-  QSettings settings;
   QString userName = userNameEdit->text();
   QString password = passwordEdit->text();
 
@@ -70,7 +68,7 @@ void PrefDialog::accept() {
   // everything ok
   qDebug() << "saving new prefs: { username:" << userName << "password:" <<
     "(omitted)" << "}";
-  settings.setValue("gc/username", userName);
-  settings.setValue("gc/password", password);
+  g_settings.setGcUsername(userName);
+  g_settings.setGcPassword(password);
   QDialog::accept();
 }
