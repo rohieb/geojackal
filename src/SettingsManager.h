@@ -13,7 +13,7 @@
 
 namespace geojackal {
 
-class Coordinate;
+struct Coordinate;
 
 /**
  * Simple wrapper for QSettings. It basically translates the QSettings
