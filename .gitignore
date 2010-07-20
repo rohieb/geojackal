@@ -9,6 +9,7 @@ Makefile*
 geojackal.pro
 *.exe
 *.dll
+*.pdb
 .settings/org.eclipse.ltk.core.refactoring.prefs
 map-cache/
 callgrind.out.*
