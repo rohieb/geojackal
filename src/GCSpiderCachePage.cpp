@@ -12,6 +12,27 @@
 using namespace geojackal;
 
 /**
+ * Replace numerical HTML entities by their Unicode representations. Currently,
+ * only decimal entities (like @c &252;) are converted, hexadecimal entities
+ * (like @c &#xf3;) are ignored.
+ */
+QString replaceHtmlEntities(QString buf) {
+  QRegExp rx("&#(\\d+);");
+  int curPos = 0;
+  while((curPos = rx.indexIn(buf, curPos)) >= 0) {
+    int len = rx.cap(0).size();
+    bool ok;
+    QChar rplcmnt(rx.cap(1).toInt(&ok)); // number == Unicode code point
+    if(ok) {
+      qDebug() << "replacing" << rx.cap(0) << "with" << rplcmnt;
+      buf.replace(curPos, len, rplcmnt);
+    }
+    curPos += len; // move to end of current match
+  }
+  return buf;
+}
+
+/**
  * Constructor
  * @param text Text of the cache description page
  */
@@ -76,7 +97,11 @@ bool GCSpiderCachePage::name(QString& buf) const {
   QRegExp rx("<span id=\"ctl00_ContentBody_CacheName\">(.*)</span");
   rx.setMinimal(true);
   bool ret = (rx.indexIn(text_) >= 0);
-  buf = rx.cap(1);
+
+  // text is utf-8, but read as ascii
+  buf = QString::fromUtf8(rx.cap(1).toStdString().c_str());
+
+  buf = replaceHtmlEntities(buf);
   return ret;
 }
 
@@ -252,15 +277,23 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) const {
   int start = text_.indexOf(startRx) + startRx.cap(1).length(); // after regex
   int end = text_.indexOf(endRx);
 
-//  for(size_t i = rx.capturedTexts().size()-1; i > 0; --i) {
-//    qDebug() << i << ":" << rx.capturedTexts()[i];
-//  }
-  // @todo process images
-  // @todo process links to other caches?
-  // @todo what about html tags in the text?
-  // @todo maybe html flag is not needed at all?
-  buf.desc = text_.mid(start, end - start);
+
+  // text is utf-8, but read as ascii
+  buf.desc = QString::fromUtf8(text_.mid(start, end - start).toStdString().
+    c_str());
+  buf.desc = replaceHtmlEntities(buf.desc);
+  // @todo html flag is not needed at all
   buf.descHtml = true;
+
+  // @todo process images
+  // currently: remove image tags from description
+  QRegExp imgTag("<img .*>");
+  imgTag.setMinimal(true);
+  buf.desc.replace(imgTag, "");
+
+  // @todo something like html tidy, at least delete multiple empty <p>,<br/>
+  // @todo process links to other caches?
+
   return (start != -1 && end != -1 && start < end);
 }
 

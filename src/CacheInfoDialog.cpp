@@ -55,16 +55,14 @@ InfoTab::~InfoTab() {
 CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
   QDialog(parent), cache_(cache) {
 
-  // text is utf-8, but read as ascii
-  QString nameText = QString::fromUtf8(cache->name.toStdString().c_str());
-  setWindowTitle(nameText + " (" + cache->waypoint + ")");
+  setWindowTitle(cache->name + " (" + cache->waypoint + ")");
 
   // Grid layout as main layout
   QGridLayout * mainLayout = new QGridLayout(this);
 
   // cache name
-  mainLayout->addWidget(new QLabel("<big><b>" + nameText + "</b></big>"), 0, 0,
-    Qt::AlignLeft);
+  mainLayout->addWidget(new QLabel("<big><b>" + cache->name + "</b></big>"), 0,
+    0, Qt::AlignLeft);
 
   // cache icon
   QLabel * pic = new QLabel;
@@ -73,14 +71,8 @@ CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
 
   // tab pages
   // setup description browser
-  // remove image tags from description
-  QString description = QString::fromUtf8(cache->desc->desc.toStdString().
-    c_str());
-  QRegExp img("<img .*>");
-  img.setMinimal(true);
-  description.replace(img, "");
   QTextBrowser * descBrowser = new QTextBrowser();
-  descBrowser->setHtml(description);
+  descBrowser->setHtml(cache->desc->desc);
   descBrowser->setOpenExternalLinks(true);
 
   // prepare tab widgets
