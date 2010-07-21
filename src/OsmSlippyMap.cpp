@@ -266,6 +266,7 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
   }
 
   // draw cache icons
+  cacheRects.clear(); // or we get bogus positions after zooming etc.
   foreach(Cache * cache, cacheList) {
     QPixmap icon = cacheIcon(cache).scaled(24, 24, Qt::KeepAspectRatio);
     QPointF tileCoordF = geoToTile(*cache->coord, zoomLevel_);
