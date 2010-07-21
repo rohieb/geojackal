@@ -213,7 +213,7 @@ QPoint OsmSlippyMap::tileToPixel(const QPoint& tileCoord) {
 }
 
 /** return the cache icon for a cache */
-QPixmap cacheIcon(Cache * cache) {
+QPixmap geojackal::cacheIcon(Cache * cache) {
   QString fileName;
   switch(cache->type) {
     case TYPE_TRADI: fileName = "type-tradi.gif"; break;
@@ -243,6 +243,7 @@ QPixmap cacheIcon(Cache * cache) {
   icon.load(":/" + fileName);
   return icon;
 }
+
 /** from QWidget */
 void OsmSlippyMap::paintEvent(QPaintEvent * event) {
   QPainter p;
@@ -269,7 +270,7 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
     QPixmap icon = cacheIcon(cache).scaled(24, 24, Qt::KeepAspectRatio);
     QPointF tileCoordF = geoToTile(*cache->coord, zoomLevel_);
     QPointF t = tileCoordF - shownTiles_.topLeft();
-    // FIXME
+    // FIXME we need a k-d-tree here
     int x = (int) (t.x() * TILE_DIM + offset_.x());
     int y = (int) (t.y() * TILE_DIM + offset_.y());
     QRect target(QPoint(x, y), QSize(24, 24));

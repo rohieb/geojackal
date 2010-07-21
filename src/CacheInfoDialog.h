@@ -13,6 +13,20 @@
 
 namespace geojackal {
 
+/**
+ * @{
+ * Tab pages
+ */
+/** Geocache information */
+class InfoTab : public QWidget {
+  Q_OBJECT
+public:
+  InfoTab(Cache * cache);
+  virtual ~InfoTab();
+};
+/** @} */
+
+/** Geocache information dialog */
 class CacheInfoDialog : public QDialog {
   Q_OBJECT
 public:
@@ -21,8 +35,6 @@ public:
 
 private:
   Cache * cache_;
-  QLabel * nameLabel;
-  QTextEdit * descEdit;
 };
 
 }

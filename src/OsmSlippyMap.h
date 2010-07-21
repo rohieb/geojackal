@@ -124,6 +124,7 @@ private:
   QHash<QRect, Cache *> cacheRects;
 };
 
-}
+QPixmap cacheIcon(Cache * cache);
 
+}
 #endif /* OSMSLIPPYMAP_H_ */
