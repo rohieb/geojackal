@@ -407,7 +407,7 @@ struct Cache : Waypoint {
   }
 };
 
-QDebug& operator<<(QDebug dbg, Cache& cache);
+QDebug& operator<<(QDebug& dbg, const Cache& cache);
 
 }
 #endif // CACHE_H

@@ -9,19 +9,19 @@
 namespace geojackal {
 
 /** dump caches to a debug stream */
-QDebug& operator<<(QDebug dbg, Cache& cache) {
-  dbg << "{ wp:" << cache.waypoint;
-  dbg << ", name:" << cache.name;
-  dbg << ", coord:" << *cache.coord;
-  dbg << ", type:" << cache.type;
-  dbg << ", size:" << cache.size;
-  dbg << ", diff:" << cache.difficulty;
-  dbg << ", terr:" << cache.terrain;
-  dbg << ", placed:" << cache.placed;
-  dbg << ", owner:" << cache.owner;
-  dbg << ", archived:" << cache.archived;
-  dbg << " }";
-  return dbg.nospace();
+QDebug& operator<<(QDebug& dbg, const Cache& cache) {
+  dbg.nospace() << "{ wp: " << cache.waypoint;
+  dbg.nospace() << ", name: " << cache.name;
+  dbg.nospace() << ", coord: " << *cache.coord;
+  dbg.nospace() << ", type: " << cache.type;
+  dbg.nospace() << ", size: " << cache.size;
+  dbg.nospace() << ", diff: " << cache.difficulty;
+  dbg.nospace() << ", terr: " << cache.terrain;
+  dbg.nospace() << ", placed: " << cache.placed->toString(Qt::ISODate);
+  dbg.nospace() << ", owner: " << cache.owner;
+  dbg.nospace() << ", archived: " << cache.archived;
+  dbg.nospace() << " }";
+  return dbg.maybeSpace();
 }
 
 }

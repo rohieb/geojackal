@@ -276,8 +276,6 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
     QRect target(QPoint(x, y), QSize(24, 24));
     target.adjust(-12, -12, -12, -12);
     cacheRects[target] = cache; // save for later
-    qDebug() << "drawing" << cache->name << "at" << *cache->coord << "= tile"
-      << tileCoordF << " = " << target.topLeft() << "pixels";
     p.drawPixmap(target, icon);
   }
 
