@@ -44,7 +44,7 @@ void SettingsManager::setGcPassword(const QString password) {
  */
 qreal SettingsManager::maxImportDist() {
   bool ok;
-  return s.value("gc/maxImportDist", 2.0).toReal(&ok);
+  return s.value("gc/maxImportDist", 2.0).toDouble(&ok);
 }
 void SettingsManager::setMaxImportDist(qreal dist) {
   s.setValue("gc/maxImportDist", dist);

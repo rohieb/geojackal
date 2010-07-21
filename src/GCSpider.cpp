@@ -6,6 +6,7 @@
 
 #include "GCSpider.h"
 #include "GCSpiderCachePage.h"
+#include <QtGui>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QEventLoop>
@@ -187,6 +188,12 @@ void GCSpider::logout() {
   pnam_->setCookieJar(new QNetworkCookieJar(pnam_));
 }
 
+/** Temporary type to save geocache GUIDs and waypoints */
+struct WaypointsGuids {
+  QString wp;
+  QString guid;
+};
+
 /**
  * Get nearest caches around a coordinate up to a specified distance.
  * @param center Center coordinates
@@ -200,8 +207,8 @@ void GCSpider::logout() {
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
   Cache *>& buf) {
 
-  QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com/seek"
-    "/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
+  QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com"
+    "/seek/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
     arg(center.lon, 0, 'f')));
   QString text = listReply->readAll();
 
@@ -216,14 +223,22 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
 
   QRegExp rx("<tr bgcolor='[^']+'\\s*class=\"Data BorderTop\">\\s*<td>.*"
     "([0-9]+(?:\\.[0-9]+)?)\\s*km\\s*</td>.*<a href=\"/seek/cache_details"
-    "\\.aspx\\?guid=([-0-9a-zA-Z]+)\">.*</a>");
+    "\\.aspx\\?guid=([-0-9a-zA-Z]+)\">.*\\((GC[A-Z0-9]{4,})\\).*</a>");
   rx.setMinimal(true);
 
+  QProgressDialog progDialog("Import geocaches", "Abort", 0, 2);
+  progDialog.setWindowModality(Qt::WindowModal);
+  progDialog.setMinimumDuration(0);
+  progDialog.setValue(1);
+  progDialog.setLabelText("Searching for geocaches…");
+
+  QList<WaypointsGuids> cacheList;
   int curPos = 0;
   double cacheDist = 0; // distance to current cache
-  while((curPos = rx.indexIn(text, curPos)) >= 0 && cacheDist <= maxDist) {
+  while((curPos = rx.indexIn(text, curPos)) >= 0 && cacheDist <= maxDist &&
+    !progDialog.wasCanceled()) {
     curPos += rx.cap(0).size(); // move to end of current chunk
-    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty()) {
+    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
       return false;
     }
 
@@ -237,14 +252,35 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
       break;
     }
 
-    // load cache page
+    // append to list for next step
+    WaypointsGuids c;
+    c.guid = rx.cap(2);
+    c.wp = rx.cap(3);
+    qDebug() << "append {" << c.guid << "," << c.wp << "}";
+    cacheList.append(c);
+  }
+
+  int progress = 2;
+  progDialog.setMaximum(progress + cacheList.size());
+  foreach(WaypointsGuids const& c, cacheList) {
+    if(progDialog.wasCanceled()) {
+      break;
+    }
+    progDialog.setLabelText(QString("Loading %1").arg(c.wp));
+    progDialog.setValue(progress);
+
+    // load cache page and extract data
     QNetworkReply * cacheReply = loadPage(QUrl("http://www.geocaching.com/"
-        "seek/cache_details.aspx?guid=" + rx.cap(2)));
+        "seek/cache_details.aspx?guid=" + c.guid));
     GCSpiderCachePage gcscp(QString(cacheReply->readAll()));
     Cache * pCache = new Cache;
     gcscp.all(*pCache);
     buf.append(pCache);
+
+    ++progress;
   }
+
+  progDialog.setValue(progDialog.maximum());
 
   qDebug() << "finished import from geocaching.com";
 

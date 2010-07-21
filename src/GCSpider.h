@@ -66,7 +66,6 @@ private:
   QString password_;
   /** Is the user already logged in? */
   bool loggedIn_;
-  /** Cookies sent by the server on login */
 };
 
 }
