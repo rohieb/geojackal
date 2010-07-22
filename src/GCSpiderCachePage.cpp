@@ -99,7 +99,8 @@ bool GCSpiderCachePage::name(QString& buf) const {
   bool ret = (rx.indexIn(text_) >= 0);
 
   // text is utf-8, but read as ascii
-  buf = QString::fromUtf8(rx.cap(1).toStdString().c_str());
+  QString cap = rx.cap(1);
+  buf = QString::fromUtf8(cap.toAscii());
 
   buf = replaceHtmlEntities(buf);
   return ret;
@@ -277,10 +278,8 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) const {
   int start = text_.indexOf(startRx) + startRx.cap(1).length(); // after regex
   int end = text_.indexOf(endRx);
 
-
   // text is utf-8, but read as ascii
-  buf.desc = QString::fromUtf8(text_.mid(start, end - start).toStdString().
-    c_str());
+  buf.desc = QString::fromUtf8(text_.mid(start, end - start).toAscii());
   buf.desc = replaceHtmlEntities(buf.desc);
   // @todo html flag is not needed at all
   buf.descHtml = true;

@@ -15,7 +15,7 @@ Failure::Failure(QString message) :
 
 /** @return Error message given by the thrower */
 const char* Failure::what() const throw() {
-  return message_.toStdString().c_str();
+  return message_.toUtf8();
 }
 
 }
