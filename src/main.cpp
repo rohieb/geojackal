@@ -41,7 +41,11 @@ int main(int argc, char *argv[]) {
   GeojackalApplication::setOrganizationName(APPNAME);
 
   MainWindow w;
+#if defined(Q_OS_SYMBIAN) || defined(Q_OS_WINCE_WM)
+  w.showMaximized();
+#else
   w.resize(640, 480);
+#endif
   w.show();
 
   return app.exec();
