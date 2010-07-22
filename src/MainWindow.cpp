@@ -34,9 +34,13 @@ MainWindow::MainWindow() :
   appMenu->addAction(exitAction);
 
   QMenu * cacheMenu = menuBar()->addMenu("&Caches");
-  QAction * importAction = new QAction("&Import...", this);
-  connect(importAction, SIGNAL(triggered()), this, SLOT(importCaches()));
-  cacheMenu->addAction(importAction);
+  QAction * importRegionAction = new QAction("&Import region...", this);
+  connect(importRegionAction, SIGNAL(triggered()), this, SLOT(importCaches()));
+  cacheMenu->addAction(importRegionAction);
+
+  QAction * importSingleAction = new QAction("&Import single...", this);
+  connect(importSingleAction, SIGNAL(triggered()), this, SLOT(importSingleCache()));
+  cacheMenu->addAction(importSingleAction);
 
   // show prefs dialogue if no password or username set
   if(g_settings.gcUsername().isEmpty() || g_settings.gcPassword().isEmpty()) {
@@ -58,6 +62,7 @@ void MainWindow::showPrefDialog() {
   prefs.exec();
 }
 
+/** Called when the user clicks on the Caches->Import region menu item */
 void MainWindow::importCaches() {
   // show prefs dialogue if no password or username set
   QString userName = g_settings.gcUsername();
@@ -72,10 +77,35 @@ void MainWindow::importCaches() {
   float maxDist = dialog.maxDist();
 
   QList<Cache *> cacheList;
-  GCSpider spider(userName, password);
-  spider.nearest(center, maxDist, cacheList);
+  try {
+    GCSpider spider(userName, password);
+    spider.nearest(center, maxDist, cacheList);
+  } catch(Failure& f) {
+    QMessageBox::critical(this, "Failure", f.what());
+  }
 
   pModel->addCaches(cacheList);
   pmap->setCaches(pModel->caches());
   pmap->setCenter(center);
+}
+
+/** Called when the user clicks on the Caches->Import single menu item */
+void MainWindow::importSingleCache() {
+  bool ok;
+  QString waypoint = QInputDialog::getText(this, "Import cache", "Enter the "
+    "waypoint of the cache:", QLineEdit::Normal, "GC", &ok);
+  if(ok) {
+    Cache * cache = new Cache;
+    try {
+      GCSpider sp(g_settings.gcUsername(), g_settings.gcPassword());
+      sp.loadCache(waypoint, *cache);
+    } catch(Failure& f) {
+      QMessageBox::critical(this, "Failure", f.what());
+      delete cache;
+      return;
+    }
+    pModel->addCache(cache);
+    pmap->setCaches(pModel->caches());
+    pmap->setCenter(*cache->coord);
+  }
 }

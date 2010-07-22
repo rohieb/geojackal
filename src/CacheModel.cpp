@@ -324,8 +324,11 @@ bool CacheModel::save() {
 //}
 
 /**
- * Add caches to the database. Because caches are indexed by their waypoint,
- * already existent caches with the same waypoint are overwritten.
+ * Add geocaches to the database. Because geocaches are indexed by their 
+ * waypoint, already existent geocaches with the same waypoint are overwritten.
+ * @param caches A list of geocaches. You do not have to care about the 
+ *  elements of this list to be deleted, they are automagically deleted if no 
+ *  longer needed.
  */
 void CacheModel::addCaches(QList<Cache *>& caches) {
   foreach(Cache * cache, caches) {
@@ -334,6 +337,17 @@ void CacheModel::addCaches(QList<Cache *>& caches) {
   save();
 }
 
+/**
+ * Add a single geocache to the database. Because geocaches are indexed by 
+ * their waypoint, already existent geocaches with the same waypoint are 
+ * overwritten.
+ * @param cache The geocache. You do not have to care about the pointer to be 
+ *  deleted, it is automagically deleted if no longer needed.
+ */
+void CacheModel::addCache(Cache * cache) {
+  cacheList[cache->waypoint] = cache;
+  save();
+}
 /**
  * Get list of caches
  */

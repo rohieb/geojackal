@@ -17,6 +17,7 @@ public:
 protected slots:
   void showPrefDialog();
   void importCaches();
+  void importSingleCache();
 
 private:
   OsmSlippyMap * pmap;
