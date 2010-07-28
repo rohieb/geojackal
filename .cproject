@@ -123,6 +123,11 @@
 <storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 <storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
+<pathentry excluding="src/" kind="src" path=""/>
+<pathentry kind="out" path=""/>
+<pathentry kind="out" path="debug"/>
+<pathentry kind="out" path="release"/>
+<pathentry kind="src" path="src"/>
 <pathentry base-path="/usr/include/qt4" include="" kind="inc" path="" system="true"/>
 <pathentry base-path="/usr/include/qt4" include="QtXml" kind="inc" path="" system="true"/>
 <pathentry base-path="/usr/include/qt4" include="QtWebKit" kind="inc" path="" system="true"/>
@@ -145,9 +150,6 @@
 <pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
 <pathentry base-path="geojackal" include="src" kind="inc" path="" system="true"/>
-<pathentry excluding="src/" kind="src" path=""/>
-<pathentry kind="out" path=""/>
-<pathentry kind="src" path="src"/>
 </storageModule>
 </cconfiguration>
 </storageModule>
