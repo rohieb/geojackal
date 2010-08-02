@@ -72,10 +72,8 @@ bool valueExists(const QString table, const QString column,
 
 /**
  * Constructor
- * @throws Failure if anything goes wrong
  */
 CacheModel::CacheModel(QObject * parent) {
-  open();
 }
 
 CacheModel::~CacheModel() {

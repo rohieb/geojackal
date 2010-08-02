@@ -55,12 +55,12 @@ void PrefDialog::accept() {
 
   // validate user data
   try {
-  GCSpider spider(userName, password);
+    GCSpider::login(userName, password);
   } catch(Failure& f) {
-    QMessageBox msg(QMessageBox::Critical, "Error", "There was an error while "
-      "trying to log in to geocaching.com. Maybe your supplied user name or "
-      "password is wrong.\n\nPlease fill in the correct values and try again.",
-      QMessageBox::Ok, this);
+    QMessageBox msg(QMessageBox::Critical, "Error", QString("There was an "
+      "error while trying to log in to geocaching.com. Maybe your supplied "
+      "user name or password is wrong.\n\nPlease fill in the correct values "
+      "and try again.\n\nThe error was: ") + f.what(), QMessageBox::Ok, this);
     msg.exec();
     return;
   }

@@ -19,24 +19,18 @@ using namespace geojackal;
 const QByteArray GCSpider::USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86; "
   "en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6";
 
+GCSpider * GCSpider::instance_ = 0;
+
 /**
  * Constructor.
- * @param username geocaching.com user name to use for log in
- * @param password geocaching.com password to use for log in
- * @throws Failure if anything goes wrong
  */
 GCSpider::GCSpider(const QString username, const QString password) :
   pnam_(0), loadPageNetReply_(0), username_(username), password_(password),
   loggedIn_(false) {
   pnam_ = new QNetworkAccessManager(this);
-  if(!pnam_) {
-    throw Failure("Could not create QNetworkAccessManager instance!");
-  }
-  login();
-  if(!loggedIn_) {
-    throw Failure("Not logged in!");
-  }
 }
+
+GCSpider::GCSpider(const GCSpider&) : QObject() {}
 
 GCSpider::~GCSpider() {
   if(pnam_)
@@ -57,6 +51,7 @@ GCSpider::~GCSpider() {
  */
 QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
   formData) {
+
   if(!pnam_) {
     throw Failure("No QNetworkAccessManager instance!");
   }
@@ -108,13 +103,26 @@ void GCSpider::loadPageFinished(QNetworkReply * reply) {
  * This function blocks until the login cookie has ben retrieved. The cookies
  * are saved to the loginCookie_ member variable, and the loggedIn_ member
  * variable is set according to whether the login was successful.
+ * @param username geocaching.com user name to use for log in
+ * @param password geocaching.com password to use for log in
+ * @return An GCSpider instance that can be used for further operations.
  * @throws Failure if anything goes wrong
  */
-void GCSpider::login() {
-  if(username_.trimmed().isEmpty()) {
+GCSpider * GCSpider::login(const QString username, const QString password) {
+
+  static Guard guard; // delete the instance at end of run time
+
+  if(!instance_) {
+    instance_ = new GCSpider(username, password);
+  }
+  if(instance_->loggedIn()) {
+    return instance_;
+  }
+
+  if(instance_->username_.trimmed().isEmpty()) {
     throw Failure("User name is empty!");
   }
-  if(password_.trimmed().isEmpty()) {
+  if(instance_->password_.trimmed().isEmpty()) {
     throw Failure("Password is empty!");
   }
 
@@ -146,13 +154,13 @@ void GCSpider::login() {
     "&ctl00%24ContentBody%24cookie=on&ctl00%24ContentBody%24Button1=Login&"
     "ctl00%24ContentBody%24myUsername=";
   QByteArray postData = LOGIN_MAGIC;
-  postData.append(QUrl::toPercentEncoding(username_));
+  postData.append(QUrl::toPercentEncoding(username));
   postData.append("&ctl00%24ContentBody%24myPassword=");
-  postData.append(QUrl::toPercentEncoding(password_));
+  postData.append(QUrl::toPercentEncoding(password));
 
   // Request login page
-  QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/login/"
-    "Default.aspx"), &postData);
+  QNetworkReply * reply = instance_->loadPage(QUrl("http://www.geocaching.com/"
+    "login/Default.aspx"), &postData);
   // extract and validate cookies
   QList<QNetworkCookie> loginCookies;
   QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
@@ -167,18 +175,19 @@ void GCSpider::login() {
         userIdCookie = true;
       }
     }
-    loggedIn_ = aspNetCookie && userIdCookie;
-    if(loggedIn_) {
-      qDebug() << "Login successful with username" << username_;
+    instance_->loggedIn_ = aspNetCookie && userIdCookie;
+    if(instance_->loggedIn_) {
+      qDebug() << "Login successful with username" << username;
     } else {
-      qDebug() << "Login failed with username" << username_;
+      qDebug() << "Login failed with username" << username;
     }
   } else {
     // who took the cookies from the cookie jar?
-    loggedIn_ = false;
-    throw Failure("No valid cookies found!");
+    instance_->loggedIn_ = false;
+    throw Failure("Login failed: No valid cookies found!");
   }
   reply->deleteLater();
+  return instance_;
 }
 
 /**

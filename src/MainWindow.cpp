@@ -13,6 +13,11 @@ MainWindow::MainWindow() :
 
   // load data
   pModel = new CacheModel(this);
+  try {
+    pModel->open();
+  } catch(Failure &f) {
+    QMessageBox::critical(this, "Failure", f.what());
+  }
 
   // map widget as central widget
   pmap = new OsmSlippyMap(g_settings.center(), 16);
@@ -78,8 +83,8 @@ void MainWindow::importCaches() {
 
   QList<Cache *> cacheList;
   try {
-    GCSpider spider(userName, password);
-    spider.nearest(center, maxDist, cacheList);
+    GCSpider * spider = GCSpider::login(userName, password);
+    spider->nearest(center, maxDist, cacheList);
   } catch(Failure& f) {
     QMessageBox::critical(this, "Failure", f.what());
   }
@@ -97,8 +102,9 @@ void MainWindow::importSingleCache() {
   if(ok) {
     Cache * cache = new Cache;
     try {
-      GCSpider sp(g_settings.gcUsername(), g_settings.gcPassword());
-      sp.loadCache(waypoint, *cache);
+      GCSpider * spider = GCSpider::login(g_settings.gcUsername(),
+        g_settings.gcPassword());
+      spider->loadCache(waypoint, *cache);
     } catch(Failure& f) {
       QMessageBox::critical(this, "Failure", f.what());
       delete cache;
