@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>geojackal.png</file>
   <!-- not needed at the time
   <file>attr/available-no.gif</file>
   <file>attr/available-yes.gif</file>

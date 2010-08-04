@@ -11,6 +11,8 @@ using namespace geojackal;
 MainWindow::MainWindow() :
   QMainWindow(0), pmap(0), pModel(0) {
 
+  setWindowIcon(QIcon(":/geojackal.png"));
+
   // load data
   pModel = new CacheModel(this);
   try {
