@@ -216,31 +216,31 @@ QPoint OsmSlippyMap::tileToPixel(const QPoint& tileCoord) {
 QPixmap geojackal::cacheIcon(Cache * cache) {
   QString fileName;
   switch(cache->type) {
-    case TYPE_TRADI: fileName = "type-tradi.gif"; break;
-    case TYPE_MULTI: fileName = "type-multi.gif"; break;
-    case TYPE_MYSTERY: fileName = "type-mystery.gif"; break;
-    case TYPE_EVENT: fileName = "type-event.gif"; break;
-    case TYPE_VIRTUAL: fileName = "type-virtual.gif"; break;
-    case TYPE_WEBCAM: fileName = "type-webcam.gif"; break;
-    case TYPE_MEGAEVENT: fileName = "type-mega.gif"; break;
-    case TYPE_LETTERBOX: fileName = "type-letterbox.gif"; break;
-    case TYPE_WHEREIGO: fileName = "type-whereigo.gif"; break;
-    case TYPE_CITO: fileName = "type-cito.gif"; break;
-    case TYPE_EARTH: fileName = "type-earth.gif"; break;
-    case TYPE_REVERSE: fileName = "type-reverse.gif"; break;
-    case TYPE_GAME: fileName = "type-game.gif"; break;
-    case TYPE_PROJECTAPE: fileName = "type-ape.gif"; break;
-    case TYPE_STAGE: fileName = "type-stage.gif"; break;
-    case TYPE_FINAL: fileName = "type-final.gif"; break;
-    case TYPE_QUESTION: fileName = "type-question.gif"; break;
-    case TYPE_REFERENCE: fileName = "type-reference.gif"; break;
-    case TYPE_PARKING: fileName = "type-parking.gif"; break;
-    case TYPE_TRAILHEAD: fileName = "type-trailhead.gif"; break;
-    case TYPE_OTHER: fileName = "type-final.gif"; break;
+    case TYPE_TRADI: fileName = "tradi.gif"; break;
+    case TYPE_MULTI: fileName = "multi.gif"; break;
+    case TYPE_MYSTERY: fileName = "mystery.gif"; break;
+    case TYPE_EVENT: fileName = "event.gif"; break;
+    case TYPE_VIRTUAL: fileName = "virtual.gif"; break;
+    case TYPE_WEBCAM: fileName = "webcam.gif"; break;
+    case TYPE_MEGAEVENT: fileName = "mega.gif"; break;
+    case TYPE_LETTERBOX: fileName = "letterbox.gif"; break;
+    case TYPE_WHEREIGO: fileName = "whereigo.gif"; break;
+    case TYPE_CITO: fileName = "cito.gif"; break;
+    case TYPE_EARTH: fileName = "earth.gif"; break;
+    case TYPE_REVERSE: fileName = "reverse.gif"; break;
+    case TYPE_GAME: fileName = "game.gif"; break;
+    case TYPE_PROJECTAPE: fileName = "ape.gif"; break;
+    case TYPE_STAGE: fileName = "stage.gif"; break;
+    case TYPE_FINAL: fileName = "final.gif"; break;
+    case TYPE_QUESTION: fileName = "question.gif"; break;
+    case TYPE_REFERENCE: fileName = "reference.gif"; break;
+    case TYPE_PARKING: fileName = "parking.gif"; break;
+    case TYPE_TRAILHEAD: fileName = "trailhead.gif"; break;
+    case TYPE_OTHER: fileName = "final.gif"; break;
     default: return QPixmap();
   }
   QPixmap icon;
-  icon.load(":/" + fileName);
+  icon.load(":/cachetype/" + fileName);
   return icon;
 }
 
