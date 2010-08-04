@@ -34,6 +34,6 @@ HEADERS = src/SettingsManager.h \
     src/GCSpider.h \
     src/GCSpiderCachePage.h \
     src/MainWindow.h
-FORMS = 
 RESOURCES = resource/geojackal.qrc
+RC_FILE = resource/geojackal.rc
 TARGET.CAPABILITY = true;
