@@ -6,7 +6,11 @@ release/
 debug/
 GeoJackal
 Makefile*
-geojackal.pro
+*.ncb
+*.sln
+*.suo
+*.vcproj*
+*.aps
 *.exe
 *.dll
 *.pdb
