@@ -14,7 +14,7 @@ using namespace geojackal;
  * invalid value.
  */
 Coordinate::Coordinate() :
-  lon(ANGLE_INVALID), lat(ANGLE_INVALID) {
+  lat(ANGLE_INVALID), lon(ANGLE_INVALID) {
 }
 
 /**
@@ -23,7 +23,7 @@ Coordinate::Coordinate() :
  * @param longitude The longitude (east-west) part of the coordinate, in degree
  */
 Coordinate::Coordinate(Angle latitude, Angle longitude) :
-  lon(longitude), lat(latitude) {
+  lat(latitude), lon(longitude) {
 }
 
 QString Coordinate::format(OutputFormat format) const {

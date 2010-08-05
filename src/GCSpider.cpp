@@ -176,15 +176,16 @@ GCSpider * GCSpider::login(const QString username, const QString password) {
       }
     }
     instance_->loggedIn_ = aspNetCookie && userIdCookie;
-    if(instance_->loggedIn_) {
-      qDebug() << "Login successful with username" << username;
-    } else {
-      qDebug() << "Login failed with username" << username;
-    }
   } else {
     // who took the cookies from the cookie jar?
     instance_->loggedIn_ = false;
-    throw Failure("Login failed: No valid cookies found!");
+    throw Failure(tr("Login failed: No valid login cookies found!"));
+  }
+
+  if(!instance_->loggedIn_) {
+    // delete all cookies, so the server does not remember us in any way
+    instance_->pnam_->setCookieJar(new QNetworkCookieJar);
+    throw Failure(tr("Login failed with username %1").arg(username));
   }
   reply->deleteLater();
   return instance_;
