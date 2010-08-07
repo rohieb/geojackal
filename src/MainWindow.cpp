@@ -79,21 +79,22 @@ void MainWindow::importCaches() {
   }
 
   GCSpiderDialog dialog(this);
-  dialog.exec();
-  Coordinate center(dialog.lat(), dialog.lon());
-  float maxDist = dialog.maxDist();
+  if(dialog.exec() == QDialog::Accepted) {
+    Coordinate center(dialog.lat(), dialog.lon());
+    float maxDist = dialog.maxDist();
 
-  QList<Cache *> cacheList;
-  try {
-    GCSpider * spider = GCSpider::login(userName, password);
-    spider->nearest(center, maxDist, cacheList);
-  } catch(Failure& f) {
-    QMessageBox::critical(this, "Failure", f.what());
+    QList<Cache *> cacheList;
+    try {
+      GCSpider * spider = GCSpider::login(userName, password);
+      spider->nearest(center, maxDist, cacheList);
+    } catch(Failure& f) {
+      QMessageBox::critical(this, "Failure", f.what());
+    }
+
+    pModel->addCaches(cacheList);
+    pmap->setCaches(pModel->caches());
+    pmap->setCenter(center);
   }
-
-  pModel->addCaches(cacheList);
-  pmap->setCaches(pModel->caches());
-  pmap->setCenter(center);
 }
 
 /** Called when the user clicks on the Caches->Import single menu item */
