@@ -7,9 +7,9 @@
 #ifndef SETTINGSMANAGER_H_
 #define SETTINGSMANAGER_H_
 
-//#include <QtGlobal>
-#include <QSettings>
 #include "Coordinate.h"
+#include <QSettings>
+#include <QDir>
 
 namespace geojackal {
 
@@ -22,8 +22,10 @@ struct Coordinate;
  */
 class SettingsManager {
 public:
-  SettingsManager();
-  virtual ~SettingsManager() {}
+
+  static SettingsManager * instance();
+
+  static QDir storageLocation();
 
   QString gcUsername();
   void setGcUsername(const QString username);
@@ -38,7 +40,26 @@ public:
   void setCenter(const Coordinate& center);
 
 private:
-  QSettings s;
+  SettingsManager();
+  SettingsManager(const SettingsManager&);
+  virtual ~SettingsManager();
+
+  /** Private guard class to get rid of the instance at end of run time */
+  class Guard {
+  public:
+    ~Guard() {
+      if(SettingsManager::instance_ != 0) {
+        delete SettingsManager::instance_;
+      }
+    }
+  };
+  friend class Guard;
+
+  /** Singleton instance */
+  static SettingsManager * instance_;
+
+  /** Wrapped QSettings object */
+  QSettings * s;
 };
 
 }
