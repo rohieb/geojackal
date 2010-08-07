@@ -24,10 +24,10 @@ PrefDialog::PrefDialog(QWidget * parent) :
   loginLayout->addWidget(new QLabel("Password:"), 2, 0, Qt::AlignLeft);
   userNameEdit = new QLineEdit;
   loginLayout->addWidget(userNameEdit, 1, 1);
-  userNameEdit->setText(g_settings.gcUsername());
+  userNameEdit->setText(g_settings->gcUsername());
   passwordEdit = new QLineEdit;
   passwordEdit->setEchoMode(QLineEdit::Password);
-  passwordEdit->setText(g_settings.gcPassword());
+  passwordEdit->setText(g_settings->gcPassword());
   loginLayout->addWidget(passwordEdit, 2, 1);
   loginBox->setLayout(loginLayout);
   loginLayout->addWidget(new QLabel("Please note that your password is stored "
@@ -68,7 +68,7 @@ void PrefDialog::accept() {
   // everything ok
   qDebug() << "saving new prefs: { username:" << userName << "password:" <<
     "(omitted)" << "}";
-  g_settings.setGcUsername(userName);
-  g_settings.setGcPassword(password);
+  g_settings->setGcUsername(userName);
+  g_settings->setGcPassword(password);
   QDialog::accept();
 }

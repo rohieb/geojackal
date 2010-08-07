@@ -22,7 +22,7 @@ MainWindow::MainWindow() :
   }
 
   // map widget as central widget
-  pmap = new OsmSlippyMap(g_settings.center(), 16);
+  pmap = new OsmSlippyMap(g_settings->center(), 16);
   pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
   pmap->setFocus();
@@ -50,7 +50,7 @@ MainWindow::MainWindow() :
   cacheMenu->addAction(importSingleAction);
 
   // show prefs dialogue if no password or username set
-  if(g_settings.gcUsername().isEmpty() || g_settings.gcPassword().isEmpty()) {
+  if(g_settings->gcUsername().isEmpty() || g_settings->gcPassword().isEmpty()) {
     showPrefDialog();
   }
 }
@@ -72,8 +72,8 @@ void MainWindow::showPrefDialog() {
 /** Called when the user clicks on the Caches->Import region menu item */
 void MainWindow::importCaches() {
   // show prefs dialogue if no password or username set
-  QString userName = g_settings.gcUsername();
-  QString password = g_settings.gcPassword();
+  QString userName = g_settings->gcUsername();
+  QString password = g_settings->gcPassword();
   if(userName.isEmpty() || password.isEmpty()) {
     showPrefDialog();
   }
@@ -104,8 +104,8 @@ void MainWindow::importSingleCache() {
   if(ok) {
     Cache * cache = new Cache;
     try {
-      GCSpider * spider = GCSpider::login(g_settings.gcUsername(),
-        g_settings.gcPassword());
+      GCSpider * spider = GCSpider::login(g_settings->gcUsername(),
+        g_settings->gcPassword());
       spider->loadCache(waypoint, *cache);
     } catch(Failure& f) {
       QMessageBox::critical(this, "Failure", f.what());

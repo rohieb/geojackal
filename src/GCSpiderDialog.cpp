@@ -13,8 +13,8 @@ GCSpiderDialog::GCSpiderDialog(QWidget * parent) :
 
   setWindowTitle("Import from geocaching.com");
 
-  maxDist_ = g_settings.maxImportDist();
-  Coordinate center = g_settings.center();
+  maxDist_ = g_settings->maxImportDist();
+  Coordinate center = g_settings->center();
   lat_ = center.lat;
   lon_ = center.lon;
 
@@ -66,7 +66,7 @@ void GCSpiderDialog::accept() {
   // everything ok, save new preferences
   qDebug() << "saving new prefs: { maxdist:" << maxDist_ << "centerLon:" << lon_
     << "centerLat" << lat_ << "}";
-  g_settings.setMaxImportDist(maxDist_);
-  g_settings.setCenter(Coordinate(lat_, lon_));
+  g_settings->setMaxImportDist(maxDist_);
+  g_settings->setCenter(Coordinate(lat_, lon_));
   QDialog::accept();
 }

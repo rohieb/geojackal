@@ -26,7 +26,7 @@ static const QString APPNAME = "GeoJackal";
 static const QString VERSION = "0.1alpha";
 
 /** Global object for user defined settings */
-extern SettingsManager g_settings;
+extern SettingsManager * g_settings;
 
 }
 

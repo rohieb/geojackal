@@ -40,6 +40,9 @@ int main(int argc, char *argv[]) {
   GeojackalApplication::setOrganizationDomain("rohieb.name");
   GeojackalApplication::setOrganizationName(APPNAME);
 
+  // instantiate here to get the app name etc.
+  g_settings = SettingsManager::instance();
+
   MainWindow w;
 #if defined(Q_OS_SYMBIAN) || defined(Q_OS_WINCE_WM)
   w.showMaximized();
