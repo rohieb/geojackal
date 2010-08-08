@@ -25,8 +25,8 @@ MainWindow::MainWindow() :
   pmap = new OsmSlippyMap(g_settings.center(), 16);
   pmap->setCaches(pModel->caches());
   pmap->setZoom(16);
-  pmap->setFocus();
   setCentralWidget(pmap);
+  pmap->setFocus();
 
   // menu
   QAction * exitAction = new QAction("&Quit", this);

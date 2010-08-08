@@ -398,3 +398,32 @@ void OsmSlippyMap::wheelEvent(QWheelEvent * event) {
     event->ignore();
   }
 }
+
+// arrow keys for panning
+void OsmSlippyMap::keyPressEvent(QKeyEvent * event) {
+  QPointF dx;
+  bool handle = false;
+  if(event->key() == Qt::Key_Left) {
+    dx = QPointF(.1, 0);
+    handle = true;
+  }
+  if(event->key() == Qt::Key_Right) {
+    dx = QPointF(-.1, 0);
+    handle = true;
+  }
+  if(event->key() == Qt::Key_Up) {
+    dx = QPointF(0, .1);
+    handle = true;
+  }
+  if(event->key() == Qt::Key_Down) {
+    dx = QPointF(0, -.1);
+    handle = true;
+  }
+
+  if(handle) {
+    QPointF newCenter = geoToTile(center_, zoomLevel_) - dx;
+    setCenter(tileToGeo(newCenter, zoomLevel_));
+  } else {
+    return QWidget::keyPressEvent(event);
+  }
+}
