@@ -80,15 +80,16 @@ Coordinate tileToGeo(const QPointF tile, const uchar zoom) {
  * Constructor.
  */
 OsmSlippyMap::OsmSlippyMap(const Coordinate& center, const uchar zoom,
-  QWidget * parent) :
-  QWidget(parent), pnam_(0), zoomLevel_(zoom), center_(center) {
+  const QDir& cacheDir, QWidget * parent) :
+  QWidget(parent), pnam_(0), cacheDir_(cacheDir), zoomLevel_(zoom),
+  center_(center) {
+
   pnam_ = new QNetworkAccessManager;
   emptyTile_ = QPixmap(TILE_DIM, TILE_DIM);
   emptyTile_.fill(Qt::lightGray);
 
   // set up network cache so we don't have to load every tile multiple times
   QNetworkDiskCache * cache = new QNetworkDiskCache;
-  QDir cacheDir = QDir(QCoreApplication::applicationDirPath() + "/map-cache");
   qDebug() << "caching maps in" << cacheDir.path();
   cache->setCacheDirectory(cacheDir.path());
   pnam_->setCache(cache);

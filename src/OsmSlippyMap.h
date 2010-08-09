@@ -30,7 +30,8 @@ public:
   /** Maximum zoom level (in OSM zoom level units...) */
   static const uchar MAX_ZOOM;
 
-  OsmSlippyMap(const Coordinate& center, const uchar zoom,
+  OsmSlippyMap(const Coordinate& center, const uchar zoom, const QDir&
+    cacheDir = QDir(QCoreApplication::applicationDirPath()),
     QWidget * parent = 0);
   virtual ~OsmSlippyMap();
 
@@ -72,6 +73,11 @@ public:
     return zoomLevel_;
   }
 
+  /** Get the directory where the map tiles are cached */
+  inline QDir cacheDir() {
+    return cacheDir_;
+  }
+
   void setCaches(QList<Cache *> caches) {
     cacheList = caches;
   }
@@ -98,6 +104,8 @@ private:
    * servers
    */
   QNetworkAccessManager * pnam_;
+  /** The directory where the map tiles are cached */
+  QDir cacheDir_;
   /** The empty tile */
   QPixmap emptyTile_;
   /** Zoom level, ranging from 0 (world map) to 18 (detail) */

@@ -22,9 +22,9 @@ MainWindow::MainWindow() :
   }
 
   // map widget as central widget
-  pmap = new OsmSlippyMap(g_settings->center(), 16);
+  QDir cacheDir(g_settings->storageLocation().filePath("maps"));
+  pmap = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
   pmap->setCaches(pModel->caches());
-  pmap->setZoom(16);
   setCentralWidget(pmap);
   pmap->setFocus();
 
