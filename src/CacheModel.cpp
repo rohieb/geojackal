@@ -11,8 +11,6 @@
 
 using namespace geojackal;
 
-const QString CacheModel::sqlFileName = "cachestore.sqlite";
-
 /**
  * Convert list of attributes to string.
  * @param attrs List of attributes
@@ -85,13 +83,14 @@ CacheModel::~CacheModel() {
 
 /**
  * Connect to the database and load the caches
+ * @param fileName File name of the SQLite Database
  * @throws Failure if anything goes wrong
  * @return @c true if all caches could be loaded, @c false otherwise
  */
-bool CacheModel::open() {
-  qDebug() << "connecting to database" << sqlFileName;
+bool CacheModel::open(const QString& fileName) {
+  qDebug() << "connecting to database" << fileName;
   db = QSqlDatabase::addDatabase("QSQLITE");
-  db.setDatabaseName(sqlFileName);
+  db.setDatabaseName(fileName);
   if(!db.open()) {
     qDebug() << "Failure: " << db.lastError();
     return false;

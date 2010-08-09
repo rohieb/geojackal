@@ -23,12 +23,10 @@ namespace geojackal {
 class CacheModel : public QObject {
   Q_OBJECT
 public:
-  static const QString sqlFileName;
-
   CacheModel(QObject * parent = 0);
   virtual ~CacheModel();
 
-  bool open();
+  bool open(const QString& fileName);
   bool save();
 
 //  int rowCount(const QModelIndex &parent = QModelIndex()) const;

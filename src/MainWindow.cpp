@@ -16,7 +16,7 @@ MainWindow::MainWindow() :
   // load data
   pModel = new CacheModel(this);
   try {
-    pModel->open();
+    pModel->open(g_settings->storageLocation().filePath("geocaches.sqlite"));
   } catch(Failure &f) {
     QMessageBox::critical(this, "Failure", f.what());
   }
