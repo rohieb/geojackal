@@ -81,12 +81,13 @@ protected:
   void invalidate();
   QPoint tileToPixel(const QPoint& tileCoord);
 
-  void paintEvent(QPaintEvent *event);
-  void resizeEvent(QResizeEvent *);
-  void mouseDoubleClickEvent(QMouseEvent * event);
-  void mousePressEvent(QMouseEvent * event);
-  void mouseMoveEvent(QMouseEvent * event);
-  void wheelEvent(QWheelEvent * event);
+  virtual void paintEvent(QPaintEvent *event);
+  virtual void resizeEvent(QResizeEvent *);
+  virtual void mouseDoubleClickEvent(QMouseEvent * event);
+  virtual void mousePressEvent(QMouseEvent * event);
+  virtual void mouseMoveEvent(QMouseEvent * event);
+  virtual void wheelEvent(QWheelEvent * event);
+  virtual void keyPressEvent(QKeyEvent * event);
 
 protected slots:
   void httpFinished(QNetworkReply * reply);
