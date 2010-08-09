@@ -116,5 +116,7 @@ void MainWindow::importSingleCache() {
     pModel->addCache(cache);
     pmap->setCaches(pModel->caches());
     pmap->setCenter(*cache->coord);
+    // also save in profile, like for region
+    g_settings->setCenter(*cache->coord);
   }
 }
