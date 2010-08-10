@@ -16,13 +16,16 @@ PrefDialog::PrefDialog(QWidget * parent) :
 
   QVBoxLayout * mainLayout = new QVBoxLayout(this);
 
-  QString profileDir = tr("Your profile is stored in %1").
-    arg(SettingsManager::storageLocation().absolutePath());
-  qDebug() << "Profile dir is" << SettingsManager::storageLocation().absolutePath();
-  QLabel * profileDirLabel = new QLabel(profileDir);
-  profileDirLabel->setWordWrap(true);
-  mainLayout->addWidget(profileDirLabel);
+  // Profile location
+  QString dir = QDir::toNativeSeparators(SettingsManager::storageLocation().
+    absolutePath());
+  qDebug() << "Profile dir is" << dir;
+  mainLayout->addWidget(new QLabel(tr("Your profile is stored in:")));
+  QLineEdit * dirEdit = new QLineEdit(dir);
+  dirEdit->setReadOnly(true);
+  mainLayout->addWidget(dirEdit);
 
+  // GC.com login data
   QGroupBox * loginBox = new QGroupBox("Geocaching.com login", this);
   QGridLayout * loginLayout = new QGridLayout(this);
   loginLayout->addWidget(new QLabel("Insert your login data for geocaching.com"
