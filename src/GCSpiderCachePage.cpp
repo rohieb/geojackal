@@ -392,8 +392,8 @@ unsigned int GCSpiderCachePage::terrain() const {
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::placed(QDate& buf) const {
-  QRegExp rx("<td>\\s*<strong>\\s*(?:Hidden|Event Date)\\s*:</strong>\\s*"
-    "(\\d{1,2})/(\\d{1,2})/(\\d{4})\\s*</td>");
+  QRegExp rx("<strong>\\s*(?:Hidden|Event Date)\\s*:\\s*</strong>\\s*"
+    "(\\d{1,2})/(\\d{1,2})/(\\d{4})");
   rx.setMinimal(true);
 
   if(rx.indexIn(text_) >= 0 && !rx.cap(1).isEmpty() && !rx.cap(2).isEmpty() &&
