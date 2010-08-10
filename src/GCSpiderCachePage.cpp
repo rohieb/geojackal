@@ -16,7 +16,7 @@ using namespace geojackal;
  * only decimal entities (like @c &252;) are converted, hexadecimal entities
  * (like @c &#xf3;) are ignored.
  */
-QString replaceHtmlEntities(QString buf) {
+QString geojackal::replaceHtmlEntities(QString buf) {
   QRegExp rx("&#(\\d+);");
   int curPos = 0;
   while((curPos = rx.indexIn(buf, curPos)) >= 0) {
@@ -520,7 +520,7 @@ bool GCSpiderCachePage::waypoints(QVector<Waypoint>& buf) const {
  * Convert english month name to ordinal number
  * @return Ordinal number of the month or @c 0 on error
  */
-int monthToOrd(QString month) {
+int geojackal::monthToOrd(QString month) {
   if(month == "January") {
     return 1;
   } else if(month == "February") {

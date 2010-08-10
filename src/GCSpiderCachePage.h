@@ -47,6 +47,9 @@ public:
   bool archived() const;
 };
 
+QString replaceHtmlEntities(QString buf);
+int monthToOrd(QString month);
+
 }
 
 #endif /* GCCACHESPIDER_H_ */
