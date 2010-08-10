@@ -319,16 +319,6 @@ struct LogMessage {
   }
 };
 
-/**
- * Cache Description, can be plain text or HTML
- */
-struct CacheDesc {
-  /** Descriptive text, notes */
-  QString desc;
-  /** Is the description in HTML format? */
-  bool descHtml;
-};
-
 /** String to indicate invalid waypoints */
 const QString WAYPOINT_INVALID = "!!!INVALID!!!";
 
@@ -349,13 +339,12 @@ struct Waypoint {
   /** Type of the waypoint */
   WaypointType type;
   /** Cache description */
-  CacheDesc * desc;
+  QString desc;
 
-  Waypoint() : coord(0), desc(0) {}
+  Waypoint() : coord(0) {}
 
   ~Waypoint() {
     if(coord != 0) delete coord;
-    if(desc != 0) delete desc;
   }
 };
 

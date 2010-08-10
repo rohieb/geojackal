@@ -66,8 +66,7 @@ bool GCSpiderCachePage::all(Cache& buf) const {
 //  qDebug() << buf.type;
   if(!buf.coord) buf.coord = new Coordinate;
   ret &= coord(*buf.coord);
-  if(!buf.desc) buf.desc = new CacheDesc;
-  ret &= desc(*buf.desc);
+  ret &= desc(buf.desc);
   ret &= shortDesc(buf.shortDesc);
   ret &= ((buf.size = size()) != SIZE_UNKNOWN);
   ret &= ((buf.difficulty = difficulty()) != 0);
@@ -270,7 +269,7 @@ bool GCSpiderCachePage::coord(Coordinate& buf) const {
  * @param buf Buffer to receive the description
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCSpiderCachePage::desc(CacheDesc& buf) const {
+bool GCSpiderCachePage::desc(QString& buf) const {
   QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\"[^>]*>)");
   QRegExp endRx("<div [^c]*class=\"CacheDetailNavigationWidget\"");
   startRx.setMinimal(true);
@@ -279,16 +278,14 @@ bool GCSpiderCachePage::desc(CacheDesc& buf) const {
   int end = text_.indexOf(endRx);
 
   // text is utf-8, but read as ascii
-  buf.desc = QString::fromUtf8(text_.mid(start, end - start).toAscii());
-  buf.desc = replaceHtmlEntities(buf.desc);
-  // @todo html flag is not needed at all
-  buf.descHtml = true;
+  buf = QString::fromUtf8(text_.mid(start, end - start).toAscii());
+  buf = replaceHtmlEntities(buf);
 
   // @todo process images
   // currently: remove image tags from description
   QRegExp imgTag("<img .*>");
   imgTag.setMinimal(true);
-  buf.desc.replace(imgTag, "");
+  buf.replace(imgTag, "");
 
   // @todo something like html tidy, at least delete multiple empty <p>,<br/>
   // @todo process links to other caches?
@@ -504,11 +501,9 @@ bool GCSpiderCachePage::waypoints(QVector<Waypoint>& buf) const {
       return false;
     }
 
-    // Note, may be HTML
+    // Note
     if(!rx.cap(4).isEmpty()) {
-      CacheDesc desc;
-      desc.descHtml = true;
-      desc.desc = rx.cap(4).trimmed();
+      wp.desc = rx.cap(4).trimmed();
     }
 
     buf.append(wp);

@@ -211,8 +211,7 @@ bool CacheModel::open(const QString& fileName) {
     cache->coord = new Coordinate(q.value(2).toDouble(&ok),
       q.value(3).toDouble(&ok));
     cache->type = static_cast<WaypointType>(q.value(4).toInt(&ok));
-    cache->desc = new CacheDesc;
-    cache->desc->desc = q.value(5).toString();
+    cache->desc = q.value(5).toString();
     cache->shortDesc = q.value(6).toString();
     cache->size = static_cast<CacheSize>(q.value(7).toInt(&ok));
     cache->terrain = q.value(8).toInt(&ok);
@@ -259,7 +258,7 @@ bool CacheModel::save() {
     q.bindValue(":lat", static_cast<double>(cache->coord->lat));
     q.bindValue(":lon", static_cast<double>(cache->coord->lon));
     q.bindValue(":type", static_cast<int>(cache->type));
-    q.bindValue(":desc", cache->desc->desc);
+    q.bindValue(":desc", cache->desc);
     q.bindValue(":waypoint", cache->waypoint);
     if(!(success = q.exec())) {
       throw Failure("Error while trying to save to SQL table 'waypoints': " +

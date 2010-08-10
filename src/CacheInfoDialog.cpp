@@ -72,7 +72,7 @@ CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
   // tab pages
   // setup description browser
   QTextBrowser * descBrowser = new QTextBrowser();
-  descBrowser->setHtml(cache->desc->desc);
+  descBrowser->setHtml(cache->desc);
   descBrowser->setOpenExternalLinks(true);
 
   // prepare tab widgets

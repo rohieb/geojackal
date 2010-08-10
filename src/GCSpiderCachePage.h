@@ -32,7 +32,7 @@ public:
   bool waypoint(QString& buf) const;
   bool type(WaypointType& buf) const;
   bool coord(Coordinate& buf) const;
-  bool desc(CacheDesc& buf) const;
+  bool desc(QString& buf) const;
   bool shortDesc(QString& buf) const;
   CacheSize size() const;
   unsigned int difficulty() const;
