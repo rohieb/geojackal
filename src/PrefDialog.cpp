@@ -12,7 +12,7 @@ using namespace geojackal;
 PrefDialog::PrefDialog(QWidget * parent) :
   QDialog(parent) {
 
-  setWindowTitle("Preferences");
+  setWindowTitle(tr("Preferences"));
 
   QVBoxLayout * mainLayout = new QVBoxLayout(this);
 
@@ -26,12 +26,13 @@ PrefDialog::PrefDialog(QWidget * parent) :
   mainLayout->addWidget(dirEdit);
 
   // GC.com login data
-  QGroupBox * loginBox = new QGroupBox("Geocaching.com login", this);
-  QGridLayout * loginLayout = new QGridLayout(this);
-  loginLayout->addWidget(new QLabel("Insert your login data for geocaching.com"
-    "\nhere before you import caches."), 0, 0, 1, 2, Qt::AlignLeft);
-  loginLayout->addWidget(new QLabel("User name:"), 1, 0, Qt::AlignLeft);
-  loginLayout->addWidget(new QLabel("Password:"), 2, 0, Qt::AlignLeft);
+  QGroupBox * loginBox = new QGroupBox(tr("Geocaching.com login"), this);
+  QGridLayout * loginLayout = new QGridLayout;
+  loginLayout->addWidget(new QLabel(tr("Insert your login data for "
+    "geocaching.com here before you import caches.")), 0, 0, 1, 2,
+    Qt::AlignLeft);
+  loginLayout->addWidget(new QLabel(tr("User name:")), 1, 0, Qt::AlignLeft);
+  loginLayout->addWidget(new QLabel(tr("Password:")), 2, 0, Qt::AlignLeft);
   userNameEdit = new QLineEdit;
   loginLayout->addWidget(userNameEdit, 1, 1);
   userNameEdit->setText(g_settings->gcUsername());
@@ -40,8 +41,8 @@ PrefDialog::PrefDialog(QWidget * parent) :
   passwordEdit->setText(g_settings->gcPassword());
   loginLayout->addWidget(passwordEdit, 2, 1);
   loginBox->setLayout(loginLayout);
-  loginLayout->addWidget(new QLabel("Please note that your password is stored "
-    "in plain text."), 3, 0, 1, 2, Qt::AlignLeft);
+  loginLayout->addWidget(new QLabel(tr("Please note that your password is "
+    "stored in plain text.")), 3, 0, 1, 2, Qt::AlignLeft);
   mainLayout->addWidget(loginBox);
 
   //QGroupBox * centerBox = new QGroupBox("Home coordinates", this);
@@ -67,10 +68,10 @@ void PrefDialog::accept() {
   try {
     GCSpider::login(userName, password);
   } catch(Failure& f) {
-    QMessageBox msg(QMessageBox::Critical, "Error", QString("There was an "
+    QMessageBox msg(QMessageBox::Critical, "Error", QString(tr("There was an "
       "error while trying to log in to geocaching.com. Maybe your supplied "
       "user name or password is wrong.\n\nPlease fill in the correct values "
-      "and try again.\n\nThe error was: ") + f.what(), QMessageBox::Ok, this);
+      "and try again.\n\nThe error was: ")) + f.what(), QMessageBox::Ok, this);
     msg.exec();
     return;
   }
