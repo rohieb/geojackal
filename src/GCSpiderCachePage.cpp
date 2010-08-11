@@ -285,7 +285,8 @@ bool GCSpiderCachePage::coord(Coordinate& buf) const {
  */
 bool GCSpiderCachePage::desc(QString& buf) const {
   QRegExp startRx("(<span .*id=\"ctl00_ContentBody_LongDescription\"[^>]*>)");
-  QRegExp endRx("<div [^c]*class=\"CacheDetailNavigationWidget\"");
+  QRegExp endRx("</span>\\s*</div>\\s*<p>\\s*</p>.*<div .*class=\""
+    "CacheDetailNavigationWidget\"");
   startRx.setMinimal(true);
   endRx.setMinimal(true);
   int start = text_.indexOf(startRx) + startRx.cap(1).length(); // after regex
@@ -293,7 +294,10 @@ bool GCSpiderCachePage::desc(QString& buf) const {
 
   // text is utf-8, but read as ascii
   buf = QString::fromUtf8(text_.mid(start, end - start).toAscii());
+
+  // tidy up
   buf = replaceHtmlEntities(buf);
+  buf.replace(QRegExp("[\n\r\t ]+"), " ");
 
   // @todo process images
   // currently: remove image tags from description
