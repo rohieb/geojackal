@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += debug_and_release \
     ordered
-TARGET = GeoJackal
+TARGET = geojackal
 QT = core \
     gui \
     network \
