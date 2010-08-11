@@ -247,7 +247,7 @@ bool CacheModel::open(const QString& fileName) {
 
 /**
  * Save all changed, updated and removed caches to the database.
- * @return @c true if the process was successful, @false otherwise. In the
+ * @return @c true if the process was successful, @c false otherwise. In the
  *  latter case, some caches may be saved, some not.
  */
 bool CacheModel::save() {

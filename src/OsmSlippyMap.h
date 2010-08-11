@@ -69,7 +69,7 @@ public:
 
   /**
    * Set the zoom level.
-   * @param The new zoom level, ranging from 0 (world map) to 18 (detail).
+   * @param zoom The new zoom level, ranging from 0 (world map) to 18 (detail).
    * @throws Failure if anything goes wrong
    */
   inline void setZoom(const uchar zoom) {

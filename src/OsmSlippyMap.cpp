@@ -71,8 +71,7 @@ QPointF geojackal::geoToTile(const Coordinate& coord, const uchar zoom) {
  * Calculate the coordinate of the northwestern edge of a given tile. To
  * retrieve the coordinate of the southeastern edge, add 1 to the tile
  * coordinates.
- * @param xTile x tile coordinate
- * @param yTile y tile coordinate
+ * @param tile tile coordinates
  * @param zoom Zoom level, ranging from 0 (whole world) to 18 (detail)
  * @return The geodetic coordinate of the northwestern edge of the given tile
  * @throws Failure if anything goes wrong
