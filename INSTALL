@@ -1,0 +1,19 @@
+To build the application, you need at least the Qt 4.5 libraries and header 
+files. You can obtain these from the Qt website (http://qt.nokia.com) or, if 
+you are using Linux, also from your distribution-specific packaging system.
+In either case, type the following commands to build the application:
+
+  qmake && make release
+
+or, if you are building on Windows:
+
+  qmake && nmake release
+
+After the build has finished, start the application:
+
+  ./GeoJackal
+
+or, if you were building on Windows:
+  
+  release\GeoJackal.exe
+
