@@ -19,7 +19,6 @@
  */
 
 #include "CacheModel.h"
-#include "functions.h"
 #include <QDateTime>
 #include <QStringList>
 
