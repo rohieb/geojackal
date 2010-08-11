@@ -20,10 +20,8 @@
 
 #include "Cache.h"
 
-namespace geojackal {
-
 /** dump caches to a debug stream */
-QDebug& operator<<(QDebug& dbg, const Cache& cache) {
+QDebug& geojackal::operator<<(QDebug& dbg, const Cache& cache) {
   dbg.nospace() << "{ wp: " << cache.waypoint;
   dbg.nospace() << ", name: " << cache.name;
   dbg.nospace() << ", coord: " << *cache.coord;
@@ -38,4 +36,26 @@ QDebug& operator<<(QDebug& dbg, const Cache& cache) {
   return dbg.maybeSpace();
 }
 
+
+/**
+ * ROT13 function to encode/decode a cache hint. Due to the nature of ROT13,
+ * both these operations are absolutely equivalent.
+ * @param text Text to be encoded or decoded
+ * @return Encoded/decoded text
+ */
+QString geojackal::rot13(QString& text) {
+  int n = text.length();
+  QString out = text;
+  while(n--) {
+    if((text.at(n) >= QChar('a') && text.at(n) <= QChar('m')) ||
+      (text.at(n) >= QChar('A') && text.at(n) <= QChar('M'))) {
+      // letters between a/A and m/M
+      out[n] = QChar(text.at(n).toAscii() + 13);
+    } else if((text.at(n) > QChar('n') && text.at(n) <= QChar('z')) ||
+      (text.at(n) >= QChar('N') && text.at(n) <= QChar('Z'))) {
+      // letters between n/N and z/Z
+      out[n] = QChar(text.at(n).toAscii() - 13);
+    }
+  }
+  return out;
 }

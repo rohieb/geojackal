@@ -31,7 +31,7 @@ using namespace geojackal;
  * @return A string which contains a @c 0 or a @c 1 for each CacheAttribute,
  *  ordered ascending.
  */
-QString attrsToString(const QVector<CacheAttribute>& attrs) {
+QString geojackal::attrsToString(const QVector<CacheAttribute>& attrs) {
   QString field(NUM_ATTRIBUTES, QChar('0'));
   foreach(CacheAttribute attr, attrs) {
     field[static_cast<int>(attr)] = QChar('1');
@@ -46,7 +46,7 @@ QString attrsToString(const QVector<CacheAttribute>& attrs) {
  * @return A list of CacheAttributes that are set in @a str, or empty list if
  *  the string was not of size @c NUM_ATTRIBUTES.
  */
-QVector<CacheAttribute> stringToAttrs(const QString str) {
+QVector<CacheAttribute> geojackal::stringToAttrs(const QString str) {
   if(str.size() != NUM_ATTRIBUTES) {
     return QVector<CacheAttribute>(); // invalid string
   }
@@ -68,7 +68,7 @@ QVector<CacheAttribute> stringToAttrs(const QString str) {
  * @return @c true if there is a row in @a column containing @a value or @c
  *  false otherwise
  */
-bool valueExists(const QString table, const QString column,
+bool geojackal::sqlValueExists(const QString table, const QString column,
   const QString value) {
   QSqlQuery qe;
   qe.prepare(QString("SELECT * FROM %1 WHERE %2 = :value").arg(table).
@@ -258,7 +258,7 @@ bool CacheModel::save() {
     Cache * cache = cacheList.value(wp);
 
     // table 'waypoints'
-    bool alreadyExists = valueExists("waypoints", "waypoint", wp);
+    bool alreadyExists = sqlValueExists("waypoints", "waypoint", wp);
     if(alreadyExists) {
       qDebug() << "updating" << wp;
       q.prepare("UPDATE waypoints SET name = :name, lat = :lat, lon = :lon, "

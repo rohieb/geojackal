@@ -51,6 +51,8 @@ private:
   Cache * cache_;
 };
 
+QString sizeToText(CacheSize size);
+
 }
 
 #endif /* CACHEINFODIALOG_H_ */

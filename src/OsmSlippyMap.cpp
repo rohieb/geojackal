@@ -56,7 +56,7 @@ uint qHash(const QRect& r) {
  * @see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames for an
  * explanation what is done here
  */
-QPointF geoToTile(const Coordinate& coord, const uchar zoom) {
+QPointF geojackal::geoToTile(const Coordinate& coord, const uchar zoom) {
   if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }
@@ -79,7 +79,7 @@ QPointF geoToTile(const Coordinate& coord, const uchar zoom) {
  * @see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames for an
  * explanation what is done here
  */
-Coordinate tileToGeo(const QPointF tile, const uchar zoom) {
+Coordinate geojackal::tileToGeo(const QPointF tile, const uchar zoom) {
   if(zoom > OsmSlippyMap::MAX_ZOOM) {
     throw Failure("Zoom level must be between 0 and 18");
   }

@@ -148,6 +148,8 @@ private:
 };
 
 QPixmap cacheIcon(Cache * cache);
+QPointF geoToTile(const Coordinate& coord, const uchar zoom);
+Coordinate tileToGeo(const QPointF tile, const uchar zoom);
 
 }
 #endif /* OSMSLIPPYMAP_H_ */

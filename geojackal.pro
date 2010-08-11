@@ -14,7 +14,6 @@ SOURCES = src/SettingsManager.cpp \
     src/CacheModel.cpp \
     src/OsmSlippyMap.cpp \
     src/Failure.cpp \
-    src/functions.cpp \
     src/Coordinate.cpp \
     src/GCSpider.cpp \
     src/GCSpiderCachePage.cpp \
@@ -28,7 +27,6 @@ HEADERS = src/SettingsManager.h \
     src/OsmSlippyMap.h \
     src/global.h \
     src/Failure.h \
-    src/functions.h \
     src/Cache.h \
     src/Coordinate.h \
     src/GCSpider.h \

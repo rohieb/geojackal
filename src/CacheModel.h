@@ -58,6 +58,11 @@ private:
   QHash<QString, Cache *> cacheList;
 };
 
+QString attrsToString(const QVector<CacheAttribute>& attrs);
+QVector<CacheAttribute> stringToAttrs(const QString str);
+bool sqlValueExists(const QString table, const QString column,
+  const QString value);
+
 }
 
 #endif /* CACHEMODEL_H_ */

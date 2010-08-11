@@ -411,6 +411,7 @@ struct Cache : Waypoint {
 };
 
 QDebug& operator<<(QDebug& dbg, const Cache& cache);
+QString rot13(QString& text);
 
 }
 #endif // CACHE_H

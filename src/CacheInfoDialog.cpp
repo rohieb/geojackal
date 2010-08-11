@@ -21,14 +21,14 @@
 #include "CacheInfoDialog.h"
 #include "OsmSlippyMap.h" // for cacheIcon()
 
-namespace geojackal {
+using namespace geojackal;
 
 /**
  * Conversion of cache size from enum to string, like "micro".
  * @param size Cache size
  * @return Lowercase textual representation of the cache size, or empty string
  */
-QString sizeToText(CacheSize size) {
+QString geojackal::sizeToText(CacheSize size) {
   switch(size) {
     case SIZE_NANO:
       return "nano";
@@ -105,6 +105,4 @@ CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
 }
 
 CacheInfoDialog::~CacheInfoDialog() {
-}
-
 }

@@ -21,7 +21,7 @@
 
 #include "Failure.h"
 
-namespace geojackal {
+using namespace geojackal;
 
 Failure::Failure(QString message) :
   message_(message) {
@@ -30,6 +30,4 @@ Failure::Failure(QString message) :
 /** @return Error message given by the thrower */
 const char* Failure::what() const throw() {
   return message_.toUtf8();
-}
-
 }
