@@ -5,6 +5,7 @@ ui_*.h
 release/
 debug/
 GeoJackal
+geojackal
 Makefile*
 *.ncb
 *.sln
