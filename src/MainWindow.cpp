@@ -30,6 +30,7 @@ using namespace geojackal;
 MainWindow::MainWindow() :
   QMainWindow(0), pmap(0), pModel(0) {
 
+  setWindowTitle("GeoJackal");
   setWindowIcon(QIcon(":/geojackal.png"));
 
   // load data
