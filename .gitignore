@@ -15,6 +15,7 @@ Makefile*
 *.exe
 *.dll
 *.pdb
+*.idb
 .settings/org.eclipse.ltk.core.refactoring.prefs
 map-cache/
 callgrind.out.*

@@ -38,7 +38,7 @@ public:
 
 protected:
   /** Internal message */
-  QString message_;
+  QByteArray message_;
 };
 
 }
