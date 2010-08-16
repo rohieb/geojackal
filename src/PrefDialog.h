@@ -32,6 +32,7 @@ public:
   virtual ~PrefDialog();
 
 public slots:
+  void verifyLogin();
   void accept();
 
 private:

@@ -22,6 +22,7 @@
 
 #include "OsmSlippyMap.h"
 #include "CacheModel.h"
+#include "GCSpider.h"
 #include <QObject>
 #include <QtGui>
 
@@ -32,9 +33,10 @@ class MainWindow : public QMainWindow {
 public:
   MainWindow();
   virtual ~MainWindow();
+  GCSpider * validateLogin();
 
 protected slots:
-  void showPrefDialog();
+  int showPrefDialog();
   void importCaches();
   void importSingleCache();
 

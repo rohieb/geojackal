@@ -36,7 +36,8 @@ MainWindow::MainWindow() :
   // load data
   pModel = new CacheModel(this);
   try {
-    pModel->open(g_settings->storageLocation().filePath("geocaches.sqlite"));
+    pModel->open(g_settings->storageLocation().
+      absoluteFilePath("geocaches.sqlite"));
   } catch(Failure &f) {
     QMessageBox::critical(this, "Failure", f.what());
   }
@@ -85,59 +86,103 @@ MainWindow::~MainWindow() {
   }
 }
 
-void MainWindow::showPrefDialog() {
+/**
+ * Shows the preferences dialog to the user
+ * @return whatever PrefDialog::exec() returns
+ */
+int MainWindow::showPrefDialog() {
   PrefDialog prefs(this);
-  prefs.exec();
+  return prefs.exec();
 }
+
+/**
+ * Validate the geocaching.com login data by displaying the Preferences dialog
+ * until login succeds. The login data are taken from the application settings.
+ * @return A GCSpider instance, or @c 0 if the user cancelled the Preferences
+ *  dialog.
+ */
+GCSpider * MainWindow::validateLogin() {
+  GCSpider * spider = 0;
+
+  // try to login until login succeeds or the user gets weary
+  bool validLogin = false;
+  while(!validLogin) {
+    QString failMsg;
+    try {
+      spider = GCSpider::login(g_settings->gcUsername(),
+        g_settings->gcPassword());
+    } catch(Failure &f) {
+      validLogin = false;
+      failMsg = f.what();
+    }
+    if(spider) { // login successful
+      validLogin = true; // for the accounts... *cough*
+      return spider;
+    }
+
+    // show prefs dialogue if login fails
+    if(!validLogin) {
+      QMessageBox::critical(this, "Error", tr("There was an error while trying "
+        "to log in to geocaching.com. Maybe the user name or password you "
+        "supplied is wrong.\n\nPlease fill in the correct values and try again."
+        "\n\nThe message was: ") + failMsg);
+
+      if(showPrefDialog() == QDialog::Rejected) {
+        return 0; // user gave up
+      }
+    }
+  }
+  Q_ASSERT(spider == 0 && !validLogin);
+  return 0; // anyways, should not happen!
+}
+
 
 /** Called when the user clicks on the Caches->Import region menu item */
 void MainWindow::importCaches() {
-  // show prefs dialogue if no password or username set
-  QString userName = g_settings->gcUsername();
-  QString password = g_settings->gcPassword();
-  if(userName.isEmpty() || password.isEmpty()) {
-    showPrefDialog();
-  }
+  GCSpider * spider = validateLogin();
 
-  GCSpiderDialog dialog(this);
-  if(dialog.exec() == QDialog::Accepted) {
-    Coordinate center(dialog.lat(), dialog.lon());
-    float maxDist = dialog.maxDist();
+  if(spider) {
+    GCSpiderDialog dialog(this);
+    if(dialog.exec() == QDialog::Accepted) {
+      Coordinate center(dialog.lat(), dialog.lon());
+      float maxDist = dialog.maxDist();
 
-    QList<Cache *> cacheList;
-    try {
-      GCSpider * spider = GCSpider::login(userName, password);
-      spider->nearest(center, maxDist, cacheList);
-    } catch(Failure& f) {
-      QMessageBox::critical(this, "Failure", f.what());
+      QList<Cache *> cacheList;
+      try {
+        spider->nearest(center, maxDist, cacheList);
+      } catch(Failure& f) {
+        QMessageBox::critical(this, "Error", f.what());
+      }
+
+      pModel->addCaches(cacheList);
+      pmap->setCaches(pModel->caches());
+      pmap->setCenter(center);
     }
-
-    pModel->addCaches(cacheList);
-    pmap->setCaches(pModel->caches());
-    pmap->setCenter(center);
   }
 }
 
 /** Called when the user clicks on the Caches->Import single menu item */
 void MainWindow::importSingleCache() {
-  bool ok;
-  QString waypoint = QInputDialog::getText(this, "Import cache", "Enter the "
-    "waypoint of the cache:", QLineEdit::Normal, "GC", &ok);
-  if(ok) {
-    Cache * cache = new Cache;
-    try {
-      GCSpider * spider = GCSpider::login(g_settings->gcUsername(),
-        g_settings->gcPassword());
-      spider->loadCache(waypoint, *cache);
-    } catch(Failure& f) {
-      QMessageBox::critical(this, "Failure", f.what());
-      delete cache;
-      return;
+  GCSpider * spider = validateLogin();
+
+  if(spider) {
+    bool ok;
+    QString waypoint = QInputDialog::getText(this, "Import cache", "Enter the "
+      "waypoint of the cache:", QLineEdit::Normal, "GC", &ok);
+    if(ok) {
+      Cache * cache = new Cache;
+      try {
+        spider->loadCache(waypoint, *cache);
+      } catch(Failure& f) {
+        QMessageBox::critical(this, "Error", f.what());
+        delete cache;
+        return;
+      }
+      pModel->addCache(cache);
+      pmap->setCaches(pModel->caches());
+      pmap->setCenter(*cache->coord);
+      // also save in profile, like for region
+      g_settings->setCenter(*cache->coord);
     }
-    pModel->addCache(cache);
-    pmap->setCaches(pModel->caches());
-    pmap->setCenter(*cache->coord);
-    // also save in profile, like for region
-    g_settings->setCenter(*cache->coord);
   }
 }

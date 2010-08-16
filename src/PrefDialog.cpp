@@ -66,6 +66,10 @@ PrefDialog::PrefDialog(QWidget * parent) :
   passwordEdit->setText(g_settings->gcPassword());
   loginBoxLayout->addRow(tr("&Password:"), passwordEdit);
 
+  QPushButton * verifyButton = new QPushButton(tr("&Test login"));
+  connect(verifyButton, SIGNAL(clicked()), this, SLOT(verifyLogin()));
+  loginBoxLayout->addRow(verifyButton);
+
   QLabel * plainTextLabel = new QLabel(tr("Please note that your password is "
     "stored in plain text."));
   plainTextLabel->setWordWrap(true);
@@ -89,8 +93,8 @@ PrefDialog::PrefDialog(QWidget * parent) :
 PrefDialog::~PrefDialog() {
 }
 
-void PrefDialog::accept() {
-  // save new preferences
+/** called when the user clicks the "Test Login" button */
+void PrefDialog::verifyLogin() {
   QString userName = userNameEdit->text();
   QString password = passwordEdit->text();
 
@@ -98,15 +102,24 @@ void PrefDialog::accept() {
   try {
     GCSpider::login(userName, password);
   } catch(Failure& f) {
-    QMessageBox msg(QMessageBox::Critical, "Error", QString(tr("There was an "
-      "error while trying to log in to geocaching.com. Maybe your supplied "
-      "user name or password is wrong.\n\nPlease fill in the correct values "
-      "and try again.\n\nThe error was: ")) + f.what(), QMessageBox::Ok, this);
-    msg.exec();
+    QMessageBox::critical(this, "Error", tr("There was an error while trying "
+      "to log in to geocaching.com. Maybe the user name or password you "
+      "supplied is wrong.\n\nPlease fill in the correct values and try again."
+      "\n\nThe message was: ") + f.what());
     return;
   }
+  // else: login ok
+  QMessageBox msg(QMessageBox::Information, "Success", tr("The login to "
+    "geocaching.com was successful."), QMessageBox::Ok, this);
+  msg.exec();
+}
 
-  // everything ok
+/** called when the user clicks the OK button */
+void PrefDialog::accept() {
+  // save new preferences
+  QString userName = userNameEdit->text();
+  QString password = passwordEdit->text();
+
   qDebug() << "saving new prefs: { username:" << userName << "password:" <<
     "(omitted)" << "}";
   g_settings->setGcUsername(userName);
