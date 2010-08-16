@@ -26,6 +26,10 @@ using namespace geojackal;
 PrefDialog::PrefDialog(QWidget * parent) :
   QDialog(parent) {
 
+#if defined(Q_OS_SYMBIAN) || defined(Q_OS_WINCE_WM)
+  showMaximized();
+#endif
+
   setWindowTitle(tr("Preferences"));
 
   QVBoxLayout * mainLayout = new QVBoxLayout;
@@ -33,7 +37,7 @@ PrefDialog::PrefDialog(QWidget * parent) :
   // Profile location
   QGroupBox * profileBox = new QGroupBox(tr("Profile location"));
   QFormLayout * profileBoxLayout = new QFormLayout;
-  profileBoxLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+  profileBoxLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
 
   QString dir = QDir::toNativeSeparators(SettingsManager::storageLocation().
     absolutePath());
@@ -48,8 +52,10 @@ PrefDialog::PrefDialog(QWidget * parent) :
   QGroupBox * loginBox = new QGroupBox(tr("Geocaching.com login"));
   QFormLayout * loginBoxLayout = new QFormLayout;
 
-  loginBoxLayout->addRow(new QLabel(tr("Insert your login data for "
-    "geocaching.com here before you import caches.")));
+  QLabel * loginNoticeLabel = new QLabel(tr("Insert your login data for "
+    "geocaching.com here before you import geocaches."));
+  loginNoticeLabel->setWordWrap(true);
+  loginBoxLayout->addRow(loginNoticeLabel);
   
   userNameEdit = new QLineEdit;
   userNameEdit->setText(g_settings->gcUsername());
@@ -60,8 +66,10 @@ PrefDialog::PrefDialog(QWidget * parent) :
   passwordEdit->setText(g_settings->gcPassword());
   loginBoxLayout->addRow(tr("&Password:"), passwordEdit);
 
-  loginBoxLayout->addRow(new QLabel(tr("Please note that your password is "
-    "stored in plain text.")));
+  QLabel * plainTextLabel = new QLabel(tr("Please note that your password is "
+    "stored in plain text."));
+  plainTextLabel->setWordWrap(true);
+  loginBoxLayout->addRow(plainTextLabel);
 
   loginBox->setLayout(loginBoxLayout);
   mainLayout->addWidget(loginBox);
