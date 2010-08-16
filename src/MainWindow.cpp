@@ -54,6 +54,7 @@ MainWindow::MainWindow() :
   connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
   QAction * prefAction = new QAction("&Preferences...", this);
+  prefAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
   connect(prefAction, SIGNAL(triggered()), SLOT(showPrefDialog()));
 
   QMenu * appMenu = menuBar()->addMenu("&Application");
