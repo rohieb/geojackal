@@ -38,9 +38,8 @@ GCSpider * GCSpider::instance_ = 0;
 /**
  * Constructor.
  */
-GCSpider::GCSpider(const QString username, const QString password) :
-  pnam_(0), loadPageNetReply_(0), username_(username), password_(password),
-  loggedIn_(false) {
+GCSpider::GCSpider() :
+  pnam_(0), loadPageNetReply_(0), loggedIn_(false) {
   pnam_ = new QNetworkAccessManager(this);
 }
 
@@ -117,31 +116,43 @@ void GCSpider::loadPageFinished(QNetworkReply * reply) {
  * This function blocks until the login cookie has ben retrieved. The cookies
  * are saved to the loginCookie_ member variable, and the loggedIn_ member
  * variable is set according to whether the login was successful.
+ *
+ * User name and password can be empty if this function was previously called;
+ * in this case, the previous user name and password are used.
+ *
  * @param username geocaching.com user name to use for log in
  * @param password geocaching.com password to use for log in
  * @return An GCSpider instance that can be used for further operations.
  * @throws Failure if anything goes wrong
  */
-GCSpider * GCSpider::login(const QString username, const QString password) {
+GCSpider * GCSpider::login(const QString username = "",
+  const QString password = "") {
 
   static Guard guard; // delete the instance at end of run time
 
+  // instanciate ourself
   if(!instance_) {
-    instance_ = new GCSpider(username, password);
+    instance_ = new GCSpider;
   }
-  if(instance_->loggedIn()) {
+
+  // use previous login data, if possible and nothing else given
+  if((username == "" || password == "") && instance_->loggedIn()) {
     return instance_;
   }
 
-  if(instance_->username_.trimmed().isEmpty()) {
+  // otherwise, do login with provided account data
+  // but first log out to prevent interference with old session cookies
+  logout();
+
+  if(username.trimmed().isEmpty()) {
     throw Failure("User name is empty!");
   }
-  if(instance_->password_.trimmed().isEmpty()) {
+  if(password.trimmed().isEmpty()) {
     throw Failure("Password is empty!");
   }
 
   // login magic for post data
-  // TODO read this from login page form
+  // TODO read this from login page form?
   const static QByteArray LOGIN_MAGIC =
     "__VIEWSTATE=%2FwEPDwULLTE4MjM1Mjc4MzIPFgIeDkxvZ2luLlJlZGlyZWN0ZRYCZg9kFgQC"
     "AQ9kFhACBQ8WAh4EVGV4dGRkAgkPFgIfAQUWWW91IGFyZSBub3QgbG9nZ2VkIGluLmQCCw8PFg"
@@ -209,8 +220,11 @@ GCSpider * GCSpider::login(const QString username, const QString password) {
  * Log out of geocaching.com. Deletes the cookies with the identity information.
  */
 void GCSpider::logout() {
-  // simpy delete the whole cookie jar
-  pnam_->setCookieJar(new QNetworkCookieJar(pnam_));
+  if(instance_) {
+    // delete cookies
+    instance_->pnam_->setCookieJar(new QNetworkCookieJar(instance_->pnam_));
+    instance_->loggedIn_ = false;
+  }
 }
 
 /** Temporary type to save geocache GUIDs and waypoints */

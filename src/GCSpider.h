@@ -47,7 +47,7 @@ class GCSpider : public QObject {
 public:
 
   static GCSpider * login(const QString username, const QString password);
-  void logout();
+  static void logout();
 
   bool nearest(const Coordinate center, const float maxDist,
     QList<Cache *>& buf);
@@ -57,7 +57,7 @@ public:
   static const QByteArray USER_AGENT;
 
   /**
-   * @return @c true if the user has beed successfully logged in
+   * @return @c true if the user has been successfully logged in
    */
   inline bool loggedIn() {
     return loggedIn_;
@@ -69,7 +69,7 @@ protected:
   QNetworkReply * loadPage(const QUrl& url, const QByteArray * formData = 0);
 
 private:
-  GCSpider(const QString username, const QString password);
+  GCSpider();
   GCSpider(const GCSpider&);
   virtual ~GCSpider();
 
@@ -77,10 +77,6 @@ private:
   QNetworkAccessManager * pnam_;
   /** QNetworkReply of the currently loaded page, used by @a loadPage() */
   QNetworkReply * loadPageNetReply_;
-  /** geocaching.com user name to use for log in */
-  QString username_;
-  /** geocaching.com password to use for log in */
-  QString password_;
   /** Is the user already logged in? */
   bool loggedIn_;
 
