@@ -28,44 +28,52 @@ PrefDialog::PrefDialog(QWidget * parent) :
 
   setWindowTitle(tr("Preferences"));
 
-  QVBoxLayout * mainLayout = new QVBoxLayout(this);
+  QVBoxLayout * mainLayout = new QVBoxLayout;
 
   // Profile location
+  QGroupBox * profileBox = new QGroupBox(tr("Profile location"));
+  QFormLayout * profileBoxLayout = new QFormLayout;
+  profileBoxLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+
   QString dir = QDir::toNativeSeparators(SettingsManager::storageLocation().
     absolutePath());
-  qDebug() << "Profile dir is" << dir;
-  mainLayout->addWidget(new QLabel(tr("Your profile is stored in:")));
   QLineEdit * dirEdit = new QLineEdit(dir);
   dirEdit->setReadOnly(true);
-  mainLayout->addWidget(dirEdit);
+  profileBoxLayout->addRow(tr("Your &profile is stored in:"), dirEdit);
+
+  profileBox->setLayout(profileBoxLayout);
+  mainLayout->addWidget(profileBox);
 
   // GC.com login data
-  QGroupBox * loginBox = new QGroupBox(tr("Geocaching.com login"), this);
-  QGridLayout * loginLayout = new QGridLayout;
-  loginLayout->addWidget(new QLabel(tr("Insert your login data for "
-    "geocaching.com here before you import caches.")), 0, 0, 1, 2,
-    Qt::AlignLeft);
-  loginLayout->addWidget(new QLabel(tr("User name:")), 1, 0, Qt::AlignLeft);
-  loginLayout->addWidget(new QLabel(tr("Password:")), 2, 0, Qt::AlignLeft);
+  QGroupBox * loginBox = new QGroupBox(tr("Geocaching.com login"));
+  QFormLayout * loginBoxLayout = new QFormLayout;
+
+  loginBoxLayout->addRow(new QLabel(tr("Insert your login data for "
+    "geocaching.com here before you import caches.")));
+  
   userNameEdit = new QLineEdit;
-  loginLayout->addWidget(userNameEdit, 1, 1);
   userNameEdit->setText(g_settings->gcUsername());
+  loginBoxLayout->addRow(tr("&User name:"), userNameEdit);
+
   passwordEdit = new QLineEdit;
   passwordEdit->setEchoMode(QLineEdit::Password);
   passwordEdit->setText(g_settings->gcPassword());
-  loginLayout->addWidget(passwordEdit, 2, 1);
-  loginBox->setLayout(loginLayout);
-  loginLayout->addWidget(new QLabel(tr("Please note that your password is "
-    "stored in plain text.")), 3, 0, 1, 2, Qt::AlignLeft);
+  loginBoxLayout->addRow(tr("&Password:"), passwordEdit);
+
+  loginBoxLayout->addRow(new QLabel(tr("Please note that your password is "
+    "stored in plain text.")));
+
+  loginBox->setLayout(loginBoxLayout);
   mainLayout->addWidget(loginBox);
 
   //QGroupBox * centerBox = new QGroupBox("Home coordinates", this);
 
+  // OK, Cancel
   QDialogButtonBox * buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
     | QDialogButtonBox::Cancel);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-  loginLayout->addWidget(buttonBox, 4, 0, 1, 2, Qt::AlignRight);
+  mainLayout->addWidget(buttonBox);
 
   setLayout(mainLayout);
 }
