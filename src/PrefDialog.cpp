@@ -43,7 +43,7 @@ PrefDialog::PrefDialog(QWidget * parent) :
     absolutePath());
   QLineEdit * dirEdit = new QLineEdit(dir);
   dirEdit->setReadOnly(true);
-  profileBoxLayout->addRow(tr("Your &profile is stored in:"), dirEdit);
+  profileBoxLayout->addRow(tr("Your profile is &stored in:"), dirEdit);
 
   profileBox->setLayout(profileBoxLayout);
   mainLayout->addWidget(profileBox);
@@ -109,9 +109,9 @@ void PrefDialog::verifyLogin() {
     return;
   }
   // else: login ok
-  QMessageBox msg(QMessageBox::Information, "Success", tr("The login to "
-    "geocaching.com was successful."), QMessageBox::Ok, this);
-  msg.exec();
+  QMessageBox::information(this, "Success", tr("The login to "
+    "geocaching.com was successful."));
+
 }
 
 /** called when the user clicks the OK button */
