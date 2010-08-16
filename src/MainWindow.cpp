@@ -43,7 +43,7 @@ MainWindow::MainWindow() :
   }
 
   // map widget as central widget
-  QDir cacheDir(g_settings->storageLocation().filePath("maps"));
+  QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
   pmap = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
   pmap->setCaches(pModel->caches());
   setCentralWidget(pmap);
