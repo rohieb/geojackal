@@ -27,7 +27,7 @@
 namespace geojackal {
 
 /**
- * Dialog to allow the user input of cache spider data, like maximum distance
+ * Dialog to allow the user input of geocache spider data, like maximum distance
  * from center point
  */
 class GCSpiderDialog : public QDialog {

@@ -22,7 +22,7 @@
 #define GCSPIDER_H_
 
 #include "global.h"
-#include "Cache.h"
+#include "Geocache.h"
 #include "Coordinate.h"
 #include <QObject>
 #include <QString>
@@ -35,7 +35,7 @@ using namespace std;
 namespace geojackal {
 
 /**
- * Class that encapsulate functionalty to retrieve caches from the
+ * Class that encapsulate functionalty to retrieve geocaches from the
  * geocaching.com database.
  *
  * This class is intented to use as a singleton, the instance can be acquired
@@ -50,8 +50,8 @@ public:
   static void logout();
 
   bool nearest(const Coordinate center, const float maxDist,
-    QList<Cache *>& buf);
-  bool loadCache(const QString waypoint, Cache& buf);
+    QList<Geocache *>& buf);
+  bool single(const QString waypoint, Geocache& buf);
 
   /** HTTP User Agent to use */
   static const QByteArray USER_AGENT;

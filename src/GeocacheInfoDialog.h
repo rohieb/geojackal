@@ -1,5 +1,5 @@
 /**
- * @file CacheInfoDialog.h
+ * @file GeocacheInfoDialog.h
  * @date Jul 14, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,12 +18,12 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CACHEINFODIALOG_H_
-#define CACHEINFODIALOG_H_
+#ifndef GEOCACHEINFODIALOG_H_
+#define GEOCACHEINFODIALOG_H_
 
 #include <QObject>
 #include <QtGui>
-#include "Cache.h"
+#include "Geocache.h"
 
 namespace geojackal {
 
@@ -35,24 +35,24 @@ namespace geojackal {
 class InfoTab : public QWidget {
   Q_OBJECT
 public:
-  InfoTab(Cache * cache);
+  InfoTab(Geocache * geocache);
   virtual ~InfoTab();
 };
 /** @} */
 
 /** Geocache information dialog */
-class CacheInfoDialog : public QDialog {
+class GeocacheInfoDialog : public QDialog {
   Q_OBJECT
 public:
-  CacheInfoDialog(Cache * cache, QWidget * parent = 0);
-  virtual ~CacheInfoDialog();
+  GeocacheInfoDialog(Geocache * geocache, QWidget * parent = 0);
+  virtual ~GeocacheInfoDialog();
 
 private:
-  Cache * cache_;
+  Geocache * geocache_;
 };
 
-QString sizeToText(CacheSize size);
+QString sizeToText(GeocacheSize size);
 
 }
 
-#endif /* CACHEINFODIALOG_H_ */
+#endif /* GEOCACHEINFODIALOG_H_ */

@@ -27,7 +27,7 @@ using namespace geojackal;
 
 /**
  * Replace numerical HTML entities by their Unicode representations. Currently,
- * only decimal entities (like @c &252;) are converted, hexadecimal entities
+ * only decimal entities (like @c &#252;) are converted, hexadecimal entities
  * (like @c &#xf3;) are ignored.
  */
 QString geojackal::replaceHtmlEntities(QString buf) {
@@ -48,7 +48,7 @@ QString geojackal::replaceHtmlEntities(QString buf) {
 
 /**
  * Constructor
- * @param text Text of the cache description page
+ * @param text Text of the geocache description page
  */
 GCSpiderCachePage::GCSpiderCachePage(QString text) :
   text_(text) {
@@ -64,13 +64,13 @@ GCSpiderCachePage::~GCSpiderCachePage() {
  */
 
 /**
- * Extract all information from the cache page
+ * Extract all information from the geocache page
  * @param buf Buffer to be filled. See the description of the other extractor
- * functions in this class to get information of the data in the returned Cache
- * object.
+ * functions in this class to get information of the data in the returned
+ * Geocache object.
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
-bool GCSpiderCachePage::all(Cache& buf) const {
+bool GCSpiderCachePage::all(Geocache& buf) const {
   bool ret = true;
   ret &= name(buf.name);
 //  qDebug() << buf.name;
@@ -94,7 +94,7 @@ bool GCSpiderCachePage::all(Cache& buf) const {
   ret &= waypoints(*buf.waypoints);
   if(!buf.logs) buf.logs = new QVector<LogMessage>;
   ret &= logs(*buf.logs);
-  if(!buf.attrs) buf.attrs = new QVector<CacheAttribute>;
+  if(!buf.attrs) buf.attrs = new QVector<GeocacheAttribute>;
   ret &= attrs(*buf.attrs);
   ret &= hint(buf.hint);
   buf.archived = archived();
@@ -102,8 +102,8 @@ bool GCSpiderCachePage::all(Cache& buf) const {
 }
 
 /**
- * Extract only the name of a cache
- * @param buf Buffer to receives the name of the cache
+ * Extract only the name of a geocache
+ * @param buf Buffer to receives the name of the geocache
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::name(QString& buf) const {
@@ -120,8 +120,8 @@ bool GCSpiderCachePage::name(QString& buf) const {
 }
 
 /**
- * Extract only the waypoint of a cache
- * @param buf Buffer to receives the waypoint of the cache
+ * Extract only the waypoint of a geocache
+ * @param buf Buffer to receives the waypoint of the geocache
  * @return @c false if the data could not be extracted, @c true otherwise.
  *
  */
@@ -134,9 +134,9 @@ bool GCSpiderCachePage::waypoint(QString& buf) const {
 }
 
 /**
- * Extract the type of a cache
- * @param buf Buffer to receive the type of the cache. If the extraction fails,
- * this buffer receives the value @c TYPE_OTHER.
+ * Extract the type of a geocache
+ * @param buf Buffer to receive the type of the geocache. If the extraction
+ * fails, this buffer receives the value @c TYPE_OTHER.
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::type(WaypointType& buf) const {
@@ -186,7 +186,7 @@ bool GCSpiderCachePage::type(WaypointType& buf) const {
       buf = TYPE_WEBCAM;
       return true;
     } else if(cap == "3653") {
-      buf = TYPE_EVENT; // 10 Years Event Caches, no exception here :P
+      buf = TYPE_EVENT; // 10 Years Event Geocaches, no exception here :P
       return true;
     } else if(cap == "12") {
       buf = TYPE_REVERSE;
@@ -199,7 +199,7 @@ bool GCSpiderCachePage::type(WaypointType& buf) const {
 }
 
 /**
- * Extract the coordinates of the cache
+ * Extract the coordinates of the geocache
  * @param buf Buffer to receive the coordinate. If the extraction fails or
  *  the coordinate is invisible (the text says @c ??? instead of a coordinate),
  *  the @c angle fields of this value are both set to @c ANGLE_INVALID.
@@ -279,7 +279,7 @@ bool GCSpiderCachePage::coord(Coordinate& buf) const {
 }
 
 /**
- * Extract the description of the cache.
+ * Extract the description of the geocache.
  * @param buf Buffer to receive the description
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
@@ -306,13 +306,13 @@ bool GCSpiderCachePage::desc(QString& buf) const {
   buf.replace(imgTag, "");
 
   // @todo something like html tidy, at least delete multiple empty <p>,<br/>
-  // @todo process links to other caches?
+  // @todo process links to other geocaches?
 
   return (start != -1 && end != -1 && start < end);
 }
 
 /**
- * Extract the short description of the cache
+ * Extract the short description of the geocache
  * @param buf Buffer to receive the short description
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
@@ -326,11 +326,11 @@ bool GCSpiderCachePage::shortDesc(QString& buf) const {
 }
 
 /**
- * Extract the size of the cache
- * @return The size of the cache, or @c SIZE_UNKNOWN if the data could not be
- * extracted
+ * Extract the size of the geocache container
+ * @return The size of the geocache container, or @c SIZE_UNKNOWN if the data
+ * could not be extracted
  */
-CacheSize GCSpiderCachePage::size() const {
+GeocacheSize GCSpiderCachePage::size() const {
   QRegExp rx("<img .*src=\"/images/icons/container/(micro|small|regular|large|"
     "other|not_chosen|virtual).gif\"");
   rx.setMinimal(true);
@@ -356,7 +356,7 @@ CacheSize GCSpiderCachePage::size() const {
 }
 
 /**
- * Extract the difficulty rating of the cache
+ * Extract the difficulty rating of the geocache
  * @return the difficulty rating multiplied by two or @c 0 if the data could
  * not be extracted
  */
@@ -379,7 +379,7 @@ unsigned int GCSpiderCachePage::difficulty() const {
 }
 
 /**
- * Extract the terrain rating of a cache
+ * Extract the terrain rating of a geocache
  * @return the terrain rating multiplied by two or @c 0 if the data could not
  * be extracted
  */
@@ -402,7 +402,7 @@ unsigned int GCSpiderCachePage::terrain() const {
 }
 
 /**
- * Extract the date when the cache was placed
+ * Extract the date when the geocache was placed
  * @param buf Buffer to receive the date of the placement
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
@@ -434,9 +434,9 @@ bool GCSpiderCachePage::placed(QDate& buf) const {
 }
 
 /**
- * Extract the date when the cache was found by the user
+ * Extract the date when the geocache was found by the user
  * @param buf Buffer to receive the found date, or the date 0-0-0000 if the
- * cache was not found yet
+ * geocache was not found yet
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::found(QDate& buf) const {
@@ -446,9 +446,9 @@ bool GCSpiderCachePage::found(QDate& buf) const {
 }
 
 /**
- * Extract the owner of the cache
- * @param buf The name of the owner of the cache or an empty string if the data
- * could not be extracted
+ * Extract the owner of the geocache
+ * @param buf The name of the owner of the geocache or an empty string if the
+ * data could not be extracted
  * @return @c false if the data could not be extracted, @c true otherwise.
  */
 bool GCSpiderCachePage::owner(QString& buf) const {
@@ -660,7 +660,7 @@ bool GCSpiderCachePage::logs(QVector<LogMessage>& buf) const {
 
     // log text
     log.msg = rx.cap(6);
-    // @todo Parse smileys, images, encryptedc logs, links to other caches etc
+    // @todo Parse smileys, images, encrypted logs, links to other geocaches etc
 
     buf.append(log);
   }
@@ -668,14 +668,14 @@ bool GCSpiderCachePage::logs(QVector<LogMessage>& buf) const {
 }
 
 /**
- * Extract cache attributes
- * @param buf a vector of cache attributes, or an empty vector if no attributes
- * exist or the data could be extracted. In any case, the buffer is
+ * Extract geocache attributes
+ * @param buf a vector of geocache attributes, or an empty vector if no
+ * attributes exist or the data could be extracted. In any case, the buffer is
  * cleared before extracted attributes are inserted.
  * @return @c false if the data could not be extracted, @c true otherwise, even
  * if there are no attributes.
  */
-bool GCSpiderCachePage::attrs(QVector<CacheAttribute>& buf) const {
+bool GCSpiderCachePage::attrs(QVector<GeocacheAttribute>& buf) const {
   QRegExp rx("<img src=\"/images/attributes/(available-yes|bicycles-yes|"
     "boat-yes|campfires-yes|camping-yes|camping-yes|cliff-yes|climbing-yes|"
     "cow-yes|danger-yes|dogs-yes|fee-yes|firstaid-yes|flashlight-yes|"
@@ -806,9 +806,10 @@ bool GCSpiderCachePage::hint(QString& buf) const {
 }
 
 /**
- * Determine whether the cache has beed archived.
- * @return the archive status. @c true means the cache has been archived,
- * @c false means the cache is still active or the data could not be extracted.
+ * Determine whether the geocache has beed archived.
+ * @return the archive status. @c true means the geocache has been archived,
+ * @c false means the geocache is still active or the data could not be
+ * extracted.
  */
 bool GCSpiderCachePage::archived() const {
   return text_.indexOf("This cache has been archived, but is available for "

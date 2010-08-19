@@ -19,9 +19,9 @@
 
 #include "MainWindow.h"
 #include "PrefDialog.h"
-#include "Cache.h"
+#include "Geocache.h"
 #include "GCSpider.h"
-#include "CacheModel.h"
+#include "GeocacheModel.h"
 #include "GCSpiderDialog.h"
 #include <QSettings>
 
@@ -34,7 +34,7 @@ MainWindow::MainWindow() :
   setWindowIcon(QIcon(":/geojackal.png"));
 
   // load data
-  pModel = new CacheModel(this);
+  pModel = new GeocacheModel(this);
   try {
     pModel->open(g_settings->storageLocation().
       absoluteFilePath("geocaches.sqlite"));
@@ -45,7 +45,7 @@ MainWindow::MainWindow() :
   // map widget as central widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
   pmap = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
-  pmap->setCaches(pModel->caches());
+  pmap->setCaches(pModel->geocaches());
   setCentralWidget(pmap);
   pmap->setFocus();
 
@@ -62,14 +62,16 @@ MainWindow::MainWindow() :
   appMenu->addAction(prefAction);
   appMenu->addAction(exitAction);
 
-  QMenu * cacheMenu = menuBar()->addMenu("&Caches");
+  QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
   QAction * importRegionAction = new QAction("&Import region...", this);
-  connect(importRegionAction, SIGNAL(triggered()), this, SLOT(importCaches()));
-  cacheMenu->addAction(importRegionAction);
+  connect(importRegionAction, SIGNAL(triggered()), this,
+    SLOT(importGeocacheRegion()));
+  geocacheMenu->addAction(importRegionAction);
 
   QAction * importSingleAction = new QAction("&Import single...", this);
-  connect(importSingleAction, SIGNAL(triggered()), this, SLOT(importSingleCache()));
-  cacheMenu->addAction(importSingleAction);
+  connect(importSingleAction, SIGNAL(triggered()), this,
+    SLOT(importSingleGeocache()));
+  geocacheMenu->addAction(importSingleAction);
 
   // show prefs dialogue if no password or username set
   if(g_settings->gcUsername().isEmpty() || g_settings->gcPassword().isEmpty()) {
@@ -137,8 +139,8 @@ GCSpider * MainWindow::validateLogin() {
 }
 
 
-/** Called when the user clicks on the Caches->Import region menu item */
-void MainWindow::importCaches() {
+/** Called when the user clicks on the Geocaches->Import region menu item */
+void MainWindow::importGeocacheRegion() {
   GCSpider * spider = validateLogin();
 
   if(spider) {
@@ -147,42 +149,42 @@ void MainWindow::importCaches() {
       Coordinate center(dialog.lat(), dialog.lon());
       float maxDist = dialog.maxDist();
 
-      QList<Cache *> cacheList;
+      QList<Geocache *> geocacheList;
       try {
-        spider->nearest(center, maxDist, cacheList);
+        spider->nearest(center, maxDist, geocacheList);
       } catch(Failure& f) {
         QMessageBox::critical(this, "Error", f.what());
       }
 
-      pModel->addCaches(cacheList);
-      pmap->setCaches(pModel->caches());
+      pModel->addGeocaches(geocacheList);
+      pmap->setCaches(pModel->geocaches());
       pmap->setCenter(center);
     }
   }
 }
 
-/** Called when the user clicks on the Caches->Import single menu item */
-void MainWindow::importSingleCache() {
+/** Called when the user clicks on the Geocaches->Import single menu item */
+void MainWindow::importSingleGeocache() {
   GCSpider * spider = validateLogin();
 
   if(spider) {
     bool ok;
-    QString waypoint = QInputDialog::getText(this, "Import cache", "Enter the "
-      "waypoint of the cache:", QLineEdit::Normal, "GC", &ok);
+    QString waypoint = QInputDialog::getText(this, "Import single geocache",
+      "Enter the waypoint of the geocache:", QLineEdit::Normal, "GC", &ok);
     if(ok) {
-      Cache * cache = new Cache;
+      Geocache * pgc = new Geocache;
       try {
-        spider->loadCache(waypoint, *cache);
+        spider->single(waypoint, *pgc);
       } catch(Failure& f) {
         QMessageBox::critical(this, "Error", f.what());
-        delete cache;
+        delete pgc;
         return;
       }
-      pModel->addCache(cache);
-      pmap->setCaches(pModel->caches());
-      pmap->setCenter(*cache->coord);
+      pModel->addGeocache(pgc);
+      pmap->setCaches(pModel->geocaches());
+      pmap->setCenter(*pgc->coord);
       // also save in profile, like for region
-      g_settings->setCenter(*cache->coord);
+      g_settings->setCenter(*pgc->coord);
     }
   }
 }

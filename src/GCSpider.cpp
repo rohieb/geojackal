@@ -102,8 +102,8 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
 /**
  * @internal
  * Called from @a loadPage() when the QNetworkAccessManager finishes to load a
- * cache page. This function just saves the network reply for later use to the
- * member @a loadPageNetReply_.
+ * geocache page. This function just saves the network reply for later use to
+ * the member @a loadPageNetReply_.
  * @param reply Network reply
  */
 void GCSpider::loadPageFinished(QNetworkReply * reply) {
@@ -234,24 +234,24 @@ struct WaypointsGuids {
 };
 
 /**
- * Get nearest caches around a coordinate up to a specified distance.
+ * Get nearest geocaches around a coordinate up to a specified distance.
  * @param center Center coordinates
- * @param maxDist Maximum distance in km from cache to center point
- * @param buf Buffer that receives the caches to be retrieved. The calling
+ * @param maxDist Maximum distance in km from loaded geocache to center point
+ * @param buf Buffer that receives the geocaches to be retrieved. The calling
  *  context is responsible for freeing the members of this vector.
- * @return @c true if all caches could be retrieved correctly, @c false
+ * @return @c true if all geocaches could be retrieved correctly, @c false
  *  otherwise
  * @throws Failure if anything goes wrong
  */
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
-  Cache *>& buf) {
+  Geocache *>& buf) {
 
   QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com"
     "/seek/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
     arg(center.lon, 0, 'f')));
   QString text = listReply->readAll();
 
-//  // cap order: bearing, distance, cache guid
+//  // cap order: bearing, distance, geocache guid
 //  QRegExp rx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
 //    "|NE|SE|SW)<br />([0-9]+(?:\\.[0-9])?+)km\\s*</td>\\s*<td>\\s*</td>\\s*<td>"
 //    "<a .*>\\s*<img .* /></a>.*</td>\\s*<td>.*</td><td>.*</td>\\s*<td><a .*"
@@ -271,10 +271,10 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
   progDialog.setValue(1);
   progDialog.setLabelText("Searching for geocaches…");
 
-  QList<WaypointsGuids> cacheList;
+  QList<WaypointsGuids> geocacheList;
   int curPos = 0;
-  double cacheDist = 0; // distance to current cache
-  while((curPos = rx.indexIn(text, curPos)) >= 0 && cacheDist <= maxDist &&
+  double geocacheDist = 0; // distance to current geocache
+  while((curPos = rx.indexIn(text, curPos)) >= 0 && geocacheDist <= maxDist &&
     !progDialog.wasCanceled()) {
     curPos += rx.cap(0).size(); // move to end of current chunk
     if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
@@ -283,11 +283,11 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
 
     // check for distance
     bool ok = false;
-    cacheDist = rx.cap(1).toDouble(&ok);
+    geocacheDist = rx.cap(1).toDouble(&ok);
     if(!ok) {
       return false;
     }
-    if(cacheDist > maxDist) {
+    if(geocacheDist > maxDist) {
       break;
     }
 
@@ -296,25 +296,25 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
     c.guid = rx.cap(2);
     c.wp = rx.cap(3);
     qDebug() << "append {" << c.guid << "," << c.wp << "}";
-    cacheList.append(c);
+    geocacheList.append(c);
   }
 
   int progress = 2;
-  progDialog.setMaximum(progress + cacheList.size());
-  foreach(WaypointsGuids const& c, cacheList) {
+  progDialog.setMaximum(progress + geocacheList.size());
+  foreach(WaypointsGuids const& c, geocacheList) {
     if(progDialog.wasCanceled()) {
       break;
     }
     progDialog.setLabelText(QString("Loading %1").arg(c.wp));
     progDialog.setValue(progress);
 
-    // load cache page and extract data
-    QNetworkReply * cacheReply = loadPage(QUrl("http://www.geocaching.com/"
+    // load geocache page and extract data
+    QNetworkReply * geocacheReply = loadPage(QUrl("http://www.geocaching.com/"
         "seek/cache_details.aspx?guid=" + c.guid));
-    GCSpiderCachePage gcscp(QString(cacheReply->readAll()));
-    Cache * pCache = new Cache;
-    gcscp.all(*pCache);
-    buf.append(pCache);
+    GCSpiderCachePage gcscp(QString(geocacheReply->readAll()));
+    Geocache * pgc = new Geocache;
+    gcscp.all(*pgc);
+    buf.append(pgc);
 
     ++progress;
   }
@@ -328,14 +328,14 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
 }
 
 /**
- * Load a single cache.
- * @param waypoint Waypoint of the cache (e.g. <em>GC132V6</em>)
- * @param buf Buffer that receives the retrieved cache data. The calling
+ * Load a single geocache.
+ * @param waypoint Waypoint of the geocache (e.g. <em>GC132V6</em>)
+ * @param buf Buffer that receives the retrieved geocache data. The calling
  *  context is responsible for freeing the members of this vector.
- * @return @c true if the cache could be retrieved correctly, @c false
+ * @return @c true if the geocache could be retrieved correctly, @c false
  *  otherwise
  */
-bool GCSpider::loadCache(QString waypoint, Cache& buf) {
+bool GCSpider::single(QString waypoint, Geocache& buf) {
   // @todo
   // try to login
   if(!loggedIn_) {

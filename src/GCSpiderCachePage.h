@@ -18,37 +18,38 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GCCACHESPIDER_H_
-#define GCCACHESPIDER_H_
+#ifndef GCSPIDERCACHEPAGE_H_
+#define GCSPIDERCACHEPAGE_H_
 
 #include "global.h"
-#include "Cache.h"
+#include "Geocache.h"
 #include <QString>
 
 namespace geojackal {
 
 /**
- * Extracts cache information from a geocaching.com cache description page.
+ * Extracts geocache information from a geocaching.com geocache description
+ * page.
  * Note: All functions in this class are reentrant.
  * @todo how to use?
  */
 class GCSpiderCachePage {
 private:
-  /** Text of the cache description page */
+  /** Text of the geocache description page */
   QString text_;
 
 public:
   GCSpiderCachePage(QString text);
   virtual ~GCSpiderCachePage();
 
-  bool all(Cache& buf) const;
+  bool all(Geocache& buf) const;
   bool name(QString& buf) const;
   bool waypoint(QString& buf) const;
   bool type(WaypointType& buf) const;
   bool coord(Coordinate& buf) const;
   bool desc(QString& buf) const;
   bool shortDesc(QString& buf) const;
-  CacheSize size() const;
+  GeocacheSize size() const;
   unsigned int difficulty() const;
   unsigned int terrain() const;
   bool placed(QDate& buf) const;
@@ -56,7 +57,7 @@ public:
   bool owner(QString& buf) const;
   bool waypoints(QVector<Waypoint>& buf) const;
   bool logs(QVector<LogMessage>& buf) const;
-  bool attrs(QVector<CacheAttribute>& buf) const;
+  bool attrs(QVector<GeocacheAttribute>& buf) const;
   bool hint(QString& buf) const;
   bool archived() const;
 };
@@ -66,4 +67,4 @@ int monthToOrd(QString month);
 
 }
 
-#endif /* GCCACHESPIDER_H_ */
+#endif /* GCSPIDERCACHEPAGE_H_ */

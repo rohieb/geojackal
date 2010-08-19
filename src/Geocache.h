@@ -1,5 +1,5 @@
 /**
- * @file Cache.h
+ * @file Geocache.h
  * @date 23 Apr 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,8 +18,8 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CACHE_H
-#define CACHE_H
+#ifndef GEOCACHE_H
+#define GEOCACHE_H
 
 #include "global.h"
 #include <QString>
@@ -30,20 +30,20 @@
 namespace geojackal {
 
 /**
- * Constants for cache/waypoint types
+ * Constants for geocache/waypoint types
  */
 enum WaypointType {
-  /** Traditional Cache */
+  /** Traditional Geocache */
   TYPE_TRADI,
-  /** Multi Cache */
+  /** Multi Geocache */
   TYPE_MULTI,
-  /** Mystery Cache */
+  /** Mystery Geocache */
   TYPE_MYSTERY,
   /** Caching Event */
   TYPE_EVENT,
-  /** Virtual Cache */
+  /** Virtual Geocache */
   TYPE_VIRTUAL,
-  /** Webcam Cache */
+  /** Webcam Geocache */
   TYPE_WEBCAM,
   /** Mega Event */
   TYPE_MEGAEVENT,
@@ -51,15 +51,15 @@ enum WaypointType {
   TYPE_LETTERBOX,
   /** Whereigo (TM) */
   TYPE_WHEREIGO,
-  /** Cache In Trash Out Event */
+  /** Geocache In Trash Out Event */
   TYPE_CITO,
-  /** Earth Cache */
+  /** Earth Geocache */
   TYPE_EARTH,
-  /** Reverse Cache */
+  /** Reverse Geocache */
   TYPE_REVERSE,
   /** GPS Adventures Maze Exhibit */
   TYPE_GAME,
-  /** Project A.P.E. Cache */
+  /** Project A.P.E. Geocache */
   TYPE_PROJECTAPE,
   /** Stage of a multicache */
   TYPE_STAGE,
@@ -80,9 +80,9 @@ enum WaypointType {
 };
 
 /**
- * Cache attributes
+ * Geocache attributes
  */
-enum CacheAttribute {
+enum GeocacheAttribute {
   /** Not always available */
   ATTR_AVAILABLE_NO = 0,
   /** Always available */
@@ -277,9 +277,9 @@ enum LogType {
 };
 
 /**
- * Size of the cache container
+ * Size of the geocache container
  */
-enum CacheSize {
+enum GeocacheSize {
   /** Nano: very small container, about the size of a thumb nail */
   SIZE_NANO,
   /** Micro: about the size of a 35&nbsp;mm film box */
@@ -299,9 +299,9 @@ enum CacheSize {
 };
 
 /**
- * Additional image for a cache or log
+ * Additional image for a geocache or log
  */
-struct CacheImage {
+struct GeocacheImage {
   /** Additional description */
   QString desc;
   /** File name on disk */
@@ -309,10 +309,10 @@ struct CacheImage {
 };
 
 /**
- * A log message of a person who visited the cache
+ * A log message of a person who visited the geocache
  */
 struct LogMessage {
-  /** Author of the log message, person who visited the cache */
+  /** Author of the log message, person who visited the geocache */
   QString author;
   /** Log message */
   QString msg;
@@ -323,7 +323,7 @@ struct LogMessage {
   /** Date of the log entry (should equal date found) */
   QDate * date;
   /** Additional images */
-  QVector<CacheImage> * images;
+  QVector<GeocacheImage> * images;
 
   LogMessage() : date(0), images(0) {}
 
@@ -337,13 +337,13 @@ struct LogMessage {
 const QString WAYPOINT_INVALID = "!!!INVALID!!!";
 
 /**
- * Waypoint of a cache
+ * Waypoint of a geocache
  */
 struct Waypoint {
   /**
-   * The waypoint, like <em>GC1Q743</em>. For additional waypoints of a cache,
-   * this field stores the 2-letter prefix code. Use WAYPOINT_INVALID to
-   * indicate an invalid value.
+   * The waypoint, like <em>GC1Q743</em>. For additional waypoints of a
+   * geocache, this field stores the 2-letter prefix code. Use WAYPOINT_INVALID
+   * to indicate an invalid value.
    */
   QString waypoint;
   /** Name of the waypoint, like <em>Wayward Drive!</em> */
@@ -352,7 +352,7 @@ struct Waypoint {
   Coordinate * coord;
   /** Type of the waypoint */
   WaypointType type;
-  /** Cache description */
+  /** Geocache description */
   QString desc;
 
   Waypoint() : coord(0) {}
@@ -363,15 +363,15 @@ struct Waypoint {
 };
 
 /**
- * Description of a cache.
- * Use the @c name member of the Waypoint structure to store the cache name,
- * and the @c desc member to store the cache description.
+ * Description of a geocache.
+ * Use the @c name member of the Waypoint structure to store the geocache name,
+ * and the @c desc member to store the geocache description.
  */
-struct Cache : Waypoint {
+struct Geocache : Waypoint {
   /** Short description (plain text) */
   QString shortDesc;
-  /** Size of the cache container */
-  CacheSize size;
+  /** Size of the geocache container */
+  GeocacheSize size;
   /**
    * Difficulty rating, ranging from 1 to 9. As steps of 0.5 are allowed, this
    * value stores the rating multiplied by @c 2 to save storage space.
@@ -382,26 +382,26 @@ struct Cache : Waypoint {
    * value stores the rating multiplied by @c 2 to save storage space.
    */
   unsigned int terrain;
-  /** Date the cache was placed */
+  /** Date the geocache was placed */
   QDate * placed;
-  /** Date the cache was found, 0 if not found */
+  /** Date the geocache was found, 0 if not found */
   QDate * found;
-  /** Person who placed the cache */
+  /** Person who placed the geocache */
   QString owner;
   /** Additional waypoints */
   QVector<Waypoint> * waypoints;
   /** Log messages */
   QVector<LogMessage> * logs;
   /** Additional attributes */
-  QVector<CacheAttribute> * attrs;
+  QVector<GeocacheAttribute> * attrs;
   /** Hints and spoiler info, ROT13-ecrypted */
   QString hint;
-  /** @c true if the cache is archived, @c false otherwise */
+  /** @c true if the geocache is archived, @c false otherwise */
   bool archived;
 
-  Cache() : placed(0), found(0), waypoints(0), logs(0), attrs(0) {}
+  Geocache() : placed(0), found(0), waypoints(0), logs(0), attrs(0) {}
 
-  ~Cache() {
+  ~Geocache() {
     if(placed != 0) delete placed;
     if(found != 0) delete found;
     if(waypoints != 0) delete waypoints;
@@ -410,8 +410,8 @@ struct Cache : Waypoint {
   }
 };
 
-QDebug& operator<<(QDebug& dbg, const Cache& cache);
+QDebug& operator<<(QDebug& dbg, const Geocache& geocache);
 QString rot13(QString& text);
 
 }
-#endif // CACHE_H
+#endif // GEOCACHE_H

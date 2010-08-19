@@ -1,5 +1,5 @@
 /**
- * @file Cache.cpp
+ * @file Geocache.cpp
  * @date Jul 14, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,27 +18,27 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Cache.h"
+#include "Geocache.h"
 
-/** dump caches to a debug stream */
-QDebug& geojackal::operator<<(QDebug& dbg, const Cache& cache) {
-  dbg.nospace() << "{ wp: " << cache.waypoint;
-  dbg.nospace() << ", name: " << cache.name;
-  dbg.nospace() << ", coord: " << *cache.coord;
-  dbg.nospace() << ", type: " << cache.type;
-  dbg.nospace() << ", size: " << cache.size;
-  dbg.nospace() << ", diff: " << cache.difficulty;
-  dbg.nospace() << ", terr: " << cache.terrain;
-  dbg.nospace() << ", placed: " << cache.placed->toString(Qt::ISODate);
-  dbg.nospace() << ", owner: " << cache.owner;
-  dbg.nospace() << ", archived: " << cache.archived;
+/** dump geocaches to a debug stream */
+QDebug& geojackal::operator<<(QDebug& dbg, const Geocache& geocache) {
+  dbg.nospace() << "{ wp: " << geocache.waypoint;
+  dbg.nospace() << ", name: " << geocache.name;
+  dbg.nospace() << ", coord: " << *geocache.coord;
+  dbg.nospace() << ", type: " << geocache.type;
+  dbg.nospace() << ", size: " << geocache.size;
+  dbg.nospace() << ", diff: " << geocache.difficulty;
+  dbg.nospace() << ", terr: " << geocache.terrain;
+  dbg.nospace() << ", placed: " << geocache.placed->toString(Qt::ISODate);
+  dbg.nospace() << ", owner: " << geocache.owner;
+  dbg.nospace() << ", archived: " << geocache.archived;
   dbg.nospace() << " }";
   return dbg.maybeSpace();
 }
 
 
 /**
- * ROT13 function to encode/decode a cache hint. Due to the nature of ROT13,
+ * ROT13 function to encode/decode a geocache hint. Due to the nature of ROT13,
  * both these operations are absolutely equivalent.
  * @param text Text to be encoded or decoded
  * @return Encoded/decoded text

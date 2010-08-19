@@ -7,11 +7,11 @@ QT = core \
     network \
     sql
 SOURCES = src/SettingsManager.cpp \
-    src/CacheInfoDialog.cpp \
-    src/Cache.cpp \
+    src/GeocacheInfoDialog.cpp \
+    src/Geocache.cpp \
     src/PrefDialog.cpp \
     src/GCSpiderDialog.cpp \
-    src/CacheModel.cpp \
+    src/GeocacheModel.cpp \
     src/OsmSlippyMap.cpp \
     src/Failure.cpp \
     src/Coordinate.cpp \
@@ -20,14 +20,14 @@ SOURCES = src/SettingsManager.cpp \
     src/MainWindow.cpp \
     src/main.cpp
 HEADERS = src/SettingsManager.h \
-    src/CacheInfoDialog.h \
+    src/GeocacheInfoDialog.h \
     src/PrefDialog.h \
     src/GCSpiderDialog.h \
-    src/CacheModel.h \
+    src/GeocacheModel.h \
     src/OsmSlippyMap.h \
     src/global.h \
     src/Failure.h \
-    src/Cache.h \
+    src/Geocache.h \
     src/Coordinate.h \
     src/GCSpider.h \
     src/GCSpiderCachePage.h \

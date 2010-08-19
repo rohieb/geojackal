@@ -23,7 +23,7 @@
 
 #include "global.h"
 #include "Coordinate.h"
-#include "Cache.h"
+#include "Geocache.h"
 #include <QtGui>
 #include <QList>
 #include <QtNetwork>
@@ -92,8 +92,8 @@ public:
     return cacheDir_;
   }
 
-  void setCaches(QList<Cache *> caches) {
-    cacheList = caches;
+  void setCaches(QList<Geocache *> geocaches) {
+    geocacheList = geocaches;
   }
 
 protected:
@@ -142,12 +142,12 @@ private:
   /** Horizontal padding between the zoom buttons, in pixels */
   static const uint zoomButtonPadding;
 
-  /** List of caches */
-  QList<Cache *> cacheList;
-  QHash<QRect, Cache *> cacheRects;
+  /** List of geocaches */
+  QList<Geocache *> geocacheList;
+  QHash<QRect, Geocache *> geocacheRects;
 };
 
-QPixmap cacheIcon(Cache * cache);
+QPixmap geocacheIcon(Geocache * geocache);
 QPointF geoToTile(const Coordinate& coord, const uchar zoom);
 Coordinate tileToGeo(const QPointF tile, const uchar zoom);
 

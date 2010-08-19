@@ -19,7 +19,7 @@
  */
 
 #include "OsmSlippyMap.h"
-#include "CacheInfoDialog.h"
+#include "GeocacheInfoDialog.h"
 #include <cmath>
 #include <QPointF>
 
@@ -226,10 +226,10 @@ QPoint OsmSlippyMap::tileToPixel(const QPoint& tileCoord) {
   return QPoint(x, y);
 }
 
-/** return the cache icon for a cache */
-QPixmap geojackal::cacheIcon(Cache * cache) {
+/** return the icon for a geocache */
+QPixmap geojackal::geocacheIcon(Geocache * geocache) {
   QString fileName;
-  switch(cache->type) {
+  switch(geocache->type) {
     case TYPE_TRADI: fileName = "tradi.gif"; break;
     case TYPE_MULTI: fileName = "multi.gif"; break;
     case TYPE_MYSTERY: fileName = "mystery.gif"; break;
@@ -279,18 +279,18 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
     }
   }
 
-  // draw cache icons
-  cacheRects.clear(); // or we get bogus positions after zooming etc.
-  foreach(Cache * cache, cacheList) {
-    QPixmap icon = cacheIcon(cache).scaled(24, 24, Qt::KeepAspectRatio);
-    QPointF tileCoordF = geoToTile(*cache->coord, zoomLevel_);
+  // draw geocache icons
+  geocacheRects.clear(); // or we get bogus positions after zooming etc.
+  foreach(Geocache * gc, geocacheList) {
+    QPixmap icon = geocacheIcon(gc).scaled(24, 24, Qt::KeepAspectRatio);
+    QPointF tileCoordF = geoToTile(*gc->coord, zoomLevel_);
     QPointF t = tileCoordF - shownTiles_.topLeft();
     // FIXME we need a k-d-tree here
     int x = (int) (t.x() * TILE_DIM + offset_.x());
     int y = (int) (t.y() * TILE_DIM + offset_.y());
     QRect target(QPoint(x, y), QSize(24, 24));
     target.adjust(-12, -12, -12, -12);
-    cacheRects[target] = cache; // save for later
+    geocacheRects[target] = gc; // save for later
     p.drawPixmap(target, icon);
   }
 
@@ -344,12 +344,12 @@ void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
     } else if(zoomOutBtn.contains(event->pos())) {
       setZoom(zoom() - 1);
     } else {
-      // not on zoom button, maybe on cache icon
-      foreach(QRect cacheRect, cacheRects.keys()) {
-        qDebug() << cacheRect << "?contains?" << event->pos();
-        if(cacheRect.contains(event->pos())) {
-          qDebug() << "you clicked on" << cacheRects.value(cacheRect)->name;
-          CacheInfoDialog dialog(cacheRects.value(cacheRect), this);
+      // not on zoom button, maybe on geocache icon
+      foreach(QRect gcr, geocacheRects.keys()) {
+        qDebug() << gcr << "?contains?" << event->pos();
+        if(gcr.contains(event->pos())) {
+          qDebug() << "you clicked on" << geocacheRects.value(gcr)->name;
+          GeocacheInfoDialog dialog(geocacheRects.value(gcr), this);
           dialog.exec();
           // only do it the first time
           event->accept();

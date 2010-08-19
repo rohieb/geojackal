@@ -1,5 +1,5 @@
 /**
- * @file CacheInfoDialog.cpp
+ * @file GeocacheInfoDialog.cpp
  * @date Jul 14, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,17 +18,18 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CacheInfoDialog.h"
-#include "OsmSlippyMap.h" // for cacheIcon()
+#include "GeocacheInfoDialog.h"
+#include "OsmSlippyMap.h" // for geocacheIcon()
 
 using namespace geojackal;
 
 /**
- * Conversion of cache size from enum to string, like "micro".
- * @param size Cache size
- * @return Lowercase textual representation of the cache size, or empty string
+ * Conversion of geocache container size from enum to string, like "micro".
+ * @param size Geocache size
+ * @return Lowercase textual representation of the geocache container size, or
+ * empty string if invalid size or @c SIZE_UNKNOWN was given
  */
-QString geojackal::sizeToText(CacheSize size) {
+QString geojackal::sizeToText(GeocacheSize size) {
   switch(size) {
     case SIZE_NANO:
       return "nano";
@@ -50,48 +51,49 @@ QString geojackal::sizeToText(CacheSize size) {
 }
 
 /** Info tab page */
-InfoTab::InfoTab(Cache * cache) : QWidget(0) {
+InfoTab::InfoTab(Geocache * geocache) : QWidget(0) {
   QVBoxLayout * l = new QVBoxLayout(this);
-  l->addWidget(new QLabel("Waypoint:\t" + cache->waypoint));
-  l->addWidget(new QLabel(QString("Owner:\t%1").arg(cache->owner)));
-  l->addWidget(new QLabel(QString("Hidden:\t%1").arg(cache->placed->toString(
-    Qt::SystemLocaleLongDate))));
-  l->addWidget(new QLabel(QString("Size:\t%1").arg(sizeToText(cache->size))));
-  l->addWidget(new QLabel(QString("Difficulty:\t%1").arg(qreal(
-    cache->difficulty) / 2.0, 0, 'f', 1)));
-  l->addWidget(new QLabel(QString("Terrain:\t%2").arg(qreal(cache->terrain)
-    / 2.0, 0, 'f', 1)));
+  l->addWidget(new QLabel("Waypoint:\t" + geocache->waypoint));
+  l->addWidget(new QLabel(QString("Owner:\t%1").arg(geocache->owner)));
+  l->addWidget(new QLabel(QString("Hidden:\t%1").arg(geocache->placed->
+    toString(Qt::SystemLocaleLongDate))));
+  l->addWidget(new QLabel(QString("Size:\t%1").
+    arg(sizeToText(geocache->size))));
+  l->addWidget(new QLabel(QString("Difficulty:\t%1").
+    arg(qreal(geocache->difficulty) / 2.0, 0, 'f', 1)));
+  l->addWidget(new QLabel(QString("Terrain:\t%2").
+    arg(qreal(geocache->terrain) / 2.0, 0, 'f', 1)));
 }
 InfoTab::~InfoTab() {
 }
 
 /** Geocache information dialog */
-CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
-  QDialog(parent), cache_(cache) {
+GeocacheInfoDialog::GeocacheInfoDialog(Geocache * geocache, QWidget * parent) :
+  QDialog(parent), geocache_(geocache) {
 
-  setWindowTitle(cache->name + " (" + cache->waypoint + ")");
+  setWindowTitle(geocache->name + " (" + geocache->waypoint + ")");
 
   // Grid layout as main layout
   QGridLayout * mainLayout = new QGridLayout(this);
 
-  // cache name
-  mainLayout->addWidget(new QLabel("<big><b>" + cache->name + "</b></big>"), 0,
-    0, Qt::AlignLeft);
+  // geocache name
+  mainLayout->addWidget(new QLabel("<big><b>" + geocache->name + "</b></big>"),
+    0, 0, Qt::AlignLeft);
 
-  // cache icon
+  // geocache icon
   QLabel * pic = new QLabel;
-  pic->setPixmap(cacheIcon(cache));
+  pic->setPixmap(geocacheIcon(geocache));
   mainLayout->addWidget(pic, 0, 1, Qt::AlignRight);
 
   // tab pages
   // setup description browser
   QTextBrowser * descBrowser = new QTextBrowser();
-  descBrowser->setHtml(cache->desc);
+  descBrowser->setHtml(geocache->desc);
   descBrowser->setOpenExternalLinks(true);
 
   // prepare tab widgets
   QTabWidget * tab = new QTabWidget;
-  tab->addTab(new InfoTab(cache), "General");
+  tab->addTab(new InfoTab(geocache), "General");
   tab->addTab(descBrowser, "Description");
 
   mainLayout->addWidget(tab, 1, 0, 1, 2);
@@ -104,5 +106,5 @@ CacheInfoDialog::CacheInfoDialog(Cache * cache, QWidget * parent) :
   setLayout(mainLayout);
 }
 
-CacheInfoDialog::~CacheInfoDialog() {
+GeocacheInfoDialog::~GeocacheInfoDialog() {
 }

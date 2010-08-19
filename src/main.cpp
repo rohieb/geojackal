@@ -21,7 +21,6 @@
 #include "MainWindow.h"
 
 #include "global.h"
-#include "Cache.h"
 #include "GCSpider.h"
 #include "OsmSlippyMap.h"
 #include <QtGui>

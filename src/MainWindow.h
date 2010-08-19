@@ -21,7 +21,7 @@
 #define MAINWINDOW_H
 
 #include "OsmSlippyMap.h"
-#include "CacheModel.h"
+#include "GeocacheModel.h"
 #include "GCSpider.h"
 #include <QObject>
 #include <QtGui>
@@ -37,12 +37,12 @@ public:
 
 protected slots:
   int showPrefDialog();
-  void importCaches();
-  void importSingleCache();
+  void importGeocacheRegion();
+  void importSingleGeocache();
 
 private:
   OsmSlippyMap * pmap;
-  CacheModel * pModel;
+  GeocacheModel * pModel;
 };
 
 }
