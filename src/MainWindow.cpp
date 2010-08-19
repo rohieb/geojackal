@@ -58,9 +58,17 @@ MainWindow::MainWindow() :
   prefAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
   connect(prefAction, SIGNAL(triggered()), SLOT(showPrefDialog()));
 
+  QAction * aboutAction = new QAction("&About...", this);
+  connect(aboutAction, SIGNAL(triggered()), SLOT(about()));
+
+  QAction * aboutQtAction = new QAction("A&bout Qt...", this);
+  connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
   QMenu * appMenu = menuBar()->addMenu("&Application");
   appMenu->addAction(prefAction);
   appMenu->addAction(exitAction);
+  appMenu->addAction(aboutAction);
+  appMenu->addAction(aboutQtAction);
 
   QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
   QAction * importRegionAction = new QAction("&Import region...", this);
@@ -187,4 +195,31 @@ void MainWindow::importSingleGeocache() {
       g_settings->setCenter(*pgc->coord);
     }
   }
+}
+
+#define STRINGIFY(x) XSTRINGIFY(x)
+#define XSTRINGIFY(x) #x
+
+/** show the about box */
+void MainWindow::about() {
+  QString gitRevision = "";
+  if(!QString(STRINGIFY(GIT_REVISION)).isEmpty()) {
+    gitRevision = tr(" from Git revision %1").arg(STRINGIFY(GIT_REVISION));
+  }
+
+  QMessageBox::about(this, tr("About %1").arg(APPNAME),
+    tr("%1\nVersion %2\n\n"
+    "A geocache management application\n\n"
+    "(C) 2010 Roland Hieber <rohieb@rohieb.name>\n\n"
+    "Built at %3 %4%5\n\n"
+    "This program is free software: you can redistribute it and/or modify it "
+    "under the terms of the GNU General Public License, version 3, as "
+    "published by the Free Software Foundation.\n\n"
+    "This program is distributed in the hope that it will be useful, but "
+    "WITHOUT ANY WARRANTY; without even the implied warranty of "
+    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General "
+    "Public License for more details.\n\n"
+    "You should have received a copy of the GNU General Public License "
+    "along with this program. If not, see http://www.gnu.org/licenses/.").
+    arg(APPNAME, VERSION, __DATE__, __TIME__, gitRevision));
 }

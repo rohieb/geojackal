@@ -34,4 +34,5 @@ HEADERS = src/SettingsManager.h \
     src/MainWindow.h
 RESOURCES = resource/geojackal.qrc
 RC_FILE = resource/geojackal.rc
+unix:DEFINES += GIT_REVISION=$$system(git log -1 --pretty='%H')
 TARGET.CAPABILITY = true;

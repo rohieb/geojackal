@@ -39,6 +39,7 @@ protected slots:
   int showPrefDialog();
   void importGeocacheRegion();
   void importSingleGeocache();
+  void about();
 
 private:
   OsmSlippyMap * pmap;
