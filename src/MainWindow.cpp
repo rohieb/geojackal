@@ -30,8 +30,8 @@ using namespace geojackal;
 MainWindow::MainWindow() :
   QMainWindow(0), pmap(0), pModel(0) {
 
-  setWindowTitle("GeoJackal");
-  setWindowIcon(QIcon(":/geojackal.png"));
+  setWindowTitle(APPNAME);
+  qApp->setWindowIcon(QIcon(":/geojackal.png"));
 
   // load data
   pModel = new GeocacheModel(this);
@@ -202,24 +202,61 @@ void MainWindow::importSingleGeocache() {
 
 /** show the about box */
 void MainWindow::about() {
-  QString gitRevision = "";
-  if(!QString(STRINGIFY(GIT_REVISION)).isEmpty()) {
-    gitRevision = tr(" from Git revision %1").arg(STRINGIFY(GIT_REVISION));
-  }
 
-  QMessageBox::about(this, tr("About %1").arg(APPNAME),
-    tr("%1\nVersion %2\n\n"
-    "A geocache management application\n\n"
-    "(C) 2010 Roland Hieber <rohieb@rohieb.name>\n\n"
-    "Built at %3 %4%5\n\n"
-    "This program is free software: you can redistribute it and/or modify it "
-    "under the terms of the GNU General Public License, version 3, as "
-    "published by the Free Software Foundation.\n\n"
-    "This program is distributed in the hope that it will be useful, but "
-    "WITHOUT ANY WARRANTY; without even the implied warranty of "
-    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General "
-    "Public License for more details.\n\n"
-    "You should have received a copy of the GNU General Public License "
-    "along with this program. If not, see http://www.gnu.org/licenses/.").
-    arg(APPNAME, VERSION, __DATE__, __TIME__, gitRevision));
+  class AboutBox : public QDialog {
+  public:
+    AboutBox(QWidget * parent = 0) : QDialog(parent) {
+      // title
+      setWindowTitle(tr("About %1").arg(APPNAME));
+
+      QGridLayout * grid = new QGridLayout;
+
+      // icon
+      QLabel * iconLabel = new QLabel;
+      QIcon icon = qApp->windowIcon();
+      QSize size = icon.actualSize(QSize(64, 64));
+      iconLabel->setPixmap(icon.pixmap(size));
+      grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignLeft);
+
+      // name and version
+      grid->addWidget(new QLabel(QString(APPNAME) + " " + VERSION), 0, 1, 1, 1,
+        Qt::AlignLeft);
+      grid->addWidget(new QLabel(tr("A geocache management application")), 1,
+        1, 1, 1, Qt::AlignLeft);
+
+      // build date, revision, license in text browser
+      QString gitRevision = "";
+      if(!QString(STRINGIFY(GIT_REVISION)).isEmpty()) {
+        gitRevision = tr(" from Git revision %1").arg(STRINGIFY(GIT_REVISION));
+      }
+      QString revString = tr("Built at %1 %2%3").arg(__DATE__, __TIME__,
+        gitRevision);
+      QTextBrowser * licenseBox = new QTextBrowser;
+      licenseBox->setOpenExternalLinks(true);
+      licenseBox->setHtml(QString("<p>") + revString + "</p>" +
+        "<p>&copy; 2010 Roland Hieber <rohieb@rohieb.name></p>" +
+        tr("<p>This program is free software: you can redistribute it and/or "
+        "modify it under the terms of the GNU General Public License, version "
+        "3, as published by the Free Software Foundation.</p>"
+        "<p>This program is distributed in the hope that it will be useful, "
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU "
+        "General Public License for more details.</p>"
+        "<p>You should have received a copy of the GNU General Public License "
+        "along with this program. If not, see <a href='http://www.gnu.org/"
+        "licenses/'>http://www.gnu.org/licenses/</a>.</p>"));
+      grid->addWidget(licenseBox, 2, 0, 1, 2);
+
+      // Close button
+      QDialogButtonBox * buttonBox =
+        new QDialogButtonBox(QDialogButtonBox::Close);
+      connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+      grid->addWidget(buttonBox, 3, 0, 1, 2);
+
+      setLayout(grid);
+    }
+  };
+
+  AboutBox box(this);
+  box.exec();
 }
