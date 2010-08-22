@@ -37,12 +37,12 @@ public:
 
 protected slots:
   int showPrefDialog();
-  void importGeocacheRegion();
-  void importSingleGeocache();
+  void importGCRegion();
+  void importGCSingle();
 
 private:
-  OsmSlippyMap * pmap;
-  GeocacheModel * pModel;
+  OsmSlippyMap * pmap_;
+  GeocacheModel * pModel_;
 };
 
 }

@@ -28,15 +28,15 @@
 using namespace geojackal;
 
 MainWindow::MainWindow() :
-  QMainWindow(0), pmap(0), pModel(0) {
+  QMainWindow(0), pmap_(0), pModel_(0) {
 
   setWindowTitle("GeoJackal");
   setWindowIcon(QIcon(":/geojackal.png"));
 
   // load data
-  pModel = new GeocacheModel(this);
+  pModel_ = new GeocacheModel(this);
   try {
-    pModel->open(g_settings->storageLocation().
+    pModel_->open(g_settings->storageLocation().
       absoluteFilePath("geocaches.sqlite"));
   } catch(Failure &f) {
     QMessageBox::critical(this, "Failure", f.what());
@@ -44,10 +44,6 @@ MainWindow::MainWindow() :
 
   // map widget as central widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
-  pmap = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
-  pmap->setCaches(pModel->geocaches());
-  setCentralWidget(pmap);
-  pmap->setFocus();
 
   // menu
   QAction * exitAction = new QAction("&Quit", this);
@@ -72,6 +68,10 @@ MainWindow::MainWindow() :
   connect(importSingleAction, SIGNAL(triggered()), this,
     SLOT(importSingleGeocache()));
   geocacheMenu->addAction(importSingleAction);
+  pmap_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
+  pmap_->setCaches(pModel_->geocaches());
+  setCentralWidget(pmap_);
+  pmap_->setFocus();
 
   // show prefs dialogue if no password or username set
   if(g_settings->gcUsername().isEmpty() || g_settings->gcPassword().isEmpty()) {
@@ -80,11 +80,11 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow() {
-  if(pmap) {
-    delete pmap;
+  if(pmap_) {
+    delete pmap_;
   }
-  if(pModel) {
-    delete pModel;
+  if(pModel_) {
+    delete pModel_;
   }
 }
 
@@ -140,7 +140,7 @@ GCSpider * MainWindow::validateLogin() {
 
 
 /** Called when the user clicks on the Geocaches->Import region menu item */
-void MainWindow::importGeocacheRegion() {
+void MainWindow::importGCRegion() {
   GCSpider * spider = validateLogin();
 
   if(spider) {
@@ -156,15 +156,15 @@ void MainWindow::importGeocacheRegion() {
         QMessageBox::critical(this, "Error", f.what());
       }
 
-      pModel->addGeocaches(geocacheList);
-      pmap->setCaches(pModel->geocaches());
-      pmap->setCenter(center);
+      pModel_->addGeocaches(geocacheList);
+      pmap_->setCaches(pModel_->geocaches());
+      pmap_->setCenter(center);
     }
   }
 }
 
 /** Called when the user clicks on the Geocaches->Import single menu item */
-void MainWindow::importSingleGeocache() {
+void MainWindow::importGCSingle() {
   GCSpider * spider = validateLogin();
 
   if(spider) {
@@ -180,9 +180,9 @@ void MainWindow::importSingleGeocache() {
         delete pgc;
         return;
       }
-      pModel->addGeocache(pgc);
-      pmap->setCaches(pModel->geocaches());
-      pmap->setCenter(*pgc->coord);
+      pModel_->addGeocache(pgc);
+      pmap_->setCaches(pModel_->geocaches());
+      pmap_->setCenter(*pgc->coord);
       // also save in profile, like for region
       g_settings->setCenter(*pgc->coord);
     }
