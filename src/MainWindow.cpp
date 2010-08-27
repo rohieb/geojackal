@@ -28,7 +28,7 @@
 using namespace geojackal;
 
 MainWindow::MainWindow() :
-  QMainWindow(0), pmap_(0), pModel_(0) {
+  QMainWindow(0), map_(0), model_(0) {
 
   setWindowTitle("GeoJackal");
   setWindowIcon(QIcon(":/geojackal.png"));
@@ -38,9 +38,9 @@ MainWindow::MainWindow() :
   setupMenu();
 
   // load data
-  pModel_ = new GeocacheModel(this);
+  model_ = new GeocacheModel(this);
   try {
-    pModel_->open(g_settings->storageLocation().
+    model_->open(g_settings->storageLocation().
       absoluteFilePath("geocaches.sqlite"));
   } catch(Failure &f) {
     QMessageBox::critical(this, "Failure", f.what());
@@ -48,10 +48,10 @@ MainWindow::MainWindow() :
 
   // map widget as central widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
-  pmap_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
-  pmap_->setCaches(pModel_->geocaches());
-  setCentralWidget(pmap_);
-  pmap_->setFocus();
+  map_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
+  map_->setCaches(model_->geocaches());
+  setCentralWidget(map_);
+  map_->setFocus();
 
   // show prefs dialogue if no password or username set
   if(g_settings->gcUsername().isEmpty() || g_settings->gcPassword().isEmpty()) {
@@ -60,11 +60,11 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow() {
-  if(pmap_) {
-    delete pmap_;
+  if(map_) {
+    delete map_;
   }
-  if(pModel_) {
-    delete pModel_;
+  if(model_) {
+    delete model_;
   }
 }
 
@@ -136,9 +136,9 @@ void MainWindow::importGCRegion() {
         QMessageBox::critical(this, "Error", f.what());
       }
 
-      pModel_->addGeocaches(geocacheList);
-      pmap_->setCaches(pModel_->geocaches());
-      pmap_->setCenter(center);
+      model_->addGeocaches(geocacheList);
+      map_->setCaches(model_->geocaches());
+      map_->setCenter(center);
     }
   }
 }
@@ -160,9 +160,9 @@ void MainWindow::importGCSingle() {
         delete pgc;
         return;
       }
-      pModel_->addGeocache(pgc);
-      pmap_->setCaches(pModel_->geocaches());
-      pmap_->setCenter(*pgc->coord);
+      model_->addGeocache(pgc);
+      map_->setCaches(model_->geocaches());
+      map_->setCenter(*pgc->coord);
       // also save in profile, like for region
       g_settings->setCenter(*pgc->coord);
     }
@@ -196,14 +196,3 @@ void MainWindow::setupMenu() {
   geocacheMenu->addAction(importGCRegionAction_);
   geocacheMenu->addAction(importGCSingleAction_);
 }
-
-/** display the map view */
-void MainWindow::mapView() {
-
-}
-
-/** display the geocache detail view */
-void MainWindow::detailView() {
-
-}
-

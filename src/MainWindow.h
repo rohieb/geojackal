@@ -45,8 +45,8 @@ protected slots:
   void importGCSingle();
 
 private:
-  OsmSlippyMap * pmap_;
-  GeocacheModel * pModel_;
+  OsmSlippyMap * map_;
+  GeocacheModel * model_;
 
   QAction * exitAction_;
   QAction * prefAction_;
