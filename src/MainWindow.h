@@ -35,6 +35,10 @@ public:
   virtual ~MainWindow();
   GCSpider * validateLogin();
 
+protected:
+  void setupActions();
+  void setupMenu();
+
 protected slots:
   int showPrefDialog();
   void importGCRegion();
@@ -43,6 +47,11 @@ protected slots:
 private:
   OsmSlippyMap * pmap_;
   GeocacheModel * pModel_;
+
+  QAction * exitAction_;
+  QAction * prefAction_;
+  QAction * importGCRegionAction_;
+  QAction * importGCSingleAction_;
 };
 
 }

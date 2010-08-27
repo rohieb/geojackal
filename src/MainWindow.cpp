@@ -33,6 +33,10 @@ MainWindow::MainWindow() :
   setWindowTitle("GeoJackal");
   setWindowIcon(QIcon(":/geojackal.png"));
 
+  // setup actions and create menu
+  setupActions();
+  setupMenu();
+
   // load data
   pModel_ = new GeocacheModel(this);
   try {
@@ -44,30 +48,6 @@ MainWindow::MainWindow() :
 
   // map widget as central widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
-
-  // menu
-  QAction * exitAction = new QAction("&Quit", this);
-  exitAction->setShortcut(QKeySequence::Close);
-  connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-
-  QAction * prefAction = new QAction("&Preferences...", this);
-  prefAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
-  connect(prefAction, SIGNAL(triggered()), SLOT(showPrefDialog()));
-
-  QMenu * appMenu = menuBar()->addMenu("&Application");
-  appMenu->addAction(prefAction);
-  appMenu->addAction(exitAction);
-
-  QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
-  QAction * importRegionAction = new QAction("&Import region...", this);
-  connect(importRegionAction, SIGNAL(triggered()), this,
-    SLOT(importGeocacheRegion()));
-  geocacheMenu->addAction(importRegionAction);
-
-  QAction * importSingleAction = new QAction("&Import single...", this);
-  connect(importSingleAction, SIGNAL(triggered()), this,
-    SLOT(importSingleGeocache()));
-  geocacheMenu->addAction(importSingleAction);
   pmap_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
   pmap_->setCaches(pModel_->geocaches());
   setCentralWidget(pmap_);
@@ -188,3 +168,42 @@ void MainWindow::importGCSingle() {
     }
   }
 }
+
+/** setup the actions */
+void MainWindow::setupActions() {
+  exitAction_ = new QAction("&Quit", this);
+  exitAction_->setShortcut(QKeySequence::Close);
+  connect(exitAction_, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+  prefAction_ = new QAction("&Preferences...", this);
+  prefAction_->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
+  connect(prefAction_, SIGNAL(triggered()), SLOT(showPrefDialog()));
+
+  importGCRegionAction_ = new QAction("&Import region...", this);
+  connect(importGCRegionAction_, SIGNAL(triggered()), SLOT(importGCRegion()));
+
+  importGCSingleAction_ = new QAction("&Import single...", this);
+  connect(importGCSingleAction_, SIGNAL(triggered()), SLOT(importGCSingle()));
+}
+
+/** setup the menu by inserting actions */
+void MainWindow::setupMenu() {
+  QMenu * appMenu = menuBar()->addMenu("&Application");
+  appMenu->addAction(prefAction_);
+  appMenu->addAction(exitAction_);
+
+  QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
+  geocacheMenu->addAction(importGCRegionAction_);
+  geocacheMenu->addAction(importGCSingleAction_);
+}
+
+/** display the map view */
+void MainWindow::mapView() {
+
+}
+
+/** display the geocache detail view */
+void MainWindow::detailView() {
+
+}
+
