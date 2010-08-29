@@ -43,11 +43,13 @@ protected slots:
   int showPrefDialog();
   void importGCRegion();
   void importGCSingle();
+  void about();
 
 private:
   OsmSlippyMap * map_;
   GeocacheModel * model_;
 
+  QAction * aboutAction_;
   QAction * exitAction_;
   QAction * prefAction_;
   QAction * importGCRegionAction_;

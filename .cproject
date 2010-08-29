@@ -94,11 +94,12 @@
 </scannerInfoProvider>
 </profile>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
 <target name="debug" path="drafts/sqlite" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
-<buildArguments/>
 <buildTarget>debug</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
@@ -106,6 +107,7 @@
 </target>
 <target name="Qt Release Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
+<buildArguments/>
 <buildTarget>release</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -113,6 +115,7 @@
 </target>
 <target name="Qt Debug Build" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>make</buildCommand>
+<buildArguments/>
 <buildTarget>debug</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -120,36 +123,36 @@
 </target>
 </buildTargets>
 </storageModule>
-<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
-<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
+<pathentry base-path="/usr/include/qt4" include="" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtScript" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtUiTools" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtMultimedia" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtXmlPatterns" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtTest" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtCore" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtSvg" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtSql" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtXml" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtWebKit" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtHelp" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtNetwork" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtScriptTools" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtGui" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="Qt" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtDBus" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="QtDesigner" kind="inc" path="" system="true"/>
+<pathentry base-path="/usr/include/qt4" include="Qt3Support" kind="inc" path="" system="true"/>
+<pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include" kind="inc" path="" system="true"/>
+<pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
+<pathentry base-path="geojackal" include="src" kind="inc" path="" system="true"/>
+<pathentry kind="mac" name="GIT_REVISION" path="" value="&quot;&quot;"/>
 <pathentry excluding="src/" kind="src" path=""/>
 <pathentry kind="out" path=""/>
 <pathentry kind="out" path="debug"/>
 <pathentry kind="out" path="release"/>
 <pathentry kind="src" path="src"/>
-<pathentry base-path="/usr/include/qt4" include="" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtXml" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtWebKit" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtDesigner" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtCore" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtUiTools" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtTest" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtXmlPatterns" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtGui" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtNetwork" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtSql" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtDBus" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtSvg" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtScriptTools" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtAssistant" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtHelp" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="QtScript" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="Qt3Support" kind="inc" path="" system="true"/>
-<pathentry base-path="/usr/include/qt4" include="Qt" kind="inc" path="" system="true"/>
-<pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include" kind="inc" path="" system="true"/>
-<pathentry base-ref="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO" include="/usr/include/c++/4.4" kind="inc" path="" system="true"/>
-<pathentry base-path="geojackal" include="src" kind="inc" path="" system="true"/>
 </storageModule>
 </cconfiguration>
 </storageModule>
