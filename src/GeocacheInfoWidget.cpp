@@ -1,5 +1,5 @@
 /**
- * @file GeocacheInfoDialog.cpp
+ * @file GeocacheInfoWidget.cpp
  * @date Jul 14, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GeocacheInfoDialog.h"
+#include "GeocacheInfoWidget.h"
 #include "OsmSlippyMap.h" // for geocacheIcon()
 
 using namespace geojackal;
@@ -71,10 +71,9 @@ InfoTab::~InfoTab() {
 }
 
 /** Geocache information dialog */
-GeocacheInfoDialog::GeocacheInfoDialog(Geocache * geocache, QWidget * parent) :
-  QDialog(parent), geocache_(geocache) {
+GeocacheInfoWidget::GeocacheInfoWidget(Geocache * geocache, QWidget * parent) :
+  QWidget(parent), geocache_(geocache) {
 
-  setWindowTitle(geocache->name + " (" + geocache->waypoint + ")");
   if(!geocache) {
     // No geocache selected
     QVBoxLayout * layout = new QVBoxLayout;
@@ -118,5 +117,5 @@ GeocacheInfoDialog::GeocacheInfoDialog(Geocache * geocache, QWidget * parent) :
   }
 }
 
-GeocacheInfoDialog::~GeocacheInfoDialog() {
+GeocacheInfoWidget::~GeocacheInfoWidget() {
 }

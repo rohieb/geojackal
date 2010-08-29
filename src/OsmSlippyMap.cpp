@@ -19,7 +19,6 @@
  */
 
 #include "OsmSlippyMap.h"
-#include "GeocacheInfoDialog.h"
 #include <cmath>
 #include <QPointF>
 
@@ -349,8 +348,10 @@ void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
         qDebug() << gcr << "?contains?" << event->pos();
         if(gcr.contains(event->pos())) {
           qDebug() << "you clicked on" << geocacheRects.value(gcr)->name;
-          GeocacheInfoDialog dialog(geocacheRects.value(gcr), this);
-          dialog.exec();
+
+          // FIXME emit signal
+          //GeocacheInfoDialog dialog(geocacheRects.value(gcr), this);
+          //dialog.exec();
           // only do it the first time
           event->accept();
           return;

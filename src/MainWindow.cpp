@@ -46,12 +46,23 @@ MainWindow::MainWindow() :
     QMessageBox::critical(this, "Failure", f.what());
   }
 
-  // map widget as central widget
+  // setup map widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
   map_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
   map_->setCaches(model_->geocaches());
-  setCentralWidget(map_);
-  map_->setFocus();
+
+  // setup geocache detail widget
+  infoPane_ = new GeocacheInfoWidget;
+  // FIXME setup slots and signals: map.selected() -> infoPane.setCache()
+
+  // stacked widget as central widget of the window
+  stack_ = new QStackedWidget;
+  stack_->addWidget(map_);
+  stack_->addWidget(infoPane_);
+
+  setCentralWidget(stack_);
+  //stack->setFocus();
+  stack_->setCurrentWidget(map_);
 
   // show prefs dialogue if no password or username set
   if(g_settings->gcUsername().isEmpty() || g_settings->gcPassword().isEmpty()) {
@@ -189,6 +200,14 @@ void MainWindow::setupActions() {
   importGCSingleAction_ = new QAction("&Import single...", this);
   connect(importGCSingleAction_, SIGNAL(triggered()), SLOT(importGCSingle()));
 
+  mapViewAction_ = new QAction("&Map", this);
+  mapViewAction_->setShortcut(Qt::ALT | Qt::Key_1);
+  connect(mapViewAction_, SIGNAL(triggered()), SLOT(mapView()));
+
+  detailViewAction_ = new QAction("&Geocache details", this);
+  detailViewAction_->setShortcut(Qt::ALT | Qt::Key_2);
+  connect(detailViewAction_, SIGNAL(triggered()), SLOT(detailView()));
+
   aboutAction_ = new QAction("&About...", this);
   connect(aboutAction_, SIGNAL(triggered()), SLOT(about()));
 }
@@ -202,6 +221,10 @@ void MainWindow::setupMenu() {
   QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
   geocacheMenu->addAction(importGCRegionAction_);
   geocacheMenu->addAction(importGCSingleAction_);
+
+  QMenu * viewMenu = menuBar()->addMenu("&View");
+  viewMenu->addAction(mapViewAction_);
+  viewMenu->addAction(detailViewAction_);
 
   QMenu * helpMenu = menuBar()->addMenu("&Help");
   helpMenu->addAction(aboutAction_);
@@ -269,4 +292,15 @@ void MainWindow::about() {
 
   AboutBox box(this);
   box.exec();
+}
+
+/** display the map view */
+void MainWindow::mapView() {
+  stack_->setCurrentWidget(map_);
+}
+
+/** display the geocache detail view */
+void MainWindow::detailView() {
+  stack_->setCurrentWidget(infoPane_);
+  // TODO check boxes before menu item
 }

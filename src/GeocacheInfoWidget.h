@@ -1,5 +1,5 @@
 /**
- * @file GeocacheInfoDialog.h
+ * @file GeocacheInfoWidget.h
  * @date Jul 14, 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,8 +18,8 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GEOCACHEINFODIALOG_H_
-#define GEOCACHEINFODIALOG_H_
+#ifndef GEOCACHEINFOWIDGET_H_
+#define GEOCACHEINFOWIDGET_H_
 
 #include <QObject>
 #include <QtGui>
@@ -40,12 +40,14 @@ public:
 };
 /** @} */
 
-/** Geocache information dialog */
-class GeocacheInfoDialog : public QDialog {
+/**
+ * Geocache information dialog
+ */
+class GeocacheInfoWidget : public QWidget {
   Q_OBJECT
 public:
-  GeocacheInfoDialog(Geocache * geocache, QWidget * parent = 0);
-  virtual ~GeocacheInfoDialog();
+  GeocacheInfoWidget(Geocache * geocache = 0, QWidget * parent = 0);
+  virtual ~GeocacheInfoWidget();
 
 private:
   Geocache * geocache_;
@@ -55,4 +57,4 @@ QString sizeToText(GeocacheSize size);
 
 }
 
-#endif /* GEOCACHEINFODIALOG_H_ */
+#endif /* GEOCACHEINFOWIDGET_H_ */

@@ -7,7 +7,7 @@ QT = core \
     network \
     sql
 SOURCES = src/SettingsManager.cpp \
-    src/GeocacheInfoDialog.cpp \
+    src/GeocacheInfoWidget.cpp \
     src/Geocache.cpp \
     src/PrefDialog.cpp \
     src/GCSpiderDialog.cpp \
@@ -20,7 +20,7 @@ SOURCES = src/SettingsManager.cpp \
     src/MainWindow.cpp \
     src/main.cpp
 HEADERS = src/SettingsManager.h \
-    src/GeocacheInfoDialog.h \
+    src/GeocacheInfoWidget.h \
     src/PrefDialog.h \
     src/GCSpiderDialog.h \
     src/GeocacheModel.h \

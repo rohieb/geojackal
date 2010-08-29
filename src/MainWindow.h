@@ -22,6 +22,7 @@
 
 #include "OsmSlippyMap.h"
 #include "GeocacheModel.h"
+#include "GeocacheInfoWidget.h"
 #include "GCSpider.h"
 #include <QObject>
 #include <QtGui>
@@ -44,9 +45,13 @@ protected slots:
   void importGCRegion();
   void importGCSingle();
   void about();
+  void mapView();
+  void detailView();
 
 private:
+  QStackedWidget * stack_;
   OsmSlippyMap * map_;
+  GeocacheInfoWidget * infoPane_;
   GeocacheModel * model_;
 
   QAction * aboutAction_;
@@ -54,6 +59,8 @@ private:
   QAction * prefAction_;
   QAction * importGCRegionAction_;
   QAction * importGCSingleAction_;
+  QAction * detailViewAction_;
+  QAction * mapViewAction_;
 };
 
 }
