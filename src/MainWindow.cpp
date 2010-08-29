@@ -171,8 +171,12 @@ void MainWindow::importGCSingle() {
 
 /** setup the actions */
 void MainWindow::setupActions() {
+  QList<QKeySequence> keySeq;
+
   exitAction_ = new QAction("&Quit", this);
-  exitAction_->setShortcut(QKeySequence::Close);
+  keySeq.append(QKeySequence(Qt::CTRL | Qt::Key_Q));
+  keySeq.append(QKeySequence(QKeySequence::Close));
+  exitAction_->setShortcuts(keySeq);
   connect(exitAction_, SIGNAL(triggered()), qApp, SLOT(quit()));
 
   prefAction_ = new QAction("&Preferences...", this);
