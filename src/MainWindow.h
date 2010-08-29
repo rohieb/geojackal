@@ -61,6 +61,8 @@ private:
   QAction * importGCSingleAction_;
   QAction * detailViewAction_;
   QAction * mapViewAction_;
+
+  QActionGroup * mainViewActionGroup_;
 };
 
 }
