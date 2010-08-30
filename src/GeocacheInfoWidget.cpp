@@ -51,71 +51,108 @@ QString geojackal::sizeToText(GeocacheSize size) {
 }
 
 /** Info tab page */
-InfoTab::InfoTab(Geocache * geocache) : QWidget(0) {
-  if(geocache) {
-    QVBoxLayout * l = new QVBoxLayout(this);
-    l->addWidget(new QLabel("Waypoint:\t" + geocache->waypoint));
-    l->addWidget(new QLabel(QString("Owner:\t%1").arg(geocache->owner)));
-    l->addWidget(new QLabel(QString("Hidden:\t%1").arg(geocache->placed->
-      toString(Qt::SystemLocaleLongDate))));
-    l->addWidget(new QLabel(QString("Size:\t%1").
-      arg(sizeToText(geocache->size))));
-    l->addWidget(new QLabel(QString("Difficulty:\t%1").
-      arg(qreal(geocache->difficulty) / 2.0, 0, 'f', 1)));
-    l->addWidget(new QLabel(QString("Terrain:\t%2").
-      arg(qreal(geocache->terrain) / 2.0, 0, 'f', 1)));
-  }
+InfoTab::InfoTab(QWidget * parent, Geocache * geocache) : QWidget(parent) {
+  waypoint_ = new QLabel(this);
+  owner_ = new QLabel(this);
+  placed_ = new QLabel(this);
+  size_ = new QLabel(this);
+  diff_ = new QLabel(this);
+  terrain_ = new QLabel(this);
+
+  QFormLayout * l = new QFormLayout(this);
+  l->addRow(tr("Waypoint:\t"), waypoint_);
+  l->addRow(tr("Owner:"), owner_);
+  l->addRow(tr("Hidden:"), placed_);
+  l->addRow(tr("Size:"), size_);
+  l->addRow(tr("Difficulty:"), diff_);
+  l->addRow(tr("Terrain:"), terrain_);
+
+  setLayout(l);
+
+  setGeocache(geocache);
 }
 
 InfoTab::~InfoTab() {
+}
+
+/**
+ * Set the geocache whose data is to be displayed.
+ * @param geocache the new geocache. If this parameter is @c 0, no data is
+ * shown.
+ */
+void InfoTab::setGeocache(Geocache * geocache) {
+  if(geocache) {
+    waypoint_->setText(geocache->waypoint);
+    owner_->setText(geocache->owner);
+    placed_->setText(geocache->placed->toString(Qt::SystemLocaleShortDate));
+    size_->setText(sizeToText(geocache->size));
+    diff_->setText(QString("%1").arg(qreal(geocache->difficulty) / 2.0));
+    terrain_->setText(QString("%1").arg(qreal(geocache->terrain) / 2.0));
+  } else {
+    waypoint_->setText("");
+    owner_->setText("");
+    placed_->setText("");
+    size_->setText("");
+    diff_->setText("");
+    terrain_->setText("");
+  }
 }
 
 /** Geocache information dialog */
 GeocacheInfoWidget::GeocacheInfoWidget(Geocache * geocache, QWidget * parent) :
   QWidget(parent), geocache_(geocache) {
 
-  if(!geocache) {
-    // No geocache selected
-    QVBoxLayout * layout = new QVBoxLayout;
-    QLabel * label = new QLabel(tr("No geocache selected"));
-    label->setAlignment(Qt::AlignCenter);
-    layout->addWidget(label, Qt::AlignCenter);
-    setLayout(layout);
+  mainLayout_ = new QGridLayout(this);
 
-  } else {
-    // Grid layout as main layout
-    QGridLayout * mainLayout = new QGridLayout(this);
+  // init fields, they are filled later
+  // name
+  geocacheName_ = new QLabel;
+  mainLayout_->addWidget(geocacheName_, 0, 0, Qt::AlignLeft | Qt::AlignTop);
 
-    // geocache name
-    mainLayout->addWidget(new QLabel("<big><b>" + geocache->name +
-      "</b></big>"), 0, 0, Qt::AlignLeft);
+  // icon
+  geocacheIcon_ = new QLabel;
+  mainLayout_->addWidget(geocacheIcon_, 0, 1, Qt::AlignRight | Qt::AlignTop);
 
-    // geocache icon
-    QLabel * pic = new QLabel;
-    pic->setPixmap(geocacheIcon(geocache));
-    mainLayout->addWidget(pic, 0, 1, Qt::AlignRight);
+  // tab pages
+  // geocache details
+  geocacheInfoTab_ = new InfoTab;
 
-    // tab pages
-    // setup description browser
-    QTextBrowser * descBrowser = new QTextBrowser();
-    descBrowser->setHtml(geocache->desc);
-    descBrowser->setOpenExternalLinks(true);
+  // description browser
+  geocacheDescBrowser_ = new QTextBrowser;
+  geocacheDescBrowser_->setOpenExternalLinks(true);
 
-    // prepare tab widgets
-    QTabWidget * tab = new QTabWidget;
-    tab->addTab(new InfoTab(geocache), "General");
-    tab->addTab(descBrowser, "Description");
+  tab_ = new QTabWidget;
+  tab_->addTab(geocacheInfoTab_, tr("General"));
+  tab_->addTab(geocacheDescBrowser_, tr("Description"));
+  mainLayout_->addWidget(tab_, 1, 0, 1, 2);
 
-    mainLayout->addWidget(tab, 1, 0, 1, 2);
+  setLayout(mainLayout_);
 
-    // button box
-    QDialogButtonBox * buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    mainLayout->addWidget(buttonBox, 2, 0, 1, 2, Qt::AlignRight);
-
-    setLayout(mainLayout);
-  }
+  // fill in the values
+  setGeocache(geocache);
 }
 
 GeocacheInfoWidget::~GeocacheInfoWidget() {
+}
+
+/**
+ * Set the geocache whose data is to be displayed.
+ * @param geocache the new geocache. If this parameter is @c 0, the controls
+ * holding the geocache information are cleared.
+ */
+void GeocacheInfoWidget::setGeocache(Geocache * geocache) {
+  if(!geocache) {
+    // clear values
+    geocacheName_->setText("<big><b>" + tr("No geocache selected") +
+      "</b></big>");
+    geocacheIcon_->setText("");
+    geocacheInfoTab_->setGeocache(0);
+    geocacheDescBrowser_->setText("");
+
+  } else {
+    geocacheName_->setText("<big><b>" + geocache->name + "</b></big>");
+    geocacheIcon_->setPixmap(geocacheIcon(geocache));
+    geocacheInfoTab_->setGeocache(geocache);
+    geocacheDescBrowser_->setHtml(geocache->desc);
+  }
 }

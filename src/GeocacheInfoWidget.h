@@ -35,8 +35,17 @@ namespace geojackal {
 class InfoTab : public QWidget {
   Q_OBJECT
 public:
-  InfoTab(Geocache * geocache);
+  InfoTab(QWidget * parent = 0, Geocache * geocache = 0);
   virtual ~InfoTab();
+  void setGeocache(Geocache * geocache = 0);
+
+private:
+  QLabel * waypoint_;
+  QLabel * owner_;
+  QLabel * placed_;
+  QLabel * size_;
+  QLabel * diff_;
+  QLabel * terrain_;
 };
 /** @} */
 
@@ -49,8 +58,17 @@ public:
   GeocacheInfoWidget(Geocache * geocache = 0, QWidget * parent = 0);
   virtual ~GeocacheInfoWidget();
 
+public slots:
+  void setGeocache(Geocache * geocache);
+
 private:
   Geocache * geocache_;
+  QLabel * geocacheName_;
+  QLabel * geocacheIcon_;
+  QTextBrowser * geocacheDescBrowser_;
+  InfoTab * geocacheInfoTab_;
+  QTabWidget * tab_;
+  QGridLayout * mainLayout_;
 };
 
 QString sizeToText(GeocacheSize size);
