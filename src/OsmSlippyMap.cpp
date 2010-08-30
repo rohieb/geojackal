@@ -252,9 +252,9 @@ QPixmap geojackal::geocacheIcon(Geocache * geocache) {
     case TYPE_OTHER: fileName = "final.gif"; break;
     default: return QPixmap();
   }
-  QPixmap icon;
+  QImage icon;
   icon.load(":/cachetype/" + fileName);
-  return icon;
+  return QPixmap::fromImage(icon.scaledToWidth(24, Qt::SmoothTransformation));
 }
 
 /** from QWidget */
