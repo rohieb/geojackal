@@ -96,6 +96,13 @@ public:
     geocacheList = geocaches;
   }
 
+signals:
+  /**
+   * Emitted if the user clicks on a geocache icon
+   * @param gc the geocache the user clicked on
+   */
+  void clicked(Geocache * gc);
+
 protected:
   void download(const uint xTile, const uint yTile);
   void invalidate();

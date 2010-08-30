@@ -53,7 +53,10 @@ MainWindow::MainWindow() :
 
   // setup geocache detail widget
   infoPane_ = new GeocacheInfoWidget;
-  // FIXME setup slots and signals: map.selected() -> infoPane.setCache()
+  // display geocache in detail widget on click on map
+  connect(map_, SIGNAL(clicked(Geocache *)), infoPane_,
+    SLOT(setGeocache(Geocache *)));
+  connect(map_, SIGNAL(clicked(Geocache *)), SLOT(detailView()));
 
   // stacked widget as central widget of the window
   stack_ = new QStackedWidget;
