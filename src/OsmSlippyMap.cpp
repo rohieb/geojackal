@@ -94,7 +94,7 @@ Coordinate geojackal::tileToGeo(const QPointF tile, const uchar zoom) {
 OsmSlippyMap::OsmSlippyMap(const Coordinate& center, const uchar zoom,
   const QDir& cacheDir, QWidget * parent) :
   QWidget(parent), pnam_(0), cacheDir_(cacheDir), zoomLevel_(zoom),
-  center_(center) {
+  drawZoomButtons_(true), center_(center) {
 
   pnam_ = new QNetworkAccessManager;
   emptyTile_ = QPixmap(TILE_DIM, TILE_DIM);
@@ -307,24 +307,25 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
     tr("Map: CC-by-SA, from OpenStreetMap.org"));
 
   // draw zoom "buttons" in upper left corner
-  QRect zoomBtn(zoomButtonTopLeft,
-    QSize(zoomButtonSize - 1, zoomButtonSize - 1));
-  p.fillRect(zoomBtn, Qt::white);
-  p.drawRect(zoomBtn);
-  float s = zoomButtonSize / 4.0f;
-  p.drawLine(zoomBtn.x() + floor(s),
-    zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s) + 1,
-    zoomBtn.y() + floor(zoomButtonSize / 2.0f));
-  p.drawLine(zoomBtn.x() + floor(zoomButtonSize / 2.0f),
-    zoomBtn.y() + floor(s), zoomBtn.x() + floor(zoomButtonSize / 2.0f),
-    zoomBtn.bottom() - floor(s) + 1);
-  zoomBtn.moveTop(zoomButtonSize + zoomButtonPadding);
-  p.fillRect(zoomBtn, Qt::white);
-  p.drawRect(zoomBtn);
-  p.drawLine(zoomBtn.x() + floor(s),
-    zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s) + 1,
-    zoomBtn.y() + floor(zoomButtonSize / 2.0f));
-
+  if(drawZoomButtons()) {
+    QRect zoomBtn(zoomButtonTopLeft,
+      QSize(zoomButtonSize - 1, zoomButtonSize - 1));
+    p.fillRect(zoomBtn, Qt::white);
+    p.drawRect(zoomBtn);
+    float s = zoomButtonSize / 4.0f;
+    p.drawLine(zoomBtn.x() + floor(s),
+      zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s)
+      + 1, zoomBtn.y() + floor(zoomButtonSize / 2.0f));
+    p.drawLine(zoomBtn.x() + floor(zoomButtonSize / 2.0f),
+      zoomBtn.y() + floor(s), zoomBtn.x() + floor(zoomButtonSize / 2.0f),
+      zoomBtn.bottom() - floor(s) + 1);
+    zoomBtn.moveTop(zoomButtonSize + zoomButtonPadding);
+    p.fillRect(zoomBtn, Qt::white);
+    p.drawRect(zoomBtn);
+    p.drawLine(zoomBtn.x() + floor(s),
+      zoomBtn.y() + floor(zoomButtonSize / 2.0f), zoomBtn.right() - floor(s)
+      + 1, zoomBtn.y() + floor(zoomButtonSize / 2.0f));
+  }
   p.end();
 }
 
@@ -334,32 +335,42 @@ void OsmSlippyMap::resizeEvent(QResizeEvent *) {
 }
 
 void OsmSlippyMap::mousePressEvent(QMouseEvent * event) {
-  // drag on left button
+  // drag or zoom on left button
   if(event->buttons() == Qt::LeftButton) {
     // if on zoom button
-    QRect zoomInBtn(zoomButtonTopLeft, QSize(zoomButtonSize, zoomButtonSize));
-    QRect zoomOutBtn = zoomInBtn.adjusted(0, zoomButtonSize + zoomButtonPadding,
-      0, zoomButtonSize + zoomButtonPadding);
+    if(drawZoomButtons()) {
+      QRect zoomInBtn(zoomButtonTopLeft, QSize(zoomButtonSize, zoomButtonSize));
+      QRect zoomOutBtn = zoomInBtn.adjusted(0, zoomButtonSize +
+        zoomButtonPadding, 0, zoomButtonSize + zoomButtonPadding);
 
-    if(zoomInBtn.contains(event->pos())) {
-      setZoom(zoom() + 1);
-    } else if(zoomOutBtn.contains(event->pos())) {
-      setZoom(zoom() - 1);
-    } else {
-      // not on zoom button, maybe on geocache icon
-      foreach(QRect gcr, geocacheRects.keys()) {
-        qDebug() << gcr << "?contains?" << event->pos();
-        if(gcr.contains(event->pos())) {
-          qDebug() << "you clicked on" << geocacheRects.value(gcr)->name;
-          emit clicked(geocacheRects.value(gcr));
-          event->accept(); // only do it the first time
-          return;
-        }
+      if(zoomInBtn.contains(event->pos())) {
+        setZoom(zoom() + 1);
+        event->accept();
+        return;
+      } else if(zoomOutBtn.contains(event->pos())) {
+        setZoom(zoom() - 1);
+        event->accept();
+        return;
       }
-      dragPos = event->pos();
     }
+
+    // not on zoom button, maybe on geocache icon
+    foreach(QRect gcr, geocacheRects.keys()) {
+      qDebug() << gcr << "?contains?" << event->pos();
+      if(gcr.contains(event->pos())) {
+        qDebug() << "you clicked on" << geocacheRects.value(gcr)->name;
+        emit clicked(geocacheRects.value(gcr));
+        event->accept(); // only do it the first time
+        return;
+      }
+    }
+
+    // else: drag map
+    dragPos = event->pos();
     event->accept();
+
   } else {
+    // ignore other mouse buttons
     event->ignore();
   }
 }

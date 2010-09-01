@@ -87,6 +87,26 @@ public:
     return zoomLevel_;
   }
 
+  /**
+   * Enable or disable the zoom buttons.
+   * Note: if zoom buttons are disabled, the user is still able to zoom by
+   * double clicking.
+   * @param b The new state of the zoom buttons, @c true to display the buttons,
+   * or @c false to hide them.
+   */
+  inline void setDrawZoomButtons(bool b) {
+    drawZoomButtons_ = b;
+    invalidate();
+  }
+
+  /**
+   * Get the state of the zoom buttons
+   * @return @c true if the zoom buttons are displayed, @c false otherwise
+   */
+  inline bool drawZoomButtons() {
+    return drawZoomButtons_;
+  }
+
   /** Get the directory where the map tiles are cached */
   inline QDir cacheDir() {
     return cacheDir_;
@@ -131,6 +151,8 @@ private:
   QPixmap emptyTile_;
   /** Zoom level, ranging from 0 (world map) to 18 (detail) */
   uchar zoomLevel_;
+  /** Whether to draw the zoom buttons */
+  bool drawZoomButtons_;
   /** Coordinate that is currently centered */
   Coordinate center_;
   /** Offset for top-left tile */
