@@ -25,7 +25,7 @@
 using namespace geojackal;
 
 const ushort OsmSlippyMap::TILE_DIM = 256;
-const uchar OsmSlippyMap::MAX_ZOOM = 18;
+const uchar OsmSlippyMap::MAX_ZOOM = 16;
 
 const QPoint OsmSlippyMap::zoomButtonTopLeft(3, 3);
 const uint OsmSlippyMap::zoomButtonSize = 15;
