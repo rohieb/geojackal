@@ -295,13 +295,16 @@ void OsmSlippyMap::paintEvent(QPaintEvent * event) {
 
   // draw copyright text
   p.setPen(Qt::black);
-#if defined(Q_OS_SYMBIAN)
   QFont font = p.font();
+#if defined(Q_OS_SYMBIAN)
   font.setPixelSize(13);
-  p.setFont(font);
+#else
+  font.setPointSize(8);
 #endif
+  p.setFont(font);
   p.drawText(rect(), Qt::AlignBottom | Qt::TextWordWrap,
-    "Map data CC-BY-SA 2009 OpenStreetMap.org contributors");
+    //: License info on the map, keep it short for small widget sizes
+    tr("Map: CC-by-SA, from OpenStreetMap.org"));
 
   // draw zoom "buttons" in upper left corner
   QRect zoomBtn(zoomButtonTopLeft,
