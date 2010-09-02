@@ -91,8 +91,8 @@ Coordinate geojackal::tileToGeo(const QPointF tile, const uchar zoom) {
 /**
  * Constructor.
  */
-OsmSlippyMap::OsmSlippyMap(const Coordinate& center, const uchar zoom,
-  const QDir& cacheDir, QWidget * parent) :
+OsmSlippyMap::OsmSlippyMap(QWidget * parent, const Coordinate& center,
+  const uchar zoom, const QDir& cacheDir) :
   QWidget(parent), pnam_(0), cacheDir_(cacheDir), zoomLevel_(zoom),
   drawZoomButtons_(true), center_(center) {
 

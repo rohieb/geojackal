@@ -48,7 +48,7 @@ MainWindow::MainWindow() :
 
   // setup map widget
   QDir cacheDir(g_settings->storageLocation().absoluteFilePath("maps"));
-  map_ = new OsmSlippyMap(g_settings->center(), 16, cacheDir);
+  map_ = new OsmSlippyMap(this, g_settings->center(), 16, cacheDir);
   map_->setCaches(model_->geocaches());
 
   // setup geocache detail widget

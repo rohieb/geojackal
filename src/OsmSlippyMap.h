@@ -44,9 +44,9 @@ public:
   /** Maximum zoom level (in OSM zoom level units...) */
   static const uchar MAX_ZOOM;
 
-  OsmSlippyMap(const Coordinate& center, const uchar zoom, const QDir&
-    cacheDir = QDir(QCoreApplication::applicationDirPath()),
-    QWidget * parent = 0);
+  OsmSlippyMap(QWidget * parent = 0, const Coordinate& center =
+    Coordinate(ANGLE_INVALID, ANGLE_INVALID), const uchar zoom = 16,
+    const QDir& cacheDir = QDir(QCoreApplication::applicationDirPath()));
   virtual ~OsmSlippyMap();
 
   /**
