@@ -49,6 +49,11 @@ public:
     const QDir& cacheDir = QDir(QCoreApplication::applicationDirPath()));
   virtual ~OsmSlippyMap();
 
+  /** Return a reasonable size of the widget */
+  virtual QSize sizeHint() const {
+    return QSize(140, 140);
+  }
+
   /**
    * Set the center coordinate. This is the coordinate that is shown in the
    * center of the widget. If the center coordinate is changed, the map will

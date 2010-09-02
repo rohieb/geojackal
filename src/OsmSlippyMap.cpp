@@ -96,6 +96,10 @@ OsmSlippyMap::OsmSlippyMap(QWidget * parent, const Coordinate& center,
   QWidget(parent), pnam_(0), cacheDir_(cacheDir), zoomLevel_(zoom),
   drawZoomButtons_(true), center_(center) {
 
+  // set up sizes and so on
+  setMinimumSize(140, 140);
+  setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
   pnam_ = new QNetworkAccessManager;
   emptyTile_ = QPixmap(TILE_DIM, TILE_DIM);
   emptyTile_.fill(Qt::lightGray);
