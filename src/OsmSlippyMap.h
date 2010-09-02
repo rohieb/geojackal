@@ -34,6 +34,8 @@ namespace geojackal {
  * Slippy map widget using OpenStreetMap data.
  * The map is loaded on-the-fly from the OpenStreetMap tile servers. It can be
  * panned by the user to provide a primitive way of navigation.
+ *
+ * @todo "cross hair" for coordinate selection
  */
 class OsmSlippyMap : public QWidget {
   Q_OBJECT
@@ -63,6 +65,7 @@ public:
   inline void setCenter(const Coordinate& coord) {
     center_ = coord;
     invalidate();
+    emit centerChanged(center_);
   }
   /**
    * Get the current center coordinate.
@@ -124,9 +127,15 @@ public:
 signals:
   /**
    * Emitted if the user clicks on a geocache icon
-   * @param gc the geocache the user clicked on
+   * @param gc The geocache the user clicked on
    */
   void clicked(Geocache * gc);
+  /**
+   * Emitted if the center has changed, particularly when the user has dragged
+   * the map.
+   * @param c The new center coordinate
+   */
+  void centerChanged(Coordinate& c);
 
 protected:
   void download(const uint xTile, const uint yTile);

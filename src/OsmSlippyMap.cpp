@@ -155,6 +155,8 @@ void OsmSlippyMap::invalidate() {
   shownTiles_ = QRect(firstX, firstY, lastX - firstX + 1, lastY - firstY + 1);
 
   // download all needed tiles
+  // FIXME need a list of all downloaded tiles so nothing gets loaded twice!
+  // TODO load first visible area, then pre-load margin of non-visible tiles
   for(uint x = firstX; x <= lastX; ++x) {
     for(uint y = firstY; y <= lastY; ++y) {
       if(!tilePixmaps_.contains(QPoint(x, y))) {
@@ -176,6 +178,7 @@ void OsmSlippyMap::invalidate() {
  * Download a tile from the tile servers.
  * @param xTile X coordinate of the tile
  * @param yTile Y coordinate of the tile
+ * @todo Must be multi-threaded for the UI not to block!
  */
 void OsmSlippyMap::download(const uint xTile, const uint yTile) {
   QPoint tileCoord(xTile, yTile);
@@ -395,6 +398,7 @@ void OsmSlippyMap::mouseMoveEvent(QMouseEvent * event) {
   qDebug() << "Mouse move to " << center_;
   invalidate();
   event->accept();
+  emit centerChanged(center_);
 }
 
 void OsmSlippyMap::mouseDoubleClickEvent(QMouseEvent * event) {
