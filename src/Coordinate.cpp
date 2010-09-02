@@ -48,15 +48,19 @@ QString Coordinate::format(OutputFormat format) const {
   Angle abslat(fabs(lat));
 
   switch(format) {
-    case FORMAT_DEG:
-      return QString("%1 %2 %3 %4").arg(abslat).arg(ns).arg(abslon).arg(ew);
-    case FORMAT_DEG_MIN:
-      return QString("%1 %2 %3 %4 %5 %6").arg((int)abslat).arg(abslat.min()).
-        arg(ns).arg((int)abslon).arg(abslon.min()).arg(ew);
-    case FORMAT_DEG_MIN_SEC:
-      return QString("%1 %2 %3 %4 %5 %6 %7 %8").arg((int)abslat).arg(
-        (int)abslat.min()).arg(abslat.sec()).arg(ns).arg((int)abslon).arg(
-        abslon.min()).arg(abslon.sec()).arg(ew);
+    case FormatDeg:
+      return QString("%1 %2 %3 %4").arg(ns).arg(QString::number(abslat, 'f',
+        5)).arg(ew).arg(QString::number(abslon, 'f', 5));
+    case FormatDegMin:
+      return QString("%1 %2\xb0 %3 %4 %5\xb0 %6").arg(ns).arg((int) abslat).
+        arg(QString::number(abslat.min(), 'f', 3)).arg(ew).arg((int) abslon).
+        arg(QString::number(abslon.min(), 'f', 3));
+    case FormatDegMinSec:
+      return QString("%1 %2\xb0 %3' %4\" %5 %6\xb0 %7' %8\"").
+        arg(ns).arg((int) abslat).arg((int) abslat.min()).
+        arg(QString::number(abslat.sec(), 'f', 2)).
+        arg(ew).arg((int) abslon).arg((int) abslon.min()).
+        arg(QString::number(abslon.sec(), 'f', 2));
     default:
       return QString("");
   }
@@ -64,6 +68,6 @@ QString Coordinate::format(OutputFormat format) const {
 
 /** Write Coordinate objects to debug stream */
 QDebug& geojackal::operator<<(QDebug& dbg, const Coordinate& c) {
-  dbg.nospace() << c.format(Coordinate::FORMAT_DEG);
+  dbg.nospace() << c.format(Coordinate::FormatDeg);
   return dbg.maybeSpace();
 }

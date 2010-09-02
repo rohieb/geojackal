@@ -118,18 +118,18 @@ const static Angle ANGLE_INVALID = 361.0;
 struct Coordinate {
   /** Control of the output formatting */
   enum OutputFormat {
-    /** Floating-point degree part, like <tt>52.0914782 N 10.1977256 E</tt> */
-    FORMAT_DEG,
+    /** Floating-point degree part, like <tt>N 52.09147 E 10.19772</tt> */
+    FormatDeg,
     /**
      * Integral degree and floating-point minute part, like
-     * <tt>52° 14.782 N 10° 19.256 E</tt>
+     * <tt>N 52° 14.782 10° 19.256</tt>
      */
-    FORMAT_DEG_MIN,
+    FormatDegMin,
     /**
      * Integral degree and minute, floating-point second part, like
-     * <tt>52° 9' 14.02" N 10° 19' 25.12" E</tt>
+     * <tt>N 52° 9' 14.02" E 10° 19' 25.12"</tt>
      */
-    FORMAT_DEG_MIN_SEC
+    FormatDegMinSec
   };
 
   /**
