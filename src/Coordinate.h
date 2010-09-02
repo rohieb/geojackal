@@ -150,6 +150,9 @@ struct Coordinate {
   QString format(OutputFormat format) const;
 };
 
+/** The invalid coordinate used to determine unset values */
+const static Coordinate COORD_INVALID(ANGLE_INVALID, ANGLE_INVALID);
+
 QDebug& operator<<(QDebug& dbg, const Coordinate& c);
 
 }
