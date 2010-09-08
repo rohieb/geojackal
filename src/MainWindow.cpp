@@ -199,10 +199,10 @@ void MainWindow::setupActions() {
   prefAction_->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
   connect(prefAction_, SIGNAL(triggered()), SLOT(showPrefDialog()));
 
-  importGCRegionAction_ = new QAction("&Import region...", this);
+  importGCRegionAction_ = new QAction("Import &region...", this);
   connect(importGCRegionAction_, SIGNAL(triggered()), SLOT(importGCRegion()));
 
-  importGCSingleAction_ = new QAction("&Import single...", this);
+  importGCSingleAction_ = new QAction("Import &single...", this);
   connect(importGCSingleAction_, SIGNAL(triggered()), SLOT(importGCSingle()));
 
   mainViewActionGroup_ = new QActionGroup(this);
@@ -212,12 +212,12 @@ void MainWindow::setupActions() {
   mapViewAction_->setCheckable(true);
   connect(mapViewAction_, SIGNAL(triggered()), SLOT(mapView()));
 
-  detailViewAction_ = new QAction("&Geocache details", mainViewActionGroup_);
+  detailViewAction_ = new QAction("Geocache &details", mainViewActionGroup_);
   detailViewAction_->setShortcut(Qt::ALT | Qt::Key_2);
   detailViewAction_->setCheckable(true);
   connect(detailViewAction_, SIGNAL(triggered()), SLOT(detailView()));
 
-  aboutAction_ = new QAction("&About...", this);
+  aboutAction_ = new QAction("A&bout...", this);
   connect(aboutAction_, SIGNAL(triggered()), SLOT(about()));
 }
 

@@ -122,8 +122,8 @@ GeocacheInfoWidget::GeocacheInfoWidget(Geocache * geocache, QWidget * parent) :
   geocacheDescBrowser_->setOpenExternalLinks(true);
 
   tab_ = new QTabWidget;
-  tab_->addTab(geocacheInfoTab_, tr("General"));
-  tab_->addTab(geocacheDescBrowser_, tr("Description"));
+  tab_->addTab(geocacheInfoTab_, tr("&General"));
+  tab_->addTab(geocacheDescBrowser_, tr("&Description"));
   mainLayout_->addWidget(tab_, 1, 0, 1, 2);
 
   setLayout(mainLayout_);
