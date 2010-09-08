@@ -33,11 +33,26 @@ Coordinate::Coordinate() :
 
 /**
  * Constructor to set latitude and longitude
- * @param latitude The latitude (north-south) part of the coordinate, in degree
- * @param longitude The longitude (east-west) part of the coordinate, in degree
+ * @param latitude The latitude (north-south) part of the coordinate, in degree.
+ *  This value must be between -180 and 180.
+ * @param longitude The longitude (east-west) part of the coordinate, in degree.
+ *  This value must be between -180 and 180.
  */
 Coordinate::Coordinate(Angle latitude, Angle longitude) :
   lat(latitude), lon(longitude) {
+}
+
+/**
+ * Returns @c true if the coordinate is a valid coordinate, otherwise @c false.
+ */
+bool Coordinate::isValid() {
+  if(lat == ANGLE_INVALID || lon == ANGLE_INVALID) {
+    return false;
+  }
+  if(lat < -180 || lat > 180 || lon < -180 || lon > 180) {
+    return false;
+  }
+  return true;
 }
 
 QString Coordinate::format(OutputFormat format) const {

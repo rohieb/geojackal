@@ -148,6 +148,7 @@ struct Coordinate {
   Coordinate();
   Coordinate(Angle latitude, Angle longitude);
   QString format(OutputFormat format) const;
+  bool isValid();
 };
 
 /** The invalid coordinate used to determine unset values */
