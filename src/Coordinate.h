@@ -97,8 +97,7 @@ struct Angle {
    * Assignment operator, sets the decimal angle in degree
    * @param val the new value, in decimal degree
    */
-  Angle&
-  operator=(double val) {
+  Angle& operator=(double val) {
     degree = val;
     return *this;
   }
@@ -106,6 +105,15 @@ struct Angle {
   /** Cast operator to double */
   operator double() const {
     return degree;
+  }
+
+  /** Multiply */
+  Angle operator*(double val) {
+    return Angle(degree * val);
+  }
+  Angle& operator*=(double val) {
+    degree *= val;
+    return *this;
   }
 };
 

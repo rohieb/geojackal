@@ -56,8 +56,8 @@ bool Coordinate::isValid() {
 }
 
 QString Coordinate::format(OutputFormat format) const {
-  QString ns = (lon >= 0) ? "N" : "S";
-  QString ew = (lat >= 0) ? "E" : "W";
+  QString ns = (lat >= 0) ? "N" : "S";
+  QString ew = (lon >= 0) ? "E" : "W";
 
   Angle abslon(fabs(lon));
   Angle abslat(fabs(lat));
