@@ -22,10 +22,22 @@
 
 using namespace geojackal;
 
+CoordinateButton::CoordinateButton(const Coordinate& coord, QWidget * parent) :
+  QPushButton(parent), coord_(coord) {
+  setText(coord.format(Coordinate::FormatDegMin));
+  connect(this, SIGNAL(clicked()), SLOT(showCoordinateDialog()));
+}
+
+void CoordinateButton::showCoordinateDialog() {
+  CoordinateDialog dlg(coordinate(), this);
+  if(dlg.exec() == QDialog::Accepted) {
+    setCoordinate(dlg.coordinate());
+  }
+}
 
 /**
  * @todo Implement coordinate selection by map
- * @todo Implement UTM imput format
+ * @todo Implement UTM input format
  */
 
 CoordinateDialog::CoordinateDialog(const Coordinate& c, QWidget * parent) :
@@ -150,10 +162,8 @@ void CoordinateDialog::setCoordinate(const Coordinate& c) {
     lonDegMinSecEdit_->setText("");
   } else if(button == degMinCombo_) {
     latDegEdit_->setText(QString::number((int)abs(c.lat.deg())));
-    qDebug() << "lat" << ((int)abs(c.lat.deg())) << c.lat.min();
     latDegMinEdit_->setText(QString::number(c.lat.min(), 'f', 3));
     latDegMinSecEdit_->setText("");
-    qDebug() << "lon" << (int)abs(c.lon.deg()) << c.lon.min();
     lonDegEdit_->setText(QString::number((int)abs(c.lon.deg())));
     lonDegMinEdit_->setText(QString::number(c.lon.min(), 'f', 3));
     lonDegMinSecEdit_->setText("");
@@ -252,7 +262,6 @@ bool CoordinateDialog::eventFilter(QObject * watched, QEvent * event) {
       watched == lonDegMinSecEdit_ || watched == lonPrefixCombo_ ||
       watched == latDegEdit_ || watched == latDegMinEdit_ ||
       watched == latDegMinSecEdit_ || watched == latPrefixCombo_) {
-      qDebug() << "focus lost, update coordinate";
       coordinate(); // as a side-effect, update coord_ from edit controls
     }
   }

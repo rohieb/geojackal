@@ -26,6 +26,33 @@
 
 namespace geojackal {
 
+/**
+ * Push button that displays a geological coordinate and lets the user choose a
+ * different one if he clicks on it
+ */
+class CoordinateButton : public QPushButton {
+  Q_OBJECT
+public:
+  CoordinateButton(const Coordinate& coord, QWidget * parent = 0);
+  void setCoordinate(const Coordinate& c) {
+    coord_ = c;
+    setText(coord_.format(Coordinate::FormatDegMin));
+  }
+  Coordinate coordinate() const {
+    return coord_;
+  }
+
+protected slots:
+  void showCoordinateDialog();
+
+private:
+  /** The coordinate shown in the widget */
+  Coordinate coord_;
+};
+
+/**
+ * Dialog to allow the user a selection of a geological coordinate
+ */
 class CoordinateDialog : public QDialog {
   Q_OBJECT
 public:
