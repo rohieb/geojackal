@@ -6,7 +6,8 @@ QT = core \
     gui \
     network \
     sql
-SOURCES = src/SettingsManager.cpp \
+SOURCES = src/CoordinateDialog.cpp \
+    src/SettingsManager.cpp \
     src/GeocacheInfoWidget.cpp \
     src/Geocache.cpp \
     src/PrefDialog.cpp \
@@ -19,7 +20,8 @@ SOURCES = src/SettingsManager.cpp \
     src/GCSpiderCachePage.cpp \
     src/MainWindow.cpp \
     src/main.cpp
-HEADERS = src/SettingsManager.h \
+HEADERS = src/CoordinateDialog.h \
+    src/SettingsManager.h \
     src/GeocacheInfoWidget.h \
     src/PrefDialog.h \
     src/GCSpiderDialog.h \
