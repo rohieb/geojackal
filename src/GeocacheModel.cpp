@@ -102,6 +102,19 @@ GeocacheModel::~GeocacheModel() {
  */
 bool GeocacheModel::open(const QString& fileName) {
   qDebug() << "connecting to database" << fileName;
+
+  // create data folder if if does not eist
+  QDir dir = QDir(fileName + "/.."); // trim file name
+  dir.makeAbsolute();
+  qDebug() << "dir" << dir.absolutePath();
+  if(!dir.exists()) {
+    if(!dir.mkpath(dir.absolutePath())) {
+      qDebug() << "Failure: Could not mkdir" << dir.absolutePath();
+      return false;
+    }
+  }
+
+  // open sqlite database
   db = QSqlDatabase::addDatabase("QSQLITE");
   db.setDatabaseName(fileName);
   if(!db.open()) {
@@ -111,9 +124,9 @@ bool GeocacheModel::open(const QString& fileName) {
 
   q = QSqlQuery(db);
 
+  // if our tables do not exist yet, create them
   QStringList tableList = db.tables(QSql::Tables);
 
-  // if our tables do not exist yet, create them
   if(!tableList.contains("waypoints")) {
     if(!q.exec("CREATE TABLE waypoints("
       "waypoint TEXT PRIMARY KEY,"
