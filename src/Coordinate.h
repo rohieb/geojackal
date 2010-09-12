@@ -22,6 +22,7 @@
 #define COORDINATE_H
 
 #include "global.h"
+#include <cmath>
 #include <QString>
 
 namespace geojackal {
@@ -70,7 +71,7 @@ struct Angle {
 
   /**
    * Get the decimal/sexagesimal value of the angle in degree. Note that decimal
-   * and sexagesimal values in degree are in fact the same :-)
+   * and sexagesimal values in degree are in fact the same ;-)
    * @return the decimal value of the angle
    */
   inline double deg() const {
@@ -78,19 +79,21 @@ struct Angle {
   }
 
   /**
-   * Get the sexagesimal minute of the angle
+   * Get the sexagesimal minute of the angle. Note that this value is always
+   * greater or equal 0.
    * @return the sexagesimal minute of the angle
    */
   inline double min() const {
-    return (deg() - (int)deg()) * 60;
+    return fabs((deg() - (int)deg()) * 60);
   }
 
   /**
-   * Get the sexagesimal seconds of the angle
+   * Get the sexagesimal seconds of the angle. Note that this value is always
+   * greater or equal 0.
    * @return the sexagesimal seconds of the angle
    */
   inline double sec() const {
-    return (min() - (int)min()) * 60;
+    return fabs((min() - (int)min()) * 60);
   }
 
   /**
