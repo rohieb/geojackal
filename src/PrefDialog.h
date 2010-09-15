@@ -25,20 +25,40 @@
 
 namespace geojackal {
 
-class PrefDialog : public QDialog {
+class PrefGeneralPage : public QWidget {
   Q_OBJECT
 public:
-  PrefDialog(QWidget * parent = 0);
-  virtual ~PrefDialog();
+  PrefGeneralPage(QWidget * parent);
+  virtual ~PrefGeneralPage() {}
+};
+
+class PrefImportPage : public QWidget {
+  Q_OBJECT
+  friend class PrefDialog;
+public:
+  PrefImportPage(QWidget * parent);
+  virtual ~PrefImportPage() {}
 
 public slots:
   void verifyLogin();
-  void accept();
 
 private:
   QLineEdit * userNameEdit;
   QLineEdit * passwordEdit;
+};
 
+class PrefDialog : public QDialog {
+  Q_OBJECT
+public:
+  PrefDialog(QWidget * parent = 0);
+  virtual ~PrefDialog() {}
+
+public slots:
+  void accept();
+
+private:
+  PrefGeneralPage * generalPage;
+  PrefImportPage * importPage;
 };
 
 }
