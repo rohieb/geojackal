@@ -41,12 +41,23 @@ PrefGeneralPage::PrefGeneralPage(QWidget * parent) : QWidget(parent) {
   dirEdit->setReadOnly(true);
   profileBoxLayout->addRow(tr("Your profile is &stored in:"), dirEdit);
 
+  // "Open folder" button
+  QPushButton * openButton = new QPushButton(tr("O&pen folder"), this);
+  connect(openButton, SIGNAL(clicked()), SLOT(openProfileDir()));
+  profileBoxLayout->addRow("", openButton);
+
   profileBox->setLayout(profileBoxLayout);
   mainLayout->addWidget(profileBox);
 
   //QGroupBox * centerBox = new QGroupBox("Home coordinates", this);
 
   setLayout(mainLayout);
+}
+
+/** open the profile folder in explorer, finder, nautilus, etc. */
+void PrefGeneralPage::openProfileDir() {
+  QDesktopServices::openUrl("file://" + SettingsManager::storageLocation().
+    absolutePath());
 }
 
 /**

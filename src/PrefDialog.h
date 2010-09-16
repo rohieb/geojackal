@@ -30,6 +30,9 @@ class PrefGeneralPage : public QWidget {
 public:
   PrefGeneralPage(QWidget * parent);
   virtual ~PrefGeneralPage() {}
+
+protected slots:
+  void openProfileDir();
 };
 
 class PrefImportPage : public QWidget {
