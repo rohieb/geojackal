@@ -42,6 +42,10 @@ public:
     return coord_;
   }
 
+signals:
+  /** emitted whenever the user selects a new coordinate */
+  void coordinateUpdated(Coordinate&);
+
 protected slots:
   void showCoordinateDialog();
 

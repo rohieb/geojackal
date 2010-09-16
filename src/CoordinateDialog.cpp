@@ -32,6 +32,7 @@ void CoordinateButton::showCoordinateDialog() {
   CoordinateDialog dlg(coordinate(), this);
   if(dlg.exec() == QDialog::Accepted) {
     setCoordinate(dlg.coordinate());
+    emit coordinateUpdated(coord_);
   }
 }
 
