@@ -55,10 +55,10 @@ CoordinateDialog::CoordinateDialog(const Coordinate& c, QWidget * parent) :
   twoDigitIntValidator_ = new QIntValidator(0, 60, this);
 
   // layout etc.
-  QGridLayout * layout = new QGridLayout(this);
+  QGridLayout * layout = new QGridLayout;
 
   // Radio buttons for input format selection
-  QHBoxLayout * radioBox = new QHBoxLayout(this);
+  QHBoxLayout * radioBox = new QHBoxLayout;
   radioGroup_ = new QButtonGroup(this);
 
   degCombo_ = new QRadioButton("&d.d\xb0", this);
@@ -78,7 +78,7 @@ CoordinateDialog::CoordinateDialog(const Coordinate& c, QWidget * parent) :
     SLOT(chooseRadio(QAbstractButton *)));
 
   // input boxes
-  QGridLayout * inputBoxLayout = new QGridLayout(this);
+  QGridLayout * inputBoxLayout = new QGridLayout;
 
   latPrefixCombo_ = new QComboBox(this);
   latPrefixCombo_->insertItem(0, tr("N", "abbreviation for north"));
