@@ -20,13 +20,15 @@
 
 #include "PrefDialog.h"
 #include "GCSpider.h"
+#include "CoordinateDialog.h"
 
 using namespace geojackal;
 
 /**
  * Set up the General page of the Preferences dialog
  */
-PrefGeneralPage::PrefGeneralPage(QWidget * parent) : QWidget(parent) {
+PrefGeneralPage::PrefGeneralPage(QWidget * parent) :
+  QWidget(parent) {
 
   QVBoxLayout * mainLayout = new QVBoxLayout;
 
@@ -49,7 +51,19 @@ PrefGeneralPage::PrefGeneralPage(QWidget * parent) : QWidget(parent) {
   profileBox->setLayout(profileBoxLayout);
   mainLayout->addWidget(profileBox);
 
-  //QGroupBox * centerBox = new QGroupBox("Home coordinates", this);
+  // Home coordinates
+  QGroupBox * centerBox = new QGroupBox(tr("Home coordinates"), this);
+  QFormLayout * centerBoxLayout = new QFormLayout;
+  centerBoxLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
+
+  SettingsManager * sm = SettingsManager::instance();
+  CoordinateButton * centerButton = new CoordinateButton(sm->center(), this);
+  connect(centerButton, SIGNAL(coordinateUpdated(Coordinate&)),
+    SLOT(updateCenter(Coordinate&)));
+  centerBoxLayout->addRow(tr("Your current home coordinates:"), centerButton);
+
+  centerBox->setLayout(centerBoxLayout);
+  mainLayout->addWidget(centerBox);
 
   setLayout(mainLayout);
 }
@@ -58,6 +72,12 @@ PrefGeneralPage::PrefGeneralPage(QWidget * parent) : QWidget(parent) {
 void PrefGeneralPage::openProfileDir() {
   QDesktopServices::openUrl("file://" + SettingsManager::storageLocation().
     absolutePath());
+}
+
+/** write the new center coordinates to disk */
+void PrefGeneralPage::updateCenter(Coordinate& newCoord) {
+  SettingsManager * sm = SettingsManager::instance();
+  sm->setCenter(newCoord);
 }
 
 /**

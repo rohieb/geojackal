@@ -22,6 +22,7 @@
 #define PREFDIALOG_H_
 
 #include <QtGui>
+#include "Coordinate.h"
 
 namespace geojackal {
 
@@ -33,6 +34,7 @@ public:
 
 protected slots:
   void openProfileDir();
+  void updateCenter(Coordinate& newCoord);
 };
 
 class PrefImportPage : public QWidget {
