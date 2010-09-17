@@ -20,10 +20,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "OsmSlippyMap.h"
-#include "GeocacheModel.h"
-#include "GeocacheInfoWidget.h"
-#include "GCSpider.h"
+#include "logic/GeocacheModel.h"
+#include "import/GCSpider.h"
+#include "ui/OsmSlippyMap.h"
+#include "ui/GeocacheInfoWidget.h"
 #include <QObject>
 #include <QtGui>
 

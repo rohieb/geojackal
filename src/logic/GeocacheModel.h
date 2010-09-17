@@ -21,10 +21,10 @@
 #ifndef GEOCACHEMODEL_H_
 #define GEOCACHEMODEL_H_
 
+#include "logic/Geocache.h"
 #include <QObject>
 #include <QtSql>
 #include <QAbstractListModel>
-#include "Geocache.h"
 
 namespace geojackal {
 

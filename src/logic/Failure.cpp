@@ -19,7 +19,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Failure.h"
+#include "logic/Failure.h"
 
 using namespace geojackal;
 

@@ -22,8 +22,8 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
-#include "Failure.h"
-#include "SettingsManager.h"
+#include "logic/Failure.h"
+#include "logic/SettingsManager.h"
 #include <QDebug>
 //#include <QStringBuilder>
 // fast string concatenation with + instead of %

@@ -17,12 +17,12 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MainWindow.h"
-#include "PrefDialog.h"
-#include "Geocache.h"
-#include "GCSpider.h"
-#include "GeocacheModel.h"
-#include "GCSpiderDialog.h"
+#include "ui/MainWindow.h"
+#include "ui/PrefDialog.h"
+#include "ui/GCSpiderDialog.h"
+#include "import/GCSpider.h"
+#include "logic/Geocache.h"
+#include "logic/GeocacheModel.h"
 #include <QSettings>
 
 using namespace geojackal;

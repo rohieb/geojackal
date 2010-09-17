@@ -25,7 +25,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QVector>
-#include "Coordinate.h"
+#include "logic/Coordinate.h"
 
 namespace geojackal {
 

@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Geocache.h"
+#include "logic/Geocache.h"
 
 /** dump geocaches to a debug stream */
 QDebug& geojackal::operator<<(QDebug& dbg, const Geocache& geocache) {

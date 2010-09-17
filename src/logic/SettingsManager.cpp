@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SettingsManager.h"
+#include "logic/SettingsManager.h"
 #include <QDebug>
 #include <QDesktopServices>
 

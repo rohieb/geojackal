@@ -18,8 +18,8 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GCSpider.h"
-#include "GCSpiderCachePage.h"
+#include "import/GCSpider.h"
+#include "import/GCSpiderCachePage.h"
 #include <QtGui>
 #include <QNetworkRequest>
 #include <QNetworkReply>

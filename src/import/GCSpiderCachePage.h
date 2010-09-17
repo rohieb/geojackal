@@ -22,7 +22,7 @@
 #define GCSPIDERCACHEPAGE_H_
 
 #include "global.h"
-#include "Geocache.h"
+#include "logic/Geocache.h"
 #include <QString>
 
 namespace geojackal {

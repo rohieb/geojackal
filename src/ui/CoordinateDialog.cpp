@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CoordinateDialog.h"
+#include "ui/CoordinateDialog.h"
 
 using namespace geojackal;
 

@@ -18,9 +18,9 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PrefDialog.h"
-#include "GCSpider.h"
-#include "CoordinateDialog.h"
+#include "import/GCSpider.h"
+#include "ui/PrefDialog.h"
+#include "ui/CoordinateDialog.h"
 
 using namespace geojackal;
 

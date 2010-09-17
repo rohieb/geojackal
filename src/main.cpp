@@ -18,11 +18,8 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "MainWindow.h"
-
 #include "global.h"
-#include "GCSpider.h"
-#include "OsmSlippyMap.h"
+#include "ui/MainWindow.h"
 #include <QtGui>
 #include <QApplication>
 

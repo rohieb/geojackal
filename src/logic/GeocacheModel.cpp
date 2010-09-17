@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GeocacheModel.h"
+#include "logic/GeocacheModel.h"
 #include <QDateTime>
 #include <QStringList>
 

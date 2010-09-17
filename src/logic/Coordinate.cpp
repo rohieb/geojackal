@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Coordinate.h"
+#include "logic/Coordinate.h"
 #include <cmath>
 
 using namespace geojackal;

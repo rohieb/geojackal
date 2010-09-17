@@ -21,7 +21,7 @@
 #ifndef SETTINGSMANAGER_H_
 #define SETTINGSMANAGER_H_
 
-#include "Coordinate.h"
+#include "logic/Coordinate.h"
 #include <QSettings>
 #include <QDir>
 

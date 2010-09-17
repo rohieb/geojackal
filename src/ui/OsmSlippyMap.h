@@ -22,8 +22,8 @@
 #define OSMSLIPPYMAP_H_
 
 #include "global.h"
-#include "Coordinate.h"
-#include "Geocache.h"
+#include "logic/Coordinate.h"
+#include "logic/Geocache.h"
 #include <QtGui>
 #include <QList>
 #include <QtNetwork>

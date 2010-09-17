@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "OsmSlippyMap.h"
+#include "ui/OsmSlippyMap.h"
 #include <cmath>
 #include <QPointF>
 

@@ -22,8 +22,8 @@
 #define GCSPIDER_H_
 
 #include "global.h"
-#include "Geocache.h"
-#include "Coordinate.h"
+#include "logic/Geocache.h"
+#include "logic/Coordinate.h"
 #include <QObject>
 #include <QString>
 #include <QList>

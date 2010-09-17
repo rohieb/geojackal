@@ -18,8 +18,8 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GeocacheInfoWidget.h"
-#include "OsmSlippyMap.h" // for geocacheIcon()
+#include "ui/GeocacheInfoWidget.h"
+#include "ui/OsmSlippyMap.h" // for geocacheIcon()
 
 using namespace geojackal;
 

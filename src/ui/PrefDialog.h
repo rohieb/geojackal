@@ -1,5 +1,5 @@
 /**
- * @file GCSpiderDialog.h
+ * @file PrefDialog.h
  * @date 13 Jul 2010
  * @author Roland Hieber <rohieb@rohieb.name>
  *
@@ -18,46 +18,54 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GCSPIDERDIALOG_H_
-#define GCSPIDERDIALOG_H_
+#ifndef PREFDIALOG_H_
+#define PREFDIALOG_H_
 
-#include "Coordinate.h"
+#include "logic/Coordinate.h"
 #include <QtGui>
 
 namespace geojackal {
 
-/**
- * Dialog to allow the user input of geocache spider data, like maximum distance
- * from center point
- */
-class GCSpiderDialog : public QDialog {
+class PrefGeneralPage : public QWidget {
   Q_OBJECT
 public:
-  GCSpiderDialog(QWidget * parent = 0);
-  virtual ~GCSpiderDialog();
+  PrefGeneralPage(QWidget * parent);
+  virtual ~PrefGeneralPage() {}
 
-  float maxDist() const {
-    return maxDist_;
-  }
-  const Angle& lat() const {
-    return lat_;
-  }
-  const Angle& lon() const {
-    return lon_;
-  }
+protected slots:
+  void openProfileDir();
+  void updateCenter(Coordinate& newCoord);
+};
+
+class PrefImportPage : public QWidget {
+  Q_OBJECT
+  friend class PrefDialog;
+public:
+  PrefImportPage(QWidget * parent);
+  virtual ~PrefImportPage() {}
+
+public slots:
+  void verifyLogin();
+
+private:
+  QLineEdit * userNameEdit;
+  QLineEdit * passwordEdit;
+};
+
+class PrefDialog : public QDialog {
+  Q_OBJECT
+public:
+  PrefDialog(QWidget * parent = 0);
+  virtual ~PrefDialog() {}
 
 public slots:
   void accept();
 
 private:
-  QLineEdit * maxDistEdit;
-  QLineEdit * latEdit;
-  QLineEdit * lonEdit;
-  float maxDist_;
-  Angle lat_;
-  Angle lon_;
+  PrefGeneralPage * generalPage;
+  PrefImportPage * importPage;
 };
 
 }
 
-#endif /* GCSPIDERDIALOG_H_ */
+#endif /* PREFDIALOG_H_ */

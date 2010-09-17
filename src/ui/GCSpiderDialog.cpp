@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GCSpiderDialog.h"
+#include "ui/GCSpiderDialog.h"
 
 using namespace geojackal;
 

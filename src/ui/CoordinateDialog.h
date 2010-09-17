@@ -21,7 +21,7 @@
 #ifndef COORDINATEWIDGET_H_
 #define COORDINATEWIDGET_H_
 
-#include "Coordinate.h"
+#include "logic/Coordinate.h"
 #include <QtGui>
 
 namespace geojackal {

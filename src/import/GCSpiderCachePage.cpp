@@ -18,7 +18,7 @@
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GCSpiderCachePage.h"
+#include "import/GCSpiderCachePage.h"
 #include <limits>
 #include <QRegExp>
 #include <QStringList>

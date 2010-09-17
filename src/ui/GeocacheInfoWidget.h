@@ -21,9 +21,9 @@
 #ifndef GEOCACHEINFOWIDGET_H_
 #define GEOCACHEINFOWIDGET_H_
 
+#include "logic/Geocache.h"
 #include <QObject>
 #include <QtGui>
-#include "Geocache.h"
 
 namespace geojackal {
 
