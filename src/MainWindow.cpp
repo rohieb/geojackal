@@ -28,7 +28,10 @@
 using namespace geojackal;
 
 MainWindow::MainWindow() :
-  QMainWindow(0), map_(0), model_(0) {
+  QMainWindow(0), stack_(0), map_(0), infoPane_(0), model_(0),
+  aboutAction_(0), exitAction_(0), prefAction_(0), importGCRegionAction_(0),
+  importGCSingleAction_(0), detailViewAction_(0), mapViewAction_(0),
+  mainViewActionGroup_(0) {
 
   setWindowTitle(APPNAME);
   qApp->setWindowIcon(QIcon(":/geojackal.png"));
