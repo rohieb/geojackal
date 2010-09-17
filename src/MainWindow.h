@@ -47,6 +47,7 @@ protected slots:
   void about();
   void mapView();
   void detailView();
+  void gotoBookmark(int index = -1);
 
 private:
   QStackedWidget * stack_;
@@ -61,6 +62,8 @@ private:
   QAction * importGCSingleAction_;
   QAction * detailViewAction_;
   QAction * mapViewAction_;
+  QAction * gotoHomeAction_;
+  QSignalMapper * gotoSignalMap_;
 
   QActionGroup * mainViewActionGroup_;
 };

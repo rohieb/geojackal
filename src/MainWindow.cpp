@@ -31,7 +31,7 @@ MainWindow::MainWindow() :
   QMainWindow(0), stack_(0), map_(0), infoPane_(0), model_(0),
   aboutAction_(0), exitAction_(0), prefAction_(0), importGCRegionAction_(0),
   importGCSingleAction_(0), detailViewAction_(0), mapViewAction_(0),
-  mainViewActionGroup_(0) {
+  gotoHomeAction_(0), gotoSignalMap_(0), mainViewActionGroup_(0) {
 
   setWindowTitle(APPNAME);
   qApp->setWindowIcon(QIcon(":/geojackal.png"));
@@ -188,6 +188,16 @@ void MainWindow::importGCSingle() {
   }
 }
 
+/**
+ * show the specified bookmark in the map
+ * @param index Index of bookmark, or @c -1 for home coordinates
+ */
+void MainWindow::gotoBookmark(int index) {
+  if(index == -1) {
+    map_->setCenter(SettingsManager::instance()->center());
+  }
+}
+
 /** setup the actions */
 void MainWindow::setupActions() {
   QList<QKeySequence> keySeq;
@@ -220,6 +230,15 @@ void MainWindow::setupActions() {
   detailViewAction_->setCheckable(true);
   connect(detailViewAction_, SIGNAL(triggered()), SLOT(detailView()));
 
+  // wire Go To actions up to just on function which does essentially the same
+  // for other bookmarks too
+  gotoSignalMap_ = new QSignalMapper(this);
+  gotoHomeAction_ = new QAction("&Home coordinates", this);
+  gotoHomeAction_->setShortcut(Qt::Key_Home);
+  gotoSignalMap_->setMapping(gotoHomeAction_, -1);
+  connect(gotoHomeAction_, SIGNAL(triggered()), gotoSignalMap_, SLOT(map()));
+  connect(gotoSignalMap_, SIGNAL(mapped(int)), SLOT(gotoBookmark(int)));
+
   aboutAction_ = new QAction("A&bout...", this);
   connect(aboutAction_, SIGNAL(triggered()), SLOT(about()));
 }
@@ -237,6 +256,9 @@ void MainWindow::setupMenu() {
   QMenu * viewMenu = menuBar()->addMenu("&View");
   viewMenu->addAction(mapViewAction_);
   viewMenu->addAction(detailViewAction_);
+
+  QMenu * gotoMenu = menuBar()->addMenu("&Places");
+  gotoMenu->addAction(gotoHomeAction_);
 
   QMenu * helpMenu = menuBar()->addMenu("&Help");
   helpMenu->addAction(aboutAction_);
