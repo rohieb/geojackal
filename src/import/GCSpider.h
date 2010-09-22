@@ -53,6 +53,8 @@ public:
     QList<Geocache *>& buf);
   bool single(const QString waypoint, Geocache& buf);
 
+  QMap<QString,QString> getAspFormFields(const QString& htmlText);
+
   /** HTTP User Agent to use */
   static const QByteArray USER_AGENT;
 
