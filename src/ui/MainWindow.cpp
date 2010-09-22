@@ -123,10 +123,10 @@ GCSpider * MainWindow::validateLogin() {
 
     // show prefs dialogue if login fails
     if(!validLogin) {
-      QMessageBox::critical(this, "Error", tr("There was an error while trying "
-        "to log in to geocaching.com. Maybe the user name or password you "
-        "supplied is wrong.\n\nPlease fill in the correct values and try again."
-        "\n\nThe message was: ") + failMsg);
+      QMessageBox::critical(this, tr("Error"), tr("There was an error while "
+        "trying to log in to geocaching.com. Maybe the user name or password "
+        "you supplied is wrong.\n\nPlease fill in the correct values and try "
+        "again.\n\nThe message was: ") + failMsg);
 
       if(showPrefDialog() == QDialog::Rejected) {
         return 0; // user gave up
@@ -150,9 +150,12 @@ void MainWindow::importGCRegion() {
 
       QList<Geocache *> geocacheList;
       try {
-        spider->nearest(center, maxDist, geocacheList);
+        if(!spider->nearest(center, maxDist, geocacheList)) {
+          throw Failure(tr("Something went wrong, but I don't know what. "
+            "Some geocaches could not be imported."));
+        }
       } catch(Failure& f) {
-        QMessageBox::critical(this, "Error", f.what());
+        QMessageBox::critical(this, tr("Error"), f.what());
       }
 
       model_->addGeocaches(geocacheList);
@@ -168,14 +171,14 @@ void MainWindow::importGCSingle() {
 
   if(spider) {
     bool ok;
-    QString waypoint = QInputDialog::getText(this, "Import single geocache",
-      "Enter the waypoint of the geocache:", QLineEdit::Normal, "GC", &ok);
+    QString waypoint = QInputDialog::getText(this, tr("Import single geocache"),
+      tr("Enter the waypoint of the geocache:"), QLineEdit::Normal, "GC", &ok);
     if(ok) {
       Geocache * pgc = new Geocache;
       try {
         spider->single(waypoint, *pgc);
       } catch(Failure& f) {
-        QMessageBox::critical(this, "Error", f.what());
+        QMessageBox::critical(this, tr("Error"), f.what());
         delete pgc;
         return;
       }
@@ -202,30 +205,30 @@ void MainWindow::gotoBookmark(int index) {
 void MainWindow::setupActions() {
   QList<QKeySequence> keySeq;
 
-  exitAction_ = new QAction("&Quit", this);
+  exitAction_ = new QAction(tr("&Quit"), this);
   keySeq.append(QKeySequence(Qt::CTRL | Qt::Key_Q));
   keySeq.append(QKeySequence(QKeySequence::Close));
   exitAction_->setShortcuts(keySeq);
   connect(exitAction_, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-  prefAction_ = new QAction("&Preferences...", this);
+  prefAction_ = new QAction(tr("&Preferences..."), this);
   prefAction_->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
   connect(prefAction_, SIGNAL(triggered()), SLOT(showPrefDialog()));
 
-  importGCRegionAction_ = new QAction("Import &region...", this);
+  importGCRegionAction_ = new QAction(tr("Import &region..."), this);
   connect(importGCRegionAction_, SIGNAL(triggered()), SLOT(importGCRegion()));
 
-  importGCSingleAction_ = new QAction("Import &single...", this);
+  importGCSingleAction_ = new QAction(tr("Import &single..."), this);
   connect(importGCSingleAction_, SIGNAL(triggered()), SLOT(importGCSingle()));
 
   mainViewActionGroup_ = new QActionGroup(this);
 
-  mapViewAction_ = new QAction("&Map", mainViewActionGroup_);
+  mapViewAction_ = new QAction(tr("&Map"), mainViewActionGroup_);
   mapViewAction_->setShortcut(Qt::ALT | Qt::Key_1);
   mapViewAction_->setCheckable(true);
   connect(mapViewAction_, SIGNAL(triggered()), SLOT(mapView()));
 
-  detailViewAction_ = new QAction("Geocache &details", mainViewActionGroup_);
+  detailViewAction_ = new QAction(tr("Geocache &details"), mainViewActionGroup_);
   detailViewAction_->setShortcut(Qt::ALT | Qt::Key_2);
   detailViewAction_->setCheckable(true);
   connect(detailViewAction_, SIGNAL(triggered()), SLOT(detailView()));
@@ -233,34 +236,34 @@ void MainWindow::setupActions() {
   // wire Go To actions up to just on function which does essentially the same
   // for other bookmarks too
   gotoSignalMap_ = new QSignalMapper(this);
-  gotoHomeAction_ = new QAction("&Home coordinates", this);
+  gotoHomeAction_ = new QAction(tr("&Home coordinates"), this);
   gotoHomeAction_->setShortcut(Qt::Key_Home);
   gotoSignalMap_->setMapping(gotoHomeAction_, -1);
   connect(gotoHomeAction_, SIGNAL(triggered()), gotoSignalMap_, SLOT(map()));
   connect(gotoSignalMap_, SIGNAL(mapped(int)), SLOT(gotoBookmark(int)));
 
-  aboutAction_ = new QAction("A&bout...", this);
+  aboutAction_ = new QAction(tr("A&bout..."), this);
   connect(aboutAction_, SIGNAL(triggered()), SLOT(about()));
 }
 
 /** setup the menu by inserting actions */
 void MainWindow::setupMenu() {
-  QMenu * appMenu = menuBar()->addMenu("&Application");
+  QMenu * appMenu = menuBar()->addMenu(tr("&Application"));
   appMenu->addAction(prefAction_);
   appMenu->addAction(exitAction_);
 
-  QMenu * geocacheMenu = menuBar()->addMenu("&Geocaches");
+  QMenu * geocacheMenu = menuBar()->addMenu(tr("&Geocaches"));
   geocacheMenu->addAction(importGCRegionAction_);
   geocacheMenu->addAction(importGCSingleAction_);
 
-  QMenu * viewMenu = menuBar()->addMenu("&View");
+  QMenu * viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(mapViewAction_);
   viewMenu->addAction(detailViewAction_);
 
-  QMenu * gotoMenu = menuBar()->addMenu("&Places");
+  QMenu * gotoMenu = menuBar()->addMenu(tr("&Places"));
   gotoMenu->addAction(gotoHomeAction_);
 
-  QMenu * helpMenu = menuBar()->addMenu("&Help");
+  QMenu * helpMenu = menuBar()->addMenu(tr("&Help"));
   helpMenu->addAction(aboutAction_);
 }
 

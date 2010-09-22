@@ -66,10 +66,10 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
   formData) {
 
   if(!pnam_) {
-    throw Failure("No QNetworkAccessManager instance!");
+    throw Failure(tr("No QNetworkAccessManager instance!"));
   }
   if(!url.toString().startsWith("http://")) {
-    throw Failure("Only URLs beginning with http:// are supported");
+    throw Failure(tr("Only URLs beginning with http:// are supported"));
   }
 
   // prepare network request
@@ -123,7 +123,8 @@ QMap<QString,QString> GCSpider::getAspFormFields(const QString& htmlText) {
   if(rx.indexIn(htmlText) > 0) {
     QString text = rx.cap(1); // childs of form element
     int curPos = 0;
-    rx.setPattern("<input type=\"hidden\" name=\"([^\"]*)\" [^>]*value=\"([^\"]*)\"");
+    rx.setPattern("<input type=\"hidden\" name=\"([^\"]*)\" [^>]*value="
+      "\"([^\"]*)\"");
     rx.setMinimal(true);
     while(rx.indexIn(text, curPos) > 0 && !rx.cap(1).isEmpty() &&
       !rx.cap(2).isNull()) {
@@ -170,10 +171,10 @@ GCSpider * GCSpider::login(const QString username = "",
   logout();
 
   if(username.trimmed().isEmpty()) {
-    throw Failure("User name is empty!");
+    throw Failure(tr("User name is empty!"));
   }
   if(password.trimmed().isEmpty()) {
-    throw Failure("Password is empty!");
+    throw Failure(tr("Password is empty!"));
   }
 
   // login magic for post data
@@ -396,10 +397,10 @@ bool GCSpider::single(QString waypoint, Geocache& buf) {
   // @todo
   // try to login
   if(!loggedIn_) {
-    throw Failure("Not logged in!");
+    throw Failure(tr("Not logged in!"));
   }
   if(!waypoint.startsWith("GC", Qt::CaseInsensitive)) {
-    throw Failure("Waypoint must begin with \"GC\"");
+    throw Failure(tr("Waypoint must begin with \"GC\""));
   }
 
   QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/seek/cache_"
