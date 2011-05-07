@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with 
  * this program; if not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "global.h"
 #include "ui/MainWindow.h"
 #include <QtGui>
@@ -51,6 +51,9 @@ using namespace geojackal;
 
 int main(int argc, char *argv[]) {
   GeojackalApplication app(argc, argv);
+
+  QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+
   GeojackalApplication::setApplicationName(APPNAME);
   GeojackalApplication::setApplicationVersion(VERSION);
   GeojackalApplication::setOrganizationDomain("rohieb.name");

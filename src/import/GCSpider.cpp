@@ -66,12 +66,11 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
   formData) {
 
   if(!pnam_) {
-    throw Failure("No QNetworkAccessManager instance!");
+    throw Failure(tr("No QNetworkAccessManager instance!"));
   }
   if(!url.toString().startsWith("http://")) {
-    throw Failure("Only URLs beginning with http:// are supported");
+    throw Failure(tr("Only URLs beginning with http:// are supported"));
   }
-  qDebug() << "fetching" << url.toString();
 
   // prepare network request
   connect(pnam_, SIGNAL(finished(QNetworkReply *)), this,
@@ -80,10 +79,11 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
   req.setRawHeader("User-Agent", USER_AGENT);
   req.setRawHeader("Host", "www.geocaching.com");
   if(formData != 0) {
-    // HTTP POST with form data
+    qDebug() << "fetching" << url.toString(); //<< "with POST data" << *formData;
     pnam_->post(req, *formData);
   } else {
     // HTTP GET
+    qDebug() << "fetching" << url.toString();
     pnam_->get(req);
   }
   // execute an event loop to process the request (nearly-synchronous)
@@ -108,6 +108,32 @@ QNetworkReply * GCSpider::loadPage(const QUrl& url, const QByteArray *
  */
 void GCSpider::loadPageFinished(QNetworkReply * reply) {
   loadPageNetReply_ = reply;
+}
+
+/**
+ * Extract hidden input form fields of an ASP.net formular, like the ones
+ * geocaching.com uses.
+ * @param text The full HTML text of the web site
+ * @return A QMap which contains the field names as keys and contents as values
+ */
+QMap<QString,QString> GCSpider::getAspFormFields(const QString& htmlText) {
+  QMap<QString,QString> map;
+  QRegExp rx("<form .*name=\"aspnetForm\"[^>]*>(.*)</form>");
+  rx.setMinimal(true);
+  if(rx.indexIn(htmlText) > 0) {
+    QString text = rx.cap(1); // childs of form element
+    int curPos = 0;
+    rx.setPattern("<input type=\"hidden\" name=\"([^\"]*)\" [^>]*value="
+      "\"([^\"]*)\"");
+    rx.setMinimal(true);
+    while(rx.indexIn(text, curPos) > 0 && !rx.cap(1).isEmpty() &&
+      !rx.cap(2).isNull()) {
+      // stuff regexed field names (1) and values (2) into map
+      curPos += rx.cap(0).length();
+      map.insert(rx.cap(1), rx.cap(2));
+    }
+  }
+  return map;
 }
 
 /**
@@ -145,10 +171,10 @@ GCSpider * GCSpider::login(const QString username = "",
   logout();
 
   if(username.trimmed().isEmpty()) {
-    throw Failure("User name is empty!");
+    throw Failure(tr("User name is empty!"));
   }
   if(password.trimmed().isEmpty()) {
-    throw Failure("Password is empty!");
+    throw Failure(tr("Password is empty!"));
   }
 
   // login magic for post data
@@ -246,66 +272,101 @@ struct WaypointsGuids {
 bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
   Geocache *>& buf) {
 
-  QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching.com"
-    "/seek/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
-    arg(center.lon, 0, 'f')));
-  QString text = listReply->readAll();
-
 //  // cap order: bearing, distance, geocache guid
-//  QRegExp rx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
+//  QRegExp gcRx("<tr .*class=\"Data BorderTop\">\\s*<td><img .* />(N|S|E|W|NW"
 //    "|NE|SE|SW)<br />([0-9]+(?:\\.[0-9])?+)km\\s*</td>\\s*<td>\\s*</td>\\s*<td>"
 //    "<a .*>\\s*<img .* /></a>.*</td>\\s*<td>.*</td><td>.*</td>\\s*<td><a .*"
 //    "href=\"/seek/cache_details.aspx?guid=([-0-9a-f]{36})\".*>.*</a>.*</td>");
-//  QRegExp rx("<tr bgcolor='[^\']+'\\s*class=\"Data BorderTop\">\\s*<td>.*<br />\\s*"
+//  QRegExp gcRx("<tr bgcolor='[^\']+'\\s*class=\"Data BorderTop\">\\s*<td>.*<br />\\s*"
 //    "([0-9]+(?:\\.[0-9]+)?)\\s*km\\s*</td>.*"
 //    "<a href=\"/seek/cache_details.aspx?guid=(.{36})\">");
 
-  QRegExp rx("<tr bgcolor='[^']+'\\s*class=\"Data BorderTop\">\\s*<td>.*"
+  // Link to a geocache page
+  QRegExp gcRx("<tr bgcolor='[^']+'\\s*class=\"Data BorderTop\">\\s*<td>.*"
     "([0-9]+(?:\\.[0-9]+)?)\\s*km\\s*</td>.*<a href=\"/seek/cache_details"
     "\\.aspx\\?guid=([-0-9a-zA-Z]+)\">.*\\((GC[A-Z0-9]{4,})\\).*</a>");
-  rx.setMinimal(true);
+  gcRx.setMinimal(true);
 
-  QProgressDialog progDialog("Import geocaches", "Abort", 0, 2);
+  // "Next" link
+  QRegExp nextRx("<a href=\"javascript:__doPostBack(.*)\"><b>Next &gt;</b>");
+  nextRx.setMinimal(true);
+
+  QProgressDialog progDialog(tr("Import geocaches"), tr("Abort"), 0, 1);
   progDialog.setWindowModality(Qt::WindowModal);
   progDialog.setMinimumDuration(0);
-  progDialog.setValue(1);
-  progDialog.setLabelText("Searching for geocaches…");
+  progDialog.setValue(0);
+  progDialog.setLabelText(tr("%1 geocaches found…").arg(0));
 
+  QString viewState;
   QList<WaypointsGuids> geocacheList;
-  int curPos = 0;
   double geocacheDist = 0; // distance to current geocache
-  while((curPos = rx.indexIn(text, curPos)) >= 0 && geocacheDist <= maxDist &&
-    !progDialog.wasCanceled()) {
-    curPos += rx.cap(0).size(); // move to end of current chunk
-    if(rx.cap(1).isEmpty() || rx.cap(2).isEmpty() || rx.cap(3).isEmpty()) {
-      return false;
+  QByteArray postData;
+  QString text;
+
+  do { // while "Next" link exists
+
+    QNetworkReply * listReply = loadPage(QUrl(QString("http://www.geocaching"
+      ".com/seek/nearest.aspx?lat=%1&lng=%2").arg(center.lat, 0, 'f').
+      arg(center.lon, 0, 'f')), &postData);
+    int curPos = 0;  // pos of last parsed gc regex, so we don't get them twice
+    text = listReply->readAll();
+
+    // parse geocache links and stuff them into a list
+    while((curPos = gcRx.indexIn(text, curPos)) >= 0 &&
+      geocacheDist <= maxDist && !progDialog.wasCanceled()) {
+      curPos += gcRx.cap(0).size(); // move to end of current chunk
+      if(gcRx.cap(1).isEmpty() || gcRx.cap(2).isEmpty() ||
+        gcRx.cap(3).isEmpty()) {
+        return false; // something went wrong
+      }
+
+      // check for distance
+      bool ok = false;
+      geocacheDist = gcRx.cap(1).toDouble(&ok);
+      if(!ok) {
+        return false;
+      }
+
+      // append to list for next step
+      WaypointsGuids c;
+      c.guid = gcRx.cap(2);
+      c.wp = gcRx.cap(3);
+      qDebug() << "append {" << c.guid << "," << c.wp << "}";
+      geocacheList.append(c);
     }
 
-    // check for distance
-    bool ok = false;
-    geocacheDist = rx.cap(1).toDouble(&ok);
-    if(!ok) {
-      return false;
-    }
+    progDialog.setLabelText(tr("%1 geocaches found…").arg(geocacheList.size()));
+
+    // if no more geocache links: get next page
     if(geocacheDist > maxDist) {
       break;
     }
 
-    // append to list for next step
-    WaypointsGuids c;
-    c.guid = rx.cap(2);
-    c.wp = rx.cap(3);
-    qDebug() << "append {" << c.guid << "," << c.wp << "}";
-    geocacheList.append(c);
-  }
+    listReply->deleteLater();
 
-  int progress = 2;
-  progDialog.setMaximum(progress + geocacheList.size());
+    // POST data for "Next" action
+    QMap<QString,QString> fields = getAspFormFields(text);
+    fields["__EVENTTARGET"] = "ctl00$ContentBody$pgrBottom$ctl08";
+    postData = "";
+    foreach(QString field, fields.keys()) {
+      postData.append(QUrl::toPercentEncoding(field));
+      postData.append("=");
+      postData.append(QUrl::toPercentEncoding(fields.value(field)));
+      postData.append("&");
+    }
+
+  } while(nextRx.indexIn(text) > 0);
+
+  // second part: load geocache descriptions
+  int progress = 0;
+  progDialog.setMaximum(geocacheList.size());
   foreach(WaypointsGuids const& c, geocacheList) {
     if(progDialog.wasCanceled()) {
       break;
     }
-    progDialog.setLabelText(QString("Loading %1").arg(c.wp));
+    progress++;
+    progDialog.setLabelText(QString(tr("Loading %1/%2: %3")).arg(progress).
+      arg(geocacheList.size()).arg(c.wp));
     progDialog.setValue(progress);
 
     // load geocache page and extract data
@@ -315,15 +376,12 @@ bool GCSpider::nearest(const Coordinate center, const float maxDist, QList<
     Geocache * pgc = new Geocache;
     gcscp.all(*pgc);
     buf.append(pgc);
-
-    ++progress;
   }
 
   progDialog.setValue(progDialog.maximum());
 
   qDebug() << "finished import from geocaching.com";
 
-  listReply->deleteLater();
   return true;
 }
 
@@ -339,10 +397,10 @@ bool GCSpider::single(QString waypoint, Geocache& buf) {
   // @todo
   // try to login
   if(!loggedIn_) {
-    throw Failure("Not logged in!");
+    throw Failure(tr("Not logged in!"));
   }
   if(!waypoint.startsWith("GC", Qt::CaseInsensitive)) {
-    throw Failure("Waypoint must begin with \"GC\"");
+    throw Failure(tr("Waypoint must begin with \"GC\""));
   }
 
   QNetworkReply * reply = loadPage(QUrl("http://www.geocaching.com/seek/cache_"
